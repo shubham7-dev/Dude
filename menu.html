@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Context Menu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: 8px 7.5px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .menu-container {
+      width: 215px;
+      background-color: #F2F2F7;
+      border-radius: 8px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu-item {
+      width: 100%;
+      height: 48px;
+      padding-left: 20px;
+      display: flex;
+      align-items: center;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: #000000;
+      background-color: transparent;
+      cursor: pointer;
+      transition: background-color 100ms ease;
+      line-height: 1;
+      letter-spacing: -0.2px;
+    }
+
+    .menu-item:hover {
+      background-color: #DEDEDE;
+    }
+
+    .menu-item:active {
+      background-color: #D5D5DA;
+    }
+  </style>
+</head>
+<body>
+  <div class="menu-container" id="menu-container">
+    <div class="menu-item" id="item-open-dude">Open Dude</div>
+    <div class="menu-item" id="item-hide-show">Hide / Show</div>
+    <div class="menu-item" id="item-quit">Quit</div>
+  </div>
+
+  <script>
+    // Prevent default browser context menu inside the custom context menu window
+    window.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    async function hideMenu() {
+      try {
+        if (window.__TAURI__?.window?.getCurrentWindow) {
+          const win = window.__TAURI__.window.getCurrentWindow();
+          await win.hide();
+          return;
+        }
+        if (window.__TAURI__?.core?.invoke) {
+          await window.__TAURI__.core.invoke('plugin:window|hide', { label: 'context-menu' });
+          return;
+        }
+      } catch (err) {
+        console.error('Failed to hide context menu:', err);
+      }
+    }
+
+    async function handleOpenDude() {
+      await hideMenu();
+      try {
+        let settingsWin = null;
+        if (window.__TAURI__?.webviewWindow?.WebviewWindow) {
+          settingsWin = await window.__TAURI__.webviewWindow.WebviewWindow.getByLabel('settings');
+        } else if (window.__TAURI__?.window?.Window) {
+          settingsWin = await window.__TAURI__.window.Window.getByLabel('settings');
+        }
+
+        if (settingsWin) {
+          if (typeof settingsWin.isMinimized === 'function' && (await settingsWin.isMinimized())) {
+            await settingsWin.unminimize();
+          }
+          await settingsWin.show();
+          await settingsWin.setFocus();
+          return;
+        }
+
+        if (window.__TAURI__?.webviewWindow?.WebviewWindow) {
+          const win = new window.__TAURI__.webviewWindow.WebviewWindow('settings', {
+            title: 'Dude',
+            url: 'settings.html',
+            width: 1000,
+            height: 625,
+            center: true,
+            resizable: false,
+            decorations: false,
+            transparent: true,
+            shadow: false,
+            focus: true
+          });
+          return;
+        }
+      } catch (e) {
+        console.warn('JS window creation failed, falling back to Rust command:', e);
+      }
+
+      if (window.__TAURI__?.core?.invoke) {
+        await window.__TAURI__.core.invoke('open_dude_settings');
+      }
+    }
+
+    async function handleHideShow() {
+      await hideMenu();
+      try {
+        let mainWin = null;
+        if (window.__TAURI__?.webviewWindow?.WebviewWindow) {
+          mainWin = await window.__TAURI__.webviewWindow.WebviewWindow.getByLabel('main');
+        } else if (window.__TAURI__?.window?.Window) {
+          mainWin = await window.__TAURI__.window.Window.getByLabel('main');
+        }
+
+        if (mainWin) {
+          const isVisible = await mainWin.isVisible();
+          if (isVisible) {
+            await mainWin.hide();
+          } else {
+            await mainWin.show();
+            await mainWin.setFocus();
+          }
+          return;
+        }
+      } catch (e) {
+        console.warn('JS toggle failed, falling back to Rust command:', e);
+      }
+
+      if (window.__TAURI__?.core?.invoke) {
+        await window.__TAURI__.core.invoke('toggle_mascot_window');
+      }
+    }
+
+    async function handleQuit() {
+      await hideMenu();
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          await window.__TAURI__.core.invoke('quit_app');
+          return;
+        }
+      } catch (e) {
+        console.warn('quit_app invoke failed, falling back to app.exit:', e);
+      }
+
+      try {
+        if (window.__TAURI__?.app?.exit) {
+          await window.__TAURI__.app.exit(0);
+          return;
+        }
+      } catch (e) {
+        console.warn('JS app exit failed:', e);
+      }
+    }
+
+    document.getElementById('item-open-dude')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handleOpenDude();
+    });
+
+    document.getElementById('item-hide-show')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handleHideShow();
+    });
+
+    document.getElementById('item-quit')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handleQuit();
+    });
+
+    // Hide on clicking backdrop (outside container)
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#menu-container')) {
+        hideMenu();
+      }
+    });
+
+    // Hide on Escape key press
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        hideMenu();
+      }
+    });
+
+    // Hide on lost focus / blur
+    window.addEventListener('blur', () => {
+      hideMenu();
+    });
+
+    // Dynamic label for Hide / Show vs Show / Hide based on mascot visibility
+    async function updateLabel() {
+      try {
+        let mainWin = null;
+        if (window.__TAURI__?.webviewWindow?.WebviewWindow) {
+          mainWin = await window.__TAURI__.webviewWindow.WebviewWindow.getByLabel('main');
+        } else if (window.__TAURI__?.window?.Window) {
+          mainWin = await window.__TAURI__.window.Window.getByLabel('main');
+        }
+        if (mainWin) {
+          const isVisible = await mainWin.isVisible();
+          const item = document.getElementById('item-hide-show');
+          if (item) {
+            item.textContent = isVisible ? 'Hide / Show' : 'Show / Hide';
+          }
+        }
+      } catch (_) {}
+    }
+
+    updateLabel();
+    window.addEventListener('focus', updateLabel);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) updateLabel();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Frontend build outputs
+dist/
+dist-ssr/
+
+# Tauri & Rust build artifacts
+src-tauri/target/
+src-tauri/gen/
+target/
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.pfx
+
+# Local settings and credential stores
+*.local
+/settings.json
+dude-settings.json
+dude_store.json
+.tauri-store.json
+store.bin
+store.json
+
+# Logs
+logs/
+*.log
+
+# Backups & temporary files
+*backup*
+*.bak
+*.tmp
+
+# Editor and OS files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

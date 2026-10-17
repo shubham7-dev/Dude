@@ -1,0 +1,4517 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dude</title>
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('dude-theme');
+        if (t === 'dark' || t === 'light') {
+          document.documentElement.setAttribute('data-theme', t);
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } catch (_) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@600;700&family=Fira+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      /* Card Background */
+      --bg-card: #F2F2F7;
+
+      /* Sidebar Background */
+      --bg-sidebar: #E0E0F5;
+
+      /* Panel Background */
+      --bg-panel: #F2F2F2;
+      --bg-panel-content: #FFFFFF;
+
+      /* Panel Text (titles, labels, headings) */
+      --color-panel-title: #000000;
+      --color-panel-heading: #000000;
+      --color-panel-label: #000000;
+      --shadow-appearance-label: 0 0 6px #F2F2F2;
+      --color-panel-footer: #555555;
+      --color-welcome-tagline: #666666;
+      --color-welcome-skip: #8E8E93;
+
+      /* Sidebar Text */
+      --color-sidebar-text: #000000;
+      --color-nav-active-text: #000000;
+      --bg-nav-active: #FFFFFF;
+
+      /* Divider Lines */
+      --color-sidebar-divider: #FFFFFF;
+
+      /* Title Underline */
+      --color-title-underline: #DCDCDC;
+
+      /* Nav Item Hover Overlay */
+      --bg-nav-hover: rgba(255, 255, 255, 0.4);
+
+      /* Window Button Icon Color */
+      --color-win-btn: #555555;
+
+      /* Window Button Hover Background */
+      --bg-win-btn-minimize-hover: #E8E8EE;
+
+      /* Theme Toggle Button Color */
+      --color-theme-toggle: #1A1A1A;
+    }
+
+    :root[data-theme="dark"] {
+      /* Card Background */
+      --bg-card: #000000;
+
+      /* Sidebar Background */
+      --bg-sidebar: #4B4B5C;
+
+      /* Panel Background */
+      --bg-panel: #34343E;
+      --bg-panel-content: #34343E;
+
+      /* Panel Text (titles, labels, headings) */
+      --color-panel-title: #FFFFFF;
+      --color-panel-heading: #FFFFFF;
+      --color-panel-label: #FFFFFF;
+      --shadow-appearance-label: 0 0 6px rgba(0, 0, 0, 0.6);
+      --color-panel-footer: #FFFFFF;
+      --color-welcome-tagline: rgba(255, 255, 255, 0.7);
+      --color-welcome-skip: rgba(255, 255, 255, 0.7);
+
+      /* Sidebar Text */
+      --color-sidebar-text: #FFFFFF;
+      --color-nav-active-text: #111111;
+      --bg-nav-active: #FFFFFF;
+
+      /* Divider Lines */
+      --color-sidebar-divider: #FFFFFF;
+
+      /* Title Underline */
+      --color-title-underline: #D0D0D0;
+
+      /* Nav Item Hover Overlay */
+      --bg-nav-hover: rgba(255, 255, 255, 0.10);
+
+      /* Window Button Icon Color */
+      --color-win-btn: #D0D0D0;
+
+      /* Window Button Hover Background */
+      --bg-win-btn-minimize-hover: rgba(255, 255, 255, 0.12);
+
+      /* Theme Toggle Button Color */
+      --color-theme-toggle: #FFFFFF;
+    }
+
+    /* Smooth 200ms theme transition on interactive toggle (no transition on first load) */
+    html.theme-transitioning,
+    html.theme-transitioning .card-window,
+    html.theme-transitioning .sidebar-panel,
+    html.theme-transitioning .content-panel,
+    html.theme-transitioning .appearance-panel,
+    html.theme-transitioning .settings-subpanel,
+    html.theme-transitioning .panel-title,
+    html.theme-transitioning .subpanel-title,
+    html.theme-transitioning .personality-heading,
+    html.theme-transitioning .row-label,
+    html.theme-transitioning .appearance-label,
+    html.theme-transitioning .nav-item,
+    html.theme-transitioning .panel-divider,
+    html.theme-transitioning .subpanel-underline,
+    html.theme-transitioning .sidebar-divider,
+    html.theme-transitioning .win-btn,
+    html.theme-transitioning .theme-toggle-btn,
+    html.theme-transitioning .about-footer,
+    html.theme-transitioning .welcome-tagline,
+    html.theme-transitioning .welcome-skip-link {
+      transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, text-shadow 200ms ease !important;
+    }
+
+    /* Sidebar Theme Toggle Button */
+    .theme-toggle-btn {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-theme-toggle);
+      outline: none;
+      -webkit-app-region: no-drag;
+      z-index: 10;
+      transition: background-color 150ms ease;
+    }
+
+    .theme-toggle-btn:hover {
+      background-color: rgba(128, 128, 128, 0.2);
+    }
+
+    .theme-toggle-btn svg {
+      width: 30px;
+      height: 30px;
+      display: block;
+      fill: currentColor;
+      pointer-events: none;
+    }
+
+    @keyframes themeIconSwap {
+      0% {
+        opacity: 0;
+        transform: rotate(-25deg) scale(0.85);
+      }
+
+      100% {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      }
+    }
+
+    .theme-toggle-btn.swapping svg {
+      animation: themeIconSwap 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 1000px;
+      height: 625px;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    [data-tauri-drag-region] {
+      -webkit-app-region: drag;
+    }
+
+    input,
+    select,
+    textarea,
+    button,
+    .nav-item,
+    .win-btn,
+    .color-swatch,
+    .appearance-slider,
+    .coord-input,
+    .tile,
+    .toggle-track,
+    .toggle-knob,
+    .section-card,
+    .key-box {
+      -webkit-app-region: no-drag;
+    }
+
+    /* Outer Card Window */
+    .card-window {
+      position: relative;
+      width: 1000px;
+      height: 625px;
+      background-color: var(--bg-card);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    /* Header Row & Window Controls */
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .window-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .win-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-win-btn);
+      transition: background-color 120ms ease, color 120ms ease;
+      outline: none;
+      -webkit-app-region: no-drag;
+    }
+
+    .win-btn svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+    }
+
+    .win-btn-minimize:hover {
+      background-color: var(--bg-win-btn-minimize-hover);
+      color: var(--color-win-btn);
+    }
+
+    .win-btn-close:hover {
+      background-color: #FF5C5C;
+      color: #FFFFFF;
+    }
+
+    /* Left Sidebar Panel */
+    .sidebar-panel {
+      position: absolute;
+      left: 18px;
+      top: 20px;
+      width: 325px;
+      height: 585px;
+      background-color: var(--bg-sidebar);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    /* Mascot Image centered at top */
+    .mascot-image {
+      position: absolute;
+      top: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 130px;
+      height: auto;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* Divider below mascot */
+    .sidebar-divider {
+      position: absolute;
+      top: 128px;
+      left: 20px;
+      width: 285px;
+      height: 2px;
+      background-color: var(--color-sidebar-divider);
+      border-radius: 1px;
+    }
+
+    /* Navigation Stack */
+    .nav-list {
+      position: absolute;
+      top: 162px;
+      left: 20px;
+      width: 276px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .nav-item {
+      width: 276px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding-left: 16px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--color-sidebar-text);
+      cursor: pointer;
+      background-color: transparent;
+      border-radius: 12px;
+      transition: background-color 100ms ease;
+      line-height: 1;
+      letter-spacing: -0.2px;
+    }
+
+    .nav-item.active {
+      background-color: var(--bg-nav-active);
+      color: var(--color-nav-active-text);
+    }
+
+    .nav-item:not(.active):hover {
+      background-color: var(--bg-nav-hover);
+    }
+
+    /* Right Content Panel (AI section) */
+    .content-panel {
+      position: absolute;
+      left: 362px;
+      top: 20px;
+      width: 619px;
+      height: 585px;
+      background-color: var(--bg-panel-content);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Panel Title */
+    .panel-title {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 44px;
+      font-weight: 400;
+      color: var(--color-panel-title);
+      line-height: 1;
+      margin: 0;
+      padding-left: 8px;
+    }
+
+    /* Underline across panel */
+    .panel-divider {
+      width: 100%;
+      height: 3px;
+      background-color: var(--color-title-underline);
+      margin-top: 12px;
+      border-radius: 1.5px;
+    }
+
+    /* Three Form Rows (Pitch 68px) */
+    .form-rows {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .form-row {
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .row-label {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 30px;
+      font-weight: 400;
+      color: var(--color-panel-label);
+      padding-left: 8px;
+      line-height: 1;
+    }
+
+    .row-input,
+    .row-select {
+      width: 411px;
+      height: 55px;
+      background-color: #E0E0E0;
+      border: 1px solid #000000;
+      border-radius: 6px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: #000000;
+      padding: 0 14px;
+      outline: none;
+      box-sizing: border-box;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    .row-select {
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%231A1A1A' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 32px;
+    }
+
+    #api-key-input {
+      letter-spacing: 2px;
+    }
+
+    /* Personality Section */
+    .personality-heading {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--color-panel-heading);
+      line-height: 1;
+      margin-top: 24px;
+      padding-left: 8px;
+    }
+
+    .personality-textarea {
+      width: 100%;
+      height: 129px;
+      background-color: #F2F2F7;
+      border: 1px solid #000000;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 14px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #000000;
+      line-height: 1.4;
+      resize: none;
+      outline: none;
+      box-sizing: border-box;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    /* Test Connection Button */
+    .test-btn {
+      width: 125px;
+      height: 30px;
+      background-color: #6B5BFF;
+      color: #FFFFFF;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
+      margin-top: 24px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      outline: none;
+      transition: opacity 120ms ease;
+    }
+
+    /* API Key Field & Remove Button in AI section */
+    .api-key-field-wrap {
+      position: relative;
+      width: 411px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+    }
+
+    .api-key-field-wrap .row-input {
+      width: 100%;
+      height: 100%;
+      padding-right: 94px;
+    }
+
+    .remove-key-btn {
+      position: absolute;
+      right: 10px;
+      background: transparent;
+      border: none;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #888888;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: color 150ms ease, background-color 150ms ease;
+      white-space: nowrap;
+      outline: none;
+    }
+
+    .remove-key-btn:hover {
+      color: #FF3B30;
+      background-color: rgba(255, 59, 48, 0.08);
+    }
+
+    .remove-key-btn.sure {
+      color: #FF3B30;
+      font-weight: 600;
+      background-color: rgba(255, 59, 48, 0.15);
+    }
+
+    .ai-bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 24px;
+    }
+
+    .model-switch-note {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-style: italic;
+      color: #8E8E93;
+      text-align: center;
+      line-height: 1.2;
+      max-width: 320px;
+    }
+
+    .setup-guide-link {
+      background: transparent;
+      border: none;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #6B5BFF;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: color 120ms ease;
+    }
+
+    .setup-guide-link:hover {
+      color: #5544DD;
+    }
+
+    /* Welcome Panel Styles */
+    .welcome-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .welcome-tagline {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: #666666;
+      margin-top: 6px;
+      line-height: 1.3;
+    }
+
+    .welcome-steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .welcome-step-card {
+      background-color: #F8F8FC;
+      border: 1px solid #E5E5EA;
+      border-radius: 12px;
+      padding: 14px 18px;
+      transition: border-color 150ms ease, background-color 150ms ease;
+    }
+
+    .welcome-step-card-active {
+      background-color: #FAF9FE;
+      border-color: #D6D0F8;
+    }
+
+    .welcome-step-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .welcome-step-title {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: #1A1A1A;
+      line-height: 1.3;
+    }
+
+    .welcome-open-btn {
+      height: 34px;
+      padding: 0 16px;
+      background-color: #6B5BFF;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 120ms ease, transform 100ms ease;
+      white-space: nowrap;
+    }
+
+    .welcome-open-btn:hover {
+      background-color: #5544DD;
+    }
+
+    .welcome-open-btn:active {
+      transform: scale(0.98);
+    }
+
+    .welcome-paste-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .welcome-key-wrap {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .welcome-key-input {
+      width: 100%;
+      height: 44px;
+      background-color: #FFFFFF;
+      border: 1.5px solid #D1D1D6;
+      border-radius: 8px;
+      padding: 0 42px 0 14px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: #000000;
+      outline: none;
+      box-sizing: border-box;
+      letter-spacing: 1px;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    .welcome-key-input:focus {
+      border-color: #6B5BFF;
+      box-shadow: 0 0 0 3px rgba(107, 91, 255, 0.15);
+    }
+
+    .welcome-eye-toggle {
+      position: absolute;
+      right: 8px;
+      width: 32px;
+      height: 32px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #8E8E93;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      padding: 0;
+      transition: color 120ms ease;
+    }
+
+    .welcome-eye-toggle:hover {
+      color: #1A1A1A;
+    }
+
+    .welcome-save-test-btn {
+      height: 44px;
+      padding: 0 20px;
+      background-color: #6B5BFF;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14.5px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 120ms ease, opacity 120ms ease;
+    }
+
+    .welcome-save-test-btn:hover:not(:disabled) {
+      background-color: #5544DD;
+    }
+
+    .welcome-save-test-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .welcome-privacy-notice {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #8E8E93;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    .welcome-feedback-msg {
+      margin-top: 10px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .welcome-feedback-msg.success {
+      color: #059669;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+    }
+
+    .welcome-feedback-msg.error {
+      color: #DC2626;
+      font-weight: 500;
+      background-color: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+
+    .welcome-start-container {
+      margin-top: 10px;
+    }
+
+    .welcome-start-btn {
+      width: 100%;
+      height: 44px;
+      background-color: #10B981;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 120ms ease;
+    }
+
+    .welcome-start-btn:hover {
+      background-color: #059669;
+    }
+
+    .welcome-bottom-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: auto;
+      padding-top: 8px;
+    }
+
+    .welcome-skip-link {
+      background: transparent;
+      border: none;
+      color: #8E8E93;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 4px 6px;
+      transition: color 120ms ease;
+    }
+
+    .welcome-skip-link:hover {
+      color: #555555;
+    }
+
+    .test-btn:hover {
+      opacity: 0.92;
+    }
+
+    .test-btn:active {
+      opacity: 0.82;
+    }
+
+    /* ======================================================================
+       APPEARANCE SECTION (Figma Pixel-Identical Implementation)
+       ====================================================================== */
+    .appearance-panel {
+      position: absolute;
+      left: 362px;
+      top: 20px;
+      width: 619px;
+      height: 585px;
+      background-color: var(--bg-panel);
+      border-radius: 16px;
+      box-shadow: 0 0 12px rgba(112, 110, 250, 0.4);
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    /* 3px gradient border from blue (top, #3D8BFF) to magenta (bottom, #D946EF) */
+    .appearance-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      padding: 3px;
+      background: linear-gradient(180deg, #3D8BFF 0%, #D946EF 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Decorative cherry blossom tree layer behind boxes and labels */
+    .appearance-tree-bg {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: auto;
+      max-height: 100%;
+      object-fit: contain;
+      object-position: bottom center;
+      pointer-events: none;
+      z-index: 1;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* Title "Appearance" (Fira Sans 44px, black) at left 35px, vertically centered about 52px from panel top */
+    .appearance-panel .subpanel-title {
+      position: absolute;
+      left: 35px;
+      top: 30px;
+      height: 44px;
+      line-height: 44px;
+      margin: 0;
+      padding: 0;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 44px;
+      font-weight: 400;
+      color: var(--color-panel-title);
+      user-select: none;
+      z-index: 3;
+    }
+
+    /* 3px #DCDCDC underline at left 19px, 582px wide, 94px from panel top */
+    .appearance-panel .subpanel-underline {
+      position: absolute;
+      left: 19px;
+      top: 94px;
+      width: 582px;
+      height: 3px;
+      background-color: var(--color-title-underline);
+      border-radius: 1.5px;
+      z-index: 3;
+    }
+
+    /* Window controls */
+    .appearance-panel .subpanel-controls {
+      position: absolute;
+      top: 28px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 5;
+    }
+
+    .appearance-panel .subpanel-saved-indicator {
+      position: absolute;
+      top: 35px;
+      right: 96px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #8A8B94;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease;
+      user-select: none;
+      z-index: 3;
+    }
+
+    .appearance-panel .subpanel-saved-indicator.visible {
+      opacity: 1;
+    }
+
+    /* Labels: Fira Sans SemiBold 30px, black, left 38px, vertically centered on their box, text-shadow 0 0 6px #F2F2F2 */
+    .appearance-label {
+      position: absolute;
+      left: 38px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 30px;
+      font-weight: 600;
+      color: var(--color-panel-label);
+      line-height: 1;
+      text-shadow: var(--shadow-appearance-label);
+      user-select: none;
+      z-index: 3;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Boxes: left 222px, 362px wide, radius 6px, 1px solid #333, background white at ~70% opacity */
+    .appearance-box {
+      position: absolute;
+      left: 222px;
+      width: 362px;
+      background-color: rgba(255, 255, 255, 0.7);
+      border: 1px solid #333333;
+      border-radius: 6px;
+      box-sizing: border-box;
+      z-index: 3;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+    }
+
+    /* Tops and heights:
+       Dude Color: 139px / 54px
+       Pill color: 209px / 54px
+       Position: 285px / 53px
+       Roundness: 355px / 54px
+       Opacity: 426px / 54px
+    */
+    .box-dude-color {
+      top: 139px;
+      height: 54px;
+    }
+
+    .label-dude-color {
+      top: 139px;
+      height: 54px;
+    }
+
+    .box-pill-color {
+      top: 209px;
+      height: 54px;
+    }
+
+    .label-pill-color {
+      top: 209px;
+      height: 54px;
+    }
+
+    .box-position {
+      top: 285px;
+      height: 53px;
+    }
+
+    .label-position {
+      top: 285px;
+      height: 53px;
+    }
+
+    .box-roundness {
+      top: 355px;
+      height: 54px;
+    }
+
+    .label-roundness {
+      top: 355px;
+      height: 54px;
+    }
+
+    .box-opacity {
+      top: 426px;
+      height: 54px;
+    }
+
+    .label-opacity {
+      top: 426px;
+      height: 54px;
+    }
+
+    /* 4 Thumbnail Buttons in Dude Color box: 56x37px, radius 4px, 1px solid #1A1A1A, light background,
+       at left 29px, 109px, 193px, 278px inside box, vertically centered ((54 - 37)/2 = 8.5px) */
+    .dude-color-btn {
+      position: absolute;
+      top: 8.5px;
+      width: 56px;
+      height: 37px;
+      border-radius: 4px;
+      border: 1px solid #1A1A1A;
+      background-color: #F8F8F8;
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+      outline: none;
+      -webkit-app-region: no-drag;
+    }
+
+    .dude-color-btn:hover:not(.active) {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .dude-color-btn.active {
+      outline: 2px solid #6B5BFF;
+      outline-offset: 2px;
+    }
+
+    .dude-color-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .dude-btn-pink {
+      left: 29px;
+    }
+
+    .dude-btn-blue {
+      left: 109px;
+    }
+
+    .dude-btn-cream {
+      left: 193px;
+    }
+
+    .dude-btn-black {
+      left: 278px;
+    }
+
+    /* Pill Color Box: 7 square swatches, 34x34px, radius 2px, vertically centered, evenly spaced across box with 18px side padding */
+    .pill-swatches-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+    }
+
+    .pill-swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 2px;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      outline: none;
+      transition: transform 100ms ease;
+      -webkit-app-region: no-drag;
+      flex-shrink: 0;
+    }
+
+    .pill-swatch:hover:not(.active) {
+      transform: scale(1.06);
+    }
+
+    .pill-swatch.active {
+      outline: 2px solid #6B5BFF;
+      outline-offset: 2px;
+    }
+
+    /* Position Box Dropdown: Fira Sans 14px semibold with 18px left padding and small light chevron at right */
+    .position-dropdown-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .position-select-el {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #000000;
+      padding-left: 18px;
+      padding-right: 36px;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      -webkit-app-region: no-drag;
+    }
+
+    .position-chevron-svg {
+      position: absolute;
+      right: 18px;
+      width: 10px;
+      height: 6px;
+      pointer-events: none;
+      color: #888888;
+    }
+
+    /* Roundness and Opacity Sliders:
+       3px #7A7A7A track from 21px to 282px inside box (no filled part)
+       18px purple (#8B5CF6) circular thumb
+       value text at right: Fira Sans bold 16px, #777, 18px right padding
+    */
+    .slider-row-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .app-slider-input {
+      position: absolute;
+      left: 21px;
+      width: 261px;
+      height: 18px;
+      background: transparent;
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+      cursor: pointer;
+      margin: 0;
+      padding: 0;
+      -webkit-app-region: no-drag;
+    }
+
+    .app-slider-input::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 3px;
+      background: #7A7A7A;
+      border-radius: 1.5px;
+      border: none;
+    }
+
+    .app-slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #8B5CF6;
+      border: none;
+      margin-top: -7.5px;
+      cursor: pointer;
+      transition: transform 100ms ease;
+    }
+
+    .app-slider-input::-webkit-slider-thumb:hover {
+      transform: scale(1.12);
+    }
+
+    .slider-val-label {
+      position: absolute;
+      right: 18px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #777777;
+      line-height: 1;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    /* ======================================================================
+       BEHAVIOR & STARTUP PANELS (Figma Pixel-Identical Implementation)
+       ====================================================================== */
+    .settings-subpanel {
+      position: absolute;
+      left: 362px;
+      top: 20px;
+      width: 619px;
+      height: 585px;
+      background-color: var(--bg-panel);
+      border-radius: 16px;
+      box-shadow: 0 0 12px rgba(112, 110, 250, 0.4);
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    /* 3px gradient border going from blue (top, #3D8BFF) to magenta (bottom, #D946EF) */
+    .settings-subpanel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      padding: 3px;
+      background: linear-gradient(180deg, #3D8BFF 0%, #D946EF 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Title: left 32px, vertically centered at about 49px from panel top */
+    .settings-subpanel .subpanel-title {
+      position: absolute;
+      left: 32px;
+      top: 27px;
+      height: 44px;
+      line-height: 44px;
+      margin: 0;
+      padding: 0;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 44px;
+      font-weight: 400;
+      color: var(--color-panel-title);
+      user-select: none;
+    }
+
+    /* 3px #DCDCDC underline at left 21px, 582px wide, 77px from panel top */
+    .settings-subpanel .subpanel-underline {
+      position: absolute;
+      left: 21px;
+      top: 77px;
+      width: 582px;
+      height: 3px;
+      background-color: var(--color-title-underline);
+      border-radius: 1.5px;
+    }
+
+    /* Saved indicator: small gray (#8A8B94, 14px) that does not shift the layout */
+    .settings-subpanel .subpanel-saved-indicator {
+      position: absolute;
+      top: 35px;
+      right: 96px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #8A8B94;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease;
+      user-select: none;
+    }
+
+    .settings-subpanel .subpanel-saved-indicator.visible {
+      opacity: 1;
+    }
+
+    .settings-subpanel .subpanel-saved-indicator.error {
+      color: #E53935;
+    }
+
+    /* Window Controls in header row */
+    .settings-subpanel .subpanel-controls {
+      position: absolute;
+      top: 28px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 5;
+    }
+
+    /* Section Cards: background #A9BDF0, radius 6px */
+    .settings-subpanel .section-card {
+      position: absolute;
+      background-color: #A9BDF0;
+      border-radius: 6px;
+      box-sizing: border-box;
+      -webkit-app-region: no-drag;
+    }
+
+    /* Behavior Card 1: left 47px, top 97px, 531x156px */
+    .behavior-card-1 {
+      left: 47px;
+      top: 97px;
+      width: 531px;
+      height: 156px;
+    }
+
+    /* Behavior Card 2 (no title): left 47px, top 282px, 531x129px */
+    .behavior-card-2 {
+      left: 47px;
+      top: 282px;
+      width: 531px;
+      height: 129px;
+    }
+
+    /* Startup Card: left 30px, top 97px, 558x156px */
+    .startup-card-main {
+      left: 30px;
+      top: 97px;
+      width: 558px;
+      height: 156px;
+    }
+
+    /* Group Title: Fira Sans Condensed SemiBold about 15px, black, vertically centered about 22px from card top */
+    .settings-subpanel .group-title {
+      position: absolute;
+      top: 13px;
+      height: 18px;
+      line-height: 18px;
+      font-family: 'Fira Sans Condensed', 'Fira Sans', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      color: #000000;
+      user-select: none;
+      letter-spacing: 0.1px;
+    }
+
+    .behavior-card-1 .group-title {
+      left: 16px;
+    }
+
+    .startup-card-main .group-title {
+      left: 33px;
+    }
+
+    /* Tile: white, 1px solid #000, radius 4px, 42px tall */
+    .settings-subpanel .tile {
+      position: absolute;
+      background-color: #FFFFFF;
+      border: 1px solid #000000;
+      border-radius: 4px;
+      height: 42px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      z-index: 20;
+      -webkit-app-region: no-drag;
+    }
+
+    /* Tiles for Behavior Card 1 (218px wide: columns at left 16px and 296px, rows at top 40px and 96px) */
+    .tile-b-218 {
+      width: 218px;
+    }
+
+    .tile-b-col1 {
+      left: 16px;
+    }
+
+    .tile-b-col2 {
+      left: 296px;
+    }
+
+    .tile-b-row1 {
+      top: 40px;
+    }
+
+    .tile-b-row2 {
+      top: 96px;
+    }
+
+    /* Tiles for Behavior Card 2 (499px wide, left 16px, tops 17px and 72px) */
+    .tile-b-499 {
+      width: 499px;
+      left: 16px;
+    }
+
+    .tile-b-sub-top {
+      top: 17px;
+    }
+
+    .tile-b-sub-bottom {
+      top: 72px;
+    }
+
+    /* Tiles for Startup Card (237px wide: columns at left 22px and 298px, rows at top 40px and 96px) */
+    .tile-s-237 {
+      width: 237px;
+    }
+
+    .tile-s-col1 {
+      left: 22px;
+    }
+
+    .tile-s-col2 {
+      left: 298px;
+    }
+
+    .tile-s-row1 {
+      top: 40px;
+    }
+
+    .tile-s-row2 {
+      top: 96px;
+    }
+
+    /* Tile Label: Fira Sans 14px semibold, black, 10-12px left padding */
+    .settings-subpanel .tile-label {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #000000;
+      padding-left: 11px;
+      user-select: none;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* Multiline Label: wraps to two lines when long */
+    .settings-subpanel .tile-label-multiline {
+      line-height: 1.15;
+      white-space: normal;
+      max-width: 135px;
+    }
+
+    /* Subtitle Tile Text Wrapper: label center ~14px, subtitle center ~31px from tile top */
+    .settings-subpanel .tile-text-wrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-left: 11px;
+      user-select: none;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .settings-subpanel .tile-text-wrap .tile-label {
+      padding-left: 0;
+      line-height: 16px;
+      margin-top: 6px;
+    }
+
+    .settings-subpanel .tile-text-wrap .tile-subtitle {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #000000;
+      line-height: 14px;
+      margin-top: 1px;
+      padding-left: 0;
+      user-select: none;
+    }
+
+    /* Toggle Component: 62x24px track, radius 8px, 150ms transition */
+    .toggle-track {
+      position: absolute;
+      right: 10px;
+      top: 9px;
+      width: 62px;
+      height: 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: background-color 150ms ease, border-color 150ms ease;
+      -webkit-app-region: no-drag;
+      z-index: 25;
+    }
+
+    /* ON: bright green track (#46D800) and white knob on right */
+    .toggle-track.active {
+      background-color: #46D800;
+      border: 1.5px solid #46D800;
+    }
+
+    /* OFF: white track with 1.5px black outline and white knob with 1.5px black outline on left */
+    .toggle-track:not(.active) {
+      background-color: #FFFFFF;
+      border: 1.5px solid #000000;
+    }
+
+    /* Knob: rounded rectangle about 34x17px (radius 6px), not a circle, 3px inset from track edge */
+    .toggle-knob {
+      position: absolute;
+      top: 2px;
+      width: 34px;
+      height: 17px;
+      border-radius: 6px;
+      box-sizing: border-box;
+      pointer-events: none;
+      transition: left 150ms ease, border-color 150ms ease, background-color 150ms ease;
+    }
+
+    .toggle-track.active .toggle-knob {
+      left: 23px;
+      background-color: #FFFFFF;
+      border: none;
+    }
+
+    .toggle-track:not(.active) .toggle-knob {
+      left: 2px;
+      background-color: #FFFFFF;
+      border: 1.5px solid #000000;
+    }
+
+    /* Shortcut Conflict Message in Startup Card bottom padding */
+    .shortcut-conflict-msg {
+      display: none;
+      position: absolute;
+      left: 22px;
+      bottom: 4px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: #D93025;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .shortcut-conflict-msg.visible {
+      display: block;
+    }
+
+    /* ======================================================================
+       AGENTS PANEL (Figma Pixel-Identical Implementation)
+       ====================================================================== */
+    .agents-card {
+      position: absolute;
+      left: 31px;
+      top: 93px;
+      width: 558px;
+      height: 264px;
+      background-color: #A9BDF0;
+      border-radius: 6px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .agents-group-title {
+      position: absolute;
+      left: 16px;
+      top: 17px;
+      height: 18px;
+      line-height: 18px;
+      font-family: 'Fira Sans Condensed', 'Fira Sans', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      color: #000000;
+      user-select: none;
+      letter-spacing: 0.1px;
+    }
+
+    .agents-tile {
+      left: 21px;
+      width: 514px;
+      height: 44px;
+      background-color: #FFFFFF;
+      border: 1px solid #000000;
+      border-radius: 4px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .agents-antigravity-tile {
+      top: 45px;
+    }
+
+    .agents-tile-label {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: #000000;
+      padding-left: 12px;
+      user-select: none;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .agents-tile .toggle-track {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      width: 62px;
+      height: 24px;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    .agents-path-text {
+      position: absolute;
+      left: 21px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #7A7A7A;
+      user-select: text;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 330px;
+      height: 31px;
+      line-height: 31px;
+    }
+
+    .agents-antigravity-path {
+      top: 101px;
+    }
+
+    .agents-btn {
+      position: absolute;
+      top: 101px;
+      width: 81px;
+      height: 31px;
+      border-radius: 4px;
+      border: 1px solid #000000;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      box-sizing: border-box;
+      line-height: 1;
+      user-select: none;
+      transition: opacity 120ms ease;
+    }
+
+    .agents-btn:hover {
+      opacity: 0.88;
+    }
+
+    .agents-btn:active {
+      transform: scale(0.98);
+    }
+
+    .agents-btn-install {
+      right: 21px;
+      background-color: #FFFFFF;
+      color: #000000;
+    }
+
+    .agents-btn-reinstall {
+      right: 112px;
+      background-color: #FFFFFF;
+      color: #000000;
+    }
+
+    .agents-btn-uninstall {
+      right: 21px;
+      background-color: #D98095;
+      color: #000000;
+    }
+
+    .agents-cursor-tile {
+      top: 155px;
+    }
+
+    .agents-cursor-path {
+      top: 211px;
+      max-width: 420px;
+    }
+
+    .agents-cursor-btn {
+      top: 211px;
+      right: 21px;
+    }
+
+    .agents-disabled {
+      opacity: 0.4 !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+    }
+
+    .agents-status-line {
+      position: absolute;
+      left: 21px;
+      top: 247px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      color: #7A7A7A;
+      line-height: 14px;
+      user-select: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 514px;
+    }
+
+    .agents-status-line.error {
+      color: #D9383A;
+      font-weight: 500;
+    }
+
+    .agents-status-line.warning {
+      color: #D97706;
+      font-weight: 500;
+    }
+
+    /* Confirmation Modal */
+    .agents-modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 16px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+    }
+
+    .agents-modal-content {
+      width: 490px;
+      background-color: var(--bg-panel);
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      padding: 24px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .agents-modal-title {
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--color-panel-title);
+    }
+
+    .agents-modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .agents-modal-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .agents-modal-label {
+      font-weight: 600;
+      color: var(--color-panel-title);
+      font-size: 12px;
+    }
+
+    .agents-modal-val {
+      font-family: monospace;
+      font-size: 12px;
+      color: #333333;
+      background: rgba(0, 0, 0, 0.06);
+      padding: 6px 8px;
+      border-radius: 4px;
+      word-break: break-all;
+    }
+
+    :root[data-theme="dark"] .agents-modal-val {
+      color: #DDDDDD;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .agents-modal-events {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .agents-modal-events span {
+      background: #A9BDF0;
+      color: #000000;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .agents-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .agents-modal-btn {
+      padding: 8px 18px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #000000;
+      transition: opacity 120ms ease;
+    }
+
+    .agents-modal-btn:hover {
+      opacity: 0.85;
+    }
+
+    .agents-modal-btn-cancel {
+      background: #FFFFFF;
+      color: #000000;
+    }
+
+    .agents-modal-btn-install {
+      background: #46D800;
+      color: #000000;
+      border-color: #38b000;
+    }
+
+    /* ======================================================================
+       ABOUT PANEL (Figma Pixel-Identical Implementation)
+       ====================================================================== */
+    .about-card-identity {
+      left: 47px;
+      top: 97px;
+      width: 531px;
+      height: 130px;
+    }
+
+    .about-card-actions {
+      left: 47px;
+      top: 245px;
+      width: 531px;
+      height: 160px;
+    }
+
+    .about-card-reset {
+      left: 47px;
+      top: 425px;
+      width: 531px;
+      height: 90px;
+    }
+
+    /* Identity Card Contents */
+    .about-identity-img {
+      position: absolute;
+      left: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100px;
+      height: auto;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .about-identity-info {
+      position: absolute;
+      left: 142px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .about-identity-title {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: #000000;
+      line-height: 1.1;
+      letter-spacing: -0.2px;
+    }
+
+    .about-identity-tagline {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: #000000;
+      line-height: 1.25;
+    }
+
+    .about-identity-version {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: #333333;
+      line-height: 1.25;
+      margin-top: 1px;
+    }
+
+    /* Action & Reset Tiles */
+    .tile-about-499 {
+      width: 499px;
+      left: 16px;
+      height: 58px;
+      padding: 0 16px 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: default;
+    }
+
+    .tile-about-top {
+      top: 16px;
+    }
+
+    .tile-about-bottom {
+      top: 86px;
+    }
+
+    .tile-about-single {
+      top: 16px;
+    }
+
+    .tile-about-499 .tile-text-wrap {
+      justify-content: center;
+      padding-left: 0;
+    }
+
+    .tile-about-499 .tile-text-wrap .tile-label {
+      padding-left: 0;
+      line-height: 18px;
+      margin-top: 0;
+    }
+
+    .tile-about-499 .tile-text-wrap .tile-subtitle {
+      padding-left: 0;
+      line-height: 16px;
+      margin-top: 2px;
+    }
+
+    /* Small Purple Action Buttons: #6B5BFF, white 13px text, 32px tall, radius 6px */
+    .about-btn-purple {
+      height: 32px;
+      min-width: 72px;
+      padding: 0 16px;
+      background-color: #6B5BFF;
+      color: #FFFFFF;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 120ms ease, opacity 120ms ease;
+      user-select: none;
+      -webkit-app-region: no-drag;
+      outline: none;
+    }
+
+    .about-btn-purple:hover:not(:disabled) {
+      background-color: #5847EB;
+    }
+
+    .about-btn-purple:active:not(:disabled) {
+      background-color: #4A3AC9;
+    }
+
+    .about-btn-purple:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    /* Reset Button: white background, red #D93025 text, 1.5px red outline */
+    .about-btn-reset {
+      height: 32px;
+      min-width: 72px;
+      padding: 0 16px;
+      background-color: #FFFFFF;
+      color: #D93025;
+      border: 1.5px solid #D93025;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+      user-select: none;
+      -webkit-app-region: no-drag;
+      outline: none;
+    }
+
+    .about-btn-reset:hover {
+      background-color: #FDF2F2;
+    }
+
+    .about-btn-reset:active {
+      background-color: #FCE8E6;
+    }
+
+    /* Footer: centered, 12px, #555, about 20px below the last card */
+    .about-footer {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      top: 535px;
+      text-align: center;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--color-panel-footer);
+      user-select: none;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card-window" data-tauri-drag-region>
+    <!-- Left Sidebar -->
+    <aside class="sidebar-panel" data-tauri-drag-region>
+      <button type="button" class="theme-toggle-btn" id="theme-toggle-btn" title="Dark mode" aria-label="Dark mode">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+        </svg>
+      </button>
+      <img src="assets/mascot.png" alt="Dude Mascot" class="mascot-image">
+      <div class="sidebar-divider"></div>
+      <nav class="nav-list">
+        <div class="nav-item active" data-tab="ai">AI</div>
+        <div class="nav-item" data-tab="appearance">Appearance</div>
+        <div class="nav-item" data-tab="behavior">Behavior</div>
+        <div class="nav-item" data-tab="startup">Startup</div>
+        <div class="nav-item" data-tab="agents">Agents</div>
+        <div class="nav-item" data-tab="about">About</div>
+      </nav>
+    </aside>
+
+    <!-- Right Content Panel (AI section) -->
+    <main class="content-panel" id="ai-panel" data-tauri-drag-region>
+      <div class="panel-header" data-tauri-drag-region>
+        <h1 class="panel-title" data-tauri-drag-region>AI</h1>
+        <div class="window-controls">
+          <button type="button" class="win-btn win-btn-minimize" id="minimize-btn" title="Minimize"
+            aria-label="Minimize">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <line x1="2" y1="7" x2="12" y2="7"></line>
+            </svg>
+          </button>
+          <button type="button" class="win-btn win-btn-close" id="close-btn" title="Close" aria-label="Close">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line>
+              <line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="panel-divider"></div>
+
+      <!-- Settings Rows -->
+      <div class="form-rows">
+        <div class="form-row">
+          <label class="row-label" for="provider-select">Provider</label>
+          <select class="row-select" id="provider-select">
+            <option value="Gemini" selected>Gemini</option>
+            <option value="Claude" disabled>Claude (Coming soon)</option>
+            <option value="OpenAI" disabled>OpenAI (Coming soon)</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label class="row-label" for="api-key-input">API key</label>
+          <div class="api-key-field-wrap">
+            <input type="password" class="row-input" id="api-key-input" placeholder="Enter API key...">
+            <button type="button" class="remove-key-btn" id="remove-key-btn" style="display: none;">Remove key</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="row-label" for="model-select">Model</label>
+          <select class="row-select" id="model-select">
+            <option value="gemini-flash-latest" selected>gemini-flash-latest</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Personality Section -->
+      <h2 class="personality-heading">Personality</h2>
+      <textarea class="personality-textarea" id="personality-input" rows="4">You are a cute, friendly mascot</textarea>
+
+      <!-- Test Connection & Setup guide row -->
+      <div class="ai-bottom-row">
+        <button type="button" class="test-btn" id="test-connection-btn">Test connection</button>
+        <span id="model-switch-note" class="model-switch-note" style="display: none;">Switched to gemini-flash-latest
+          because the chosen model didn't work.</span>
+        <button type="button" class="setup-guide-link" id="setup-guide-link">Setup guide</button>
+      </div>
+    </main>
+
+    <!-- Right Content Panel (Welcome section) -->
+    <main class="content-panel welcome-panel" id="welcome-panel" style="display: none;" data-tauri-drag-region>
+      <div class="panel-header" data-tauri-drag-region>
+        <div>
+          <h1 class="panel-title" data-tauri-drag-region style="padding-left: 0; font-size: 38px;">Welcome to Dude</h1>
+          <p class="welcome-tagline">Dude uses your own Gemini API key. It is free and stays on your PC.</p>
+        </div>
+        <div class="window-controls">
+          <button type="button" class="win-btn win-btn-minimize" id="welcome-minimize-btn" title="Minimize"
+            aria-label="Minimize">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <line x1="2" y1="7" x2="12" y2="7"></line>
+            </svg>
+          </button>
+          <button type="button" class="win-btn win-btn-close" id="welcome-close-btn" title="Close" aria-label="Close">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line>
+              <line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="panel-divider" style="margin-top: 14px; margin-bottom: 16px;"></div>
+
+      <div class="welcome-steps-container">
+        <!-- Step 1 -->
+        <div class="welcome-step-card">
+          <div class="welcome-step-row">
+            <span class="welcome-step-title">1. Open Google AI Studio</span>
+            <button type="button" class="welcome-open-btn" id="welcome-open-ai-studio-btn">
+              Open Google AI Studio
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" style="width: 13px; height: 13px; margin-left: 6px;">
+                <path d="M12 9v4a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 2 13V6a1.5 1.5 0 0 1 1.5-1.5H8"></path>
+                <polyline points="10 2 14 2 14 6"></polyline>
+                <line x1="6.5" y1="9.5" x2="14" y2="2"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="welcome-step-card">
+          <div class="welcome-step-row">
+            <span class="welcome-step-title">2. Create an API key and copy it.</span>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="welcome-step-card welcome-step-card-active">
+          <div class="welcome-step-row" style="margin-bottom: 10px;">
+            <span class="welcome-step-title">3. Paste it here</span>
+          </div>
+          <div class="welcome-paste-row">
+            <div class="welcome-key-wrap">
+              <input type="password" class="welcome-key-input" id="welcome-key-input"
+                placeholder="Paste your API key here..." autocomplete="off" spellcheck="false">
+              <button type="button" class="welcome-eye-toggle" id="welcome-eye-btn" title="Toggle visibility"
+                aria-label="Toggle password visibility">
+                <svg id="eye-icon-show" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;">
+                  <path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"></path>
+                  <circle cx="10" cy="10" r="3"></circle>
+                </svg>
+                <svg id="eye-icon-hide" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px; display: none;">
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0 1 10 19c-5.5 0-9-6-9-6a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 10 4c5.5 0 9 6 9 6a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                  </path>
+                  <line x1="1" y1="1" x2="19" y2="19"></line>
+                </svg>
+              </button>
+            </div>
+            <button type="button" class="welcome-save-test-btn" id="welcome-save-btn">Save and test</button>
+          </div>
+
+          <p class="welcome-privacy-notice">
+            Your key is saved in Windows Credential Manager on this PC and is only sent to Google.
+          </p>
+
+          <!-- Status / Error message -->
+          <div class="welcome-feedback-msg" id="welcome-feedback" style="display: none;"></div>
+
+          <!-- Success Action: Start using Dude -->
+          <div class="welcome-start-container" id="welcome-start-wrap" style="display: none;">
+            <button type="button" class="welcome-start-btn" id="welcome-start-btn">Start using Dude</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Skip link -->
+      <div class="welcome-bottom-bar">
+        <button type="button" class="welcome-skip-link" id="welcome-skip-btn">Skip for now</button>
+      </div>
+    </main>
+
+    <!-- Right Content Panel (Appearance section) -->
+    <section class="appearance-panel" id="appearance-panel" style="display: none;" data-tauri-drag-region>
+      <!-- Background decorative tree -->
+      <img src="assets/appearance-tree.png" alt="" class="appearance-tree-bg">
+
+      <!-- Header with Title, Saved text, and Window Controls -->
+      <h1 class="subpanel-title" data-tauri-drag-region>Appearance</h1>
+      <div class="subpanel-underline"></div>
+      <span class="subpanel-saved-indicator" id="appearance-saved-indicator">Saved</span>
+      <div class="subpanel-controls">
+        <button type="button" class="win-btn win-btn-minimize" id="appearance-minimize-btn" title="Minimize"
+          aria-label="Minimize">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="2" y1="7" x2="12" y2="7"></line>
+          </svg>
+        </button>
+        <button type="button" class="win-btn win-btn-close" id="appearance-close-btn" title="Close" aria-label="Close">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line>
+            <line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 5 Appearance Rows (Tops: 139, 209, 285, 355, 426) -->
+      <!-- Row 1: Dude Color -->
+      <div class="appearance-label label-dude-color">Dude Color</div>
+      <div class="appearance-box box-dude-color">
+        <button type="button" class="dude-color-btn dude-btn-pink" data-dude-color="pink" title="Pink">
+          <img src="assets/mascot-base-pink.png" alt="Pink">
+        </button>
+        <button type="button" class="dude-color-btn dude-btn-blue" data-dude-color="blue" title="Blue">
+          <img src="assets/mascot-base-blue.png" alt="Blue">
+        </button>
+        <button type="button" class="dude-color-btn dude-btn-cream active" data-dude-color="cream" title="Cream">
+          <img src="assets/mascot-base.png" alt="Cream">
+        </button>
+        <button type="button" class="dude-color-btn dude-btn-black" data-dude-color="black" title="Black">
+          <img src="assets/mascot-base-black.png" alt="Black">
+        </button>
+      </div>
+
+      <!-- Row 2: Pill color (7 square swatches) -->
+      <div class="appearance-label label-pill-color">Pill color</div>
+      <div class="appearance-box box-pill-color">
+        <div class="pill-swatches-wrap">
+          <button type="button" class="pill-swatch active" data-pill-color="#000000" style="background-color: #000000;"
+            title="#000000"></button>
+          <button type="button" class="pill-swatch" data-pill-color="#F2F2F2"
+            style="background-color: #F2F2F2; border: 1px solid #C9C9C9;" title="#F2F2F2"></button>
+          <button type="button" class="pill-swatch" data-pill-color="#818CF8" style="background-color: #818CF8;"
+            title="#818CF8"></button>
+          <button type="button" class="pill-swatch" data-pill-color="#1A1033" style="background-color: #1A1033;"
+            title="#1A1033"></button>
+          <button type="button" class="pill-swatch" data-pill-color="#0B1B3A" style="background-color: #0B1B3A;"
+            title="#0B1B3A"></button>
+          <button type="button" class="pill-swatch" data-pill-color="#0E2A1F" style="background-color: #0E2A1F;"
+            title="#0E2A1F"></button>
+          <button type="button" class="pill-swatch" data-pill-color="#4A0E1F" style="background-color: #4A0E1F;"
+            title="#4A0E1F"></button>
+        </div>
+      </div>
+
+      <!-- Row 3: Position (Top-left, Top-center, Top-right) -->
+      <div class="appearance-label label-position">Position</div>
+      <div class="appearance-box box-position">
+        <div class="position-dropdown-wrap">
+          <select id="position-select" class="position-select-el">
+            <option value="top-left" selected>Top-left</option>
+            <option value="top-center">Top-center</option>
+            <option value="top-right">Top-right</option>
+          </select>
+          <svg class="position-chevron-svg" viewBox="0 0 10 6" fill="none">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Row 4: Roundness (0 to 24 px) -->
+      <div class="appearance-label label-roundness">Roundness</div>
+      <div class="appearance-box box-roundness">
+        <div class="slider-row-wrap">
+          <input type="range" class="app-slider-input" id="roundness-input" min="0" max="24" value="8">
+          <span class="slider-val-label" id="roundness-val">8px</span>
+        </div>
+      </div>
+
+      <!-- Row 5: Opacity (40 to 100 %) -->
+      <div class="appearance-label label-opacity">Opacity</div>
+      <div class="appearance-box box-opacity">
+        <div class="slider-row-wrap">
+          <input type="range" class="app-slider-input" id="opacity-input" min="40" max="100" value="100">
+          <span class="slider-val-label" id="opacity-val">100%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Content Panel (Behavior section) -->
+    <section class="settings-subpanel behavior-panel" id="behavior-panel" style="display: none;">
+      <h1 class="subpanel-title" data-tauri-drag-region>Behavior</h1>
+      <span class="subpanel-saved-indicator" id="behavior-saved-indicator">Saved</span>
+      <div class="subpanel-controls">
+        <button type="button" class="win-btn win-btn-minimize" id="behavior-minimize-btn" title="Minimize"
+          aria-label="Minimize">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="2" y1="7" x2="12" y2="7"></line>
+          </svg>
+        </button>
+        <button type="button" class="win-btn win-btn-close" id="behavior-close-btn" title="Close" aria-label="Close">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line>
+            <line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="subpanel-underline"></div>
+
+      <!-- Card 1: left 47px, top 97px, 531x156px -->
+      <div class="section-card behavior-card-1">
+        <div class="group-title">Mascot Personality</div>
+        <div class="tile tile-b-218 tile-b-col1 tile-b-row1" data-setting="eyesFollow" data-section="behavior">
+          <span class="tile-label">Eyes follow cursor</span>
+          <div class="toggle-track active" role="switch" aria-checked="true" data-toggle="eyesFollow">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <div class="tile tile-b-218 tile-b-col2 tile-b-row1" data-setting="blink" data-section="behavior">
+          <span class="tile-label">Eye blink</span>
+          <div class="toggle-track active" role="switch" aria-checked="true" data-toggle="blink">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <div class="tile tile-b-218 tile-b-col1 tile-b-row2" data-setting="blushSmile" data-section="behavior">
+          <span class="tile-label tile-label-multiline">Blush / smile<br>reactions</span>
+          <div class="toggle-track active" role="switch" aria-checked="true" data-toggle="blushSmile">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <div class="tile tile-b-218 tile-b-col2 tile-b-row2" data-setting="reactToReplies" data-section="behavior">
+          <span class="tile-label">React to AI replies</span>
+          <div class="toggle-track active" role="switch" aria-checked="true" data-toggle="reactToReplies">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 (no title): left 47px, top 282px, 531x129px -->
+      <div class="section-card behavior-card-2">
+        <div class="tile tile-b-499 tile-b-sub-top" data-setting="autoCollapse" data-section="behavior">
+          <div class="tile-text-wrap">
+            <span class="tile-label">Auto collapse</span>
+            <span class="tile-subtitle">Automatically collapse the pill when left idle after expanding.</span>
+          </div>
+          <div class="toggle-track" role="switch" aria-checked="false" data-toggle="autoCollapse">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <div class="tile tile-b-499 tile-b-sub-bottom" data-setting="fastAnimations" data-section="behavior">
+          <div class="tile-text-wrap">
+            <span class="tile-label">Animation speed</span>
+            <span class="tile-subtitle">Expand, Collapse, Spring Animation Speed.</span>
+          </div>
+          <div class="toggle-track" role="switch" aria-checked="false" data-toggle="fastAnimations">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Content Panel (Startup section) -->
+    <section class="settings-subpanel startup-panel" id="startup-panel" style="display: none;">
+      <h1 class="subpanel-title" data-tauri-drag-region>Startup</h1>
+      <span class="subpanel-saved-indicator" id="startup-saved-indicator">Saved</span>
+      <div class="subpanel-controls">
+        <button type="button" class="win-btn win-btn-minimize" id="startup-minimize-btn" title="Minimize"
+          aria-label="Minimize">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="2" y1="7" x2="12" y2="7"></line>
+          </svg>
+        </button>
+        <button type="button" class="win-btn win-btn-close" id="startup-close-btn" title="Close" aria-label="Close">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line>
+            <line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="subpanel-underline"></div>
+
+      <!-- One card: left 30px, top 97px, 558x156px -->
+      <div class="section-card startup-card-main">
+        <div class="group-title">Mascot Personality</div>
+        <div class="tile tile-s-237 tile-s-col1 tile-s-row1" data-setting="startWithWindows" data-section="startup">
+          <span class="tile-label">Start with Windows</span>
+          <div class="toggle-track" role="switch" aria-checked="false" data-toggle="startWithWindows">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <div class="tile tile-s-237 tile-s-col2 tile-s-row1" data-setting="shortcutToggleEnabled" data-section="startup"
+          title="Ctrl+Shift+M">
+          <span class="tile-label tile-label-multiline">Show / hide<br>shortcut</span>
+          <div class="toggle-track active" role="switch" aria-checked="true" data-toggle="shortcutToggleEnabled">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <div class="tile tile-s-237 tile-s-col1 tile-s-row2" data-setting="showMascotOnStartup" data-section="startup">
+          <span class="tile-label tile-label-multiline">Show mascot on<br>startup</span>
+          <div class="toggle-track active" role="switch" aria-checked="true" data-toggle="showMascotOnStartup">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <div class="tile tile-s-237 tile-s-col2 tile-s-row2" data-setting="shortcutChatEnabled" data-section="startup"
+          title="Ctrl+Shift+Space">
+          <span class="tile-label tile-label-multiline">Open chat<br>shortcut</span>
+          <div class="toggle-track active" role="switch" aria-checked="true" data-toggle="shortcutChatEnabled">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <div class="shortcut-conflict-msg" id="shortcut-conflict-msg">Shortcut already used by another app.</div>
+      </div>
+    </section>
+
+    <!-- Agents Subpanel -->
+    <section class="settings-subpanel agents-panel" id="agents-panel" style="display: none;" data-tauri-drag-region>
+      <h1 class="subpanel-title" data-tauri-drag-region>Agents</h1>
+      <div class="subpanel-controls">
+        <button type="button" class="win-btn win-btn-minimize" id="agents-minimize-btn" title="Minimize"
+          aria-label="Minimize">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="2" y1="7" x2="12" y2="7"></line>
+          </svg>
+        </button>
+        <button type="button" class="win-btn win-btn-close" id="agents-close-btn" title="Close" aria-label="Close">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line>
+            <line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="subpanel-underline"></div>
+
+      <!-- Agents Card: left 31px, top 93px, 558 x 264px -->
+      <div class="section-card agents-card">
+        <div class="group-title agents-group-title">Hooks</div>
+
+        <!-- Antigravity Tile: left 21px, top 45px, 514 x 44px -->
+        <div class="tile agents-tile agents-antigravity-tile" id="antigravity-tile">
+          <span class="tile-label agents-tile-label">Antigravity</span>
+          <div class="toggle-track" id="antigravity-toggle" role="switch" aria-checked="false">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+
+        <!-- Antigravity Path & Action Buttons Row: vertically centered at ~116px -->
+        <div class="agents-path-text agents-antigravity-path" id="antigravity-path-text">
+          %USERPROFILE%\.gemini\config\hooks.json</div>
+        <button type="button" class="agents-btn agents-btn-install" id="antigravity-install-btn"
+          style="display: none;">install</button>
+        <button type="button" class="agents-btn agents-btn-reinstall" id="antigravity-reinstall-btn">Reinstall</button>
+        <button type="button" class="agents-btn agents-btn-uninstall" id="antigravity-uninstall-btn">Uninstall</button>
+
+        <!-- Cursor Tile: left 21px, top 155px, 514 x 44px (Disabled 40% opacity) -->
+        <div class="tile agents-tile agents-cursor-tile agents-disabled" id="cursor-tile" title="Coming soon">
+          <span class="tile-label agents-tile-label">Cursor</span>
+          <div class="toggle-track" id="cursor-toggle" role="switch" aria-checked="false">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+
+        <!-- Cursor Path & Action Buttons Row: vertically centered at ~226px -->
+        <div class="agents-path-text agents-cursor-path agents-disabled" id="cursor-path-text" title="Coming soon">
+          %USERPROFILE%\.cursor\hooks.json</div>
+        <button type="button" class="agents-btn agents-btn-install agents-cursor-btn agents-disabled"
+          id="cursor-install-btn" title="Coming soon" disabled>install</button>
+
+        <!-- Status line in bottom padding: 11px gray text at left 21px -->
+        <div class="agents-status-line" id="agents-status-line"></div>
+      </div>
+
+      <!-- Confirmation Modal for Installation -->
+      <div class="agents-modal-overlay" id="agents-install-modal" style="display: none;">
+        <div class="agents-modal-content">
+          <div class="agents-modal-title">Install Antigravity Hooks</div>
+          <div class="agents-modal-body">
+            <div class="agents-modal-field">
+              <span class="agents-modal-label">Target File:</span>
+              <span class="agents-modal-val" id="modal-target-path"></span>
+            </div>
+            <div class="agents-modal-field">
+              <span class="agents-modal-label">Events to be added (6):</span>
+              <div class="agents-modal-events">
+                <span>SessionStart</span>
+                <span>PreToolUse</span>
+                <span>PostToolUse</span>
+                <span>PreInvocation</span>
+                <span>PostInvocation</span>
+                <span>Stop</span>
+              </div>
+            </div>
+            <div class="agents-modal-field">
+              <span class="agents-modal-label">Backup Location:</span>
+              <span class="agents-modal-val" id="modal-backup-path"></span>
+            </div>
+          </div>
+          <div class="agents-modal-actions">
+            <button type="button" class="agents-modal-btn agents-modal-btn-cancel" id="modal-cancel-btn">Cancel</button>
+            <button type="button" class="agents-modal-btn agents-modal-btn-install"
+              id="modal-confirm-install-btn">Install</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Content Panel (About section) -->
+    <section class="settings-subpanel about-panel" id="about-panel" style="display: none;" data-tauri-drag-region>
+      <h1 class="subpanel-title" data-tauri-drag-region>About</h1>
+      <div class="subpanel-controls">
+        <button type="button" class="win-btn win-btn-minimize" id="about-minimize-btn" title="Minimize"
+          aria-label="Minimize">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="2" y1="7" x2="12" y2="7"></line>
+          </svg>
+        </button>
+        <button type="button" class="win-btn win-btn-close" id="about-close-btn" title="Close" aria-label="Close">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line>
+            <line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="subpanel-underline"></div>
+
+      <!-- 1. Identity card: left 47px, top 97px, width 531px, height about 130px -->
+      <div class="section-card about-card-identity">
+        <img src="assets/mascot.png" alt="Dude Mascot" class="about-identity-img">
+        <div class="about-identity-info">
+          <div class="about-identity-title">Dude</div>
+          <div class="about-identity-tagline">Your AI buddy at the top of your screen.</div>
+          <div class="about-identity-version">Version <span id="about-version-display">...</span> &nbsp;·&nbsp; Made by
+            <span id="about-author-display">Shubham Kale</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Actions card: left 47px, top about 245px, width 531px, height about 160px -->
+      <div class="section-card about-card-actions">
+        <div class="tile tile-about-499 tile-about-top">
+          <div class="tile-text-wrap">
+            <span class="tile-label">Setup guide</span>
+            <span class="tile-subtitle">Show the welcome and API key steps again.</span>
+          </div>
+          <button type="button" class="about-btn-purple" id="about-setup-guide-btn">Open</button>
+        </div>
+        <div class="tile tile-about-499 tile-about-bottom">
+          <div class="tile-text-wrap">
+            <span class="tile-label">Copy diagnostic info</span>
+            <span class="tile-subtitle">Version, Windows and screen info. No keys or chats.</span>
+          </div>
+          <button type="button" class="about-btn-purple" id="about-copy-diag-btn">Copy</button>
+        </div>
+      </div>
+
+      <!-- 3. Reset card: left 47px, top about 425px, width 531px, height about 90px -->
+      <div class="section-card about-card-reset">
+        <div class="tile tile-about-499 tile-about-single">
+          <div class="tile-text-wrap">
+            <span class="tile-label">Reset to defaults</span>
+            <span class="tile-subtitle">Appearance, Behavior, Startup. Your key stays.</span>
+          </div>
+          <button type="button" class="about-btn-reset" id="about-reset-btn">Reset</button>
+        </div>
+      </div>
+
+      <!-- 4. Footer: centered, 12px, #555, about 20px below the last card -->
+      <div class="about-footer">
+        &copy; 2026 <span id="about-footer-author">Shubham Kale</span> &nbsp;·&nbsp; Code: MIT &nbsp;·&nbsp; Mascot,
+        Dude: all rights reserved
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Global error logger in debug builds only
+    let isDebugMode = false;
+    try {
+      if (window.__TAURI__?.core?.invoke) {
+        window.__TAURI__.core.invoke('is_debug').then((res) => {
+          isDebugMode = Boolean(res);
+        }).catch(() => { });
+      }
+    } catch (_) { }
+
+    function logFrontendErrorToTauri(msg, stack) {
+      if (!isDebugMode) return;
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          window.__TAURI__.core.invoke('log_frontend_error', { message: String(msg), stack: stack || undefined });
+        }
+      } catch (_) { }
+    }
+
+    window.addEventListener('error', (event) => {
+      if (!isDebugMode) return;
+      try {
+        const msg = event.message || (event.error && event.error.message) || String(event.error || 'Unknown error');
+        const stack = event.error?.stack || (event.filename ? `${event.filename}:${event.lineno}:${event.colno}` : undefined);
+        logFrontendErrorToTauri(msg, stack);
+      } catch (_) { }
+    });
+    window.addEventListener('unhandledrejection', (event) => {
+      if (!isDebugMode) return;
+      try {
+        const msg = event.reason?.message || String(event.reason || 'Unhandled Promise rejection');
+        const stack = event.reason?.stack || undefined;
+        logFrontendErrorToTauri(msg, stack);
+      } catch (_) { }
+    });
+
+    const origConsoleError = console.error;
+    console.error = function (...args) {
+      origConsoleError.apply(console, args);
+      if (!isDebugMode) return;
+      try {
+        const msg = args.map(a => (a instanceof Error ? a.message : (typeof a === 'object' ? JSON.stringify(a) : String(a)))).join(' ');
+        const errObj = args.find(a => a instanceof Error);
+        logFrontendErrorToTauri(msg, errObj?.stack);
+      } catch (_) { }
+    };
+
+    // Minimize Window helper
+    async function minimizeSettingsWindow() {
+      try {
+        if (window.__TAURI__?.window?.getCurrentWindow) {
+          const win = window.__TAURI__.window.getCurrentWindow();
+          await win.minimize();
+          return;
+        }
+      } catch (err) {
+        console.warn('getCurrentWindow minimize error:', err);
+      }
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          await window.__TAURI__.core.invoke('plugin:window|minimize', { label: 'settings' });
+        }
+      } catch (err) {
+        console.warn('invoke plugin:window|minimize error:', err);
+      }
+    }
+
+    // Close Window helper
+    async function closeSettingsWindow() {
+      try {
+        if (window.__TAURI__?.window?.getCurrentWindow) {
+          const win = window.__TAURI__.window.getCurrentWindow();
+          await win.hide();
+          return;
+        }
+      } catch (err) {
+        console.warn('getCurrentWindow hide error:', err);
+      }
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          await window.__TAURI__.core.invoke('plugin:window|hide', { label: 'settings' });
+        }
+      } catch (err) {
+        console.warn('invoke plugin:window|hide error:', err);
+      }
+    }
+
+    // Minimize buttons
+    ['minimize-btn', 'appearance-minimize-btn', 'welcome-minimize-btn', 'behavior-minimize-btn', 'startup-minimize-btn', 'agents-minimize-btn', 'about-minimize-btn'].forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener('mousedown', (e) => e.stopPropagation());
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          minimizeSettingsWindow();
+        });
+      }
+    });
+
+    // Close buttons
+    ['close-btn', 'appearance-close-btn', 'welcome-close-btn', 'behavior-close-btn', 'startup-close-btn', 'agents-close-btn', 'about-close-btn'].forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener('mousedown', (e) => e.stopPropagation());
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeSettingsWindow();
+        });
+      }
+    });
+
+    // ----------------------------------------------------------------------
+    // Tab Switching: AI, Appearance, Behavior, Startup, About & Welcome View
+    // ----------------------------------------------------------------------
+    const aiPanel = document.getElementById('ai-panel');
+    const appearancePanel = document.getElementById('appearance-panel');
+    const welcomePanel = document.getElementById('welcome-panel');
+    const behaviorPanel = document.getElementById('behavior-panel');
+    const startupPanel = document.getElementById('startup-panel');
+    const agentsPanel = document.getElementById('agents-panel');
+    const aboutPanel = document.getElementById('about-panel');
+    const navItems = document.querySelectorAll('.nav-item');
+
+    function showTab(tab) {
+      navItems.forEach(n => n.classList.remove('active'));
+      if (aiPanel) aiPanel.style.display = 'none';
+      if (appearancePanel) appearancePanel.style.display = 'none';
+      if (welcomePanel) welcomePanel.style.display = 'none';
+      if (behaviorPanel) behaviorPanel.style.display = 'none';
+      if (startupPanel) startupPanel.style.display = 'none';
+      if (agentsPanel) agentsPanel.style.display = 'none';
+      if (aboutPanel) aboutPanel.style.display = 'none';
+
+      if (tab !== 'agents') {
+        try { stopAgentsEventPolling(); } catch (err) { console.error('Failed to stop agents polling:', err); }
+      }
+
+      if (tab === 'ai') {
+        const item = document.querySelector('.nav-item[data-tab="ai"]');
+        if (item) item.classList.add('active');
+        if (aiPanel) aiPanel.style.display = 'flex';
+      } else if (tab === 'appearance') {
+        const item = document.querySelector('.nav-item[data-tab="appearance"]');
+        if (item) item.classList.add('active');
+        if (appearancePanel) appearancePanel.style.display = 'block';
+        try { loadAppearanceSettings(); } catch (err) { console.error('Failed to load appearance settings:', err); }
+      } else if (tab === 'behavior') {
+        const item = document.querySelector('.nav-item[data-tab="behavior"]');
+        if (item) item.classList.add('active');
+        if (behaviorPanel) behaviorPanel.style.display = 'block';
+        try { loadBehaviorSettings(); } catch (err) { console.error('Failed to load behavior settings:', err); }
+      } else if (tab === 'startup') {
+        const item = document.querySelector('.nav-item[data-tab="startup"]');
+        if (item) item.classList.add('active');
+        if (startupPanel) startupPanel.style.display = 'block';
+        try { loadStartupSettings(); } catch (err) { console.error('Failed to load startup settings:', err); }
+      } else if (tab === 'agents') {
+        const item = document.querySelector('.nav-item[data-tab="agents"]');
+        if (item) item.classList.add('active');
+        if (agentsPanel) agentsPanel.style.display = 'block';
+        try {
+          loadAgentsSettings();
+          startAgentsEventPolling();
+        } catch (err) { console.error('Failed to load agents settings:', err); }
+      } else if (tab === 'about') {
+        const item = document.querySelector('.nav-item[data-tab="about"]');
+        if (item) item.classList.add('active');
+        if (aboutPanel) aboutPanel.style.display = 'block';
+        try { loadAboutSection(); } catch (err) { console.error('Failed to load about section:', err); }
+      } else if (tab === 'welcome') {
+        if (welcomePanel) welcomePanel.style.display = 'flex';
+        try { initWelcomeView(); } catch (err) { console.error('Failed to init welcome view:', err); }
+      }
+    }
+
+    // ONE click handler attached once through event delegation
+    const navList = document.querySelector('.nav-list');
+    if (navList) {
+      navList.addEventListener('click', (e) => {
+        const item = e.target.closest('.nav-item');
+        if (!item) return;
+        e.preventDefault();
+        const tab = item.getAttribute('data-tab');
+        if (tab) {
+          showTab(tab);
+        }
+      });
+    }
+
+    // ----------------------------------------------------------------------
+    // AI Section Settings & Remove Key Button
+    // ----------------------------------------------------------------------
+    const providerSelect = document.getElementById('provider-select');
+    const apiKeyInput = document.getElementById('api-key-input');
+    const modelSelect = document.getElementById('model-select');
+    const personalityInput = document.getElementById('personality-input');
+    const removeKeyBtn = document.getElementById('remove-key-btn');
+    const setupGuideLink = document.getElementById('setup-guide-link');
+    const modelSwitchNote = document.getElementById('model-switch-note');
+
+    let removeKeyTimeout = null;
+
+    function populateModelSelect(models, selectedModel) {
+      if (!modelSelect) return;
+      const safeModels = (Array.isArray(models) && models.length > 0) ? models : ['gemini-flash-latest'];
+      const targetVal = selectedModel || modelSelect.value || 'gemini-flash-latest';
+
+      modelSelect.innerHTML = '';
+      safeModels.forEach((m) => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        if (m === targetVal) {
+          opt.selected = true;
+        }
+        modelSelect.appendChild(opt);
+      });
+
+      if (safeModels.includes(targetVal)) {
+        modelSelect.value = targetVal;
+      } else {
+        modelSelect.value = 'gemini-flash-latest';
+      }
+    }
+
+    async function refreshAvailableModels() {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          const models = await window.__TAURI__.core.invoke('get_available_models');
+          populateModelSelect(models, modelSelect ? modelSelect.value : null);
+        }
+      } catch (err) {
+        console.warn('Failed to get available models:', err);
+        populateModelSelect(['gemini-flash-latest'], 'gemini-flash-latest');
+      }
+    }
+
+    if (window.__TAURI__?.event?.listen) {
+      window.__TAURI__.event.listen('model-switched', (event) => {
+        const newModel = event.payload || 'gemini-flash-latest';
+        if (modelSelect) {
+          modelSelect.value = newModel;
+        }
+        if (modelSwitchNote) {
+          modelSwitchNote.style.display = 'inline-block';
+        }
+      });
+      window.__TAURI__.event.listen('models-refreshed', (event) => {
+        if (event.payload) {
+          populateModelSelect(event.payload, modelSelect ? modelSelect.value : null);
+        }
+      });
+    }
+
+    function resetRemoveKeyBtn() {
+      if (!removeKeyBtn) return;
+      removeKeyBtn.textContent = 'Remove key';
+      removeKeyBtn.classList.remove('sure');
+      if (removeKeyTimeout) {
+        clearTimeout(removeKeyTimeout);
+        removeKeyTimeout = null;
+      }
+    }
+
+    function updateRemoveKeyVisibility() {
+      if (!removeKeyBtn) return;
+      if (apiKeyInput && apiKeyInput.value.trim().length > 0) {
+        removeKeyBtn.style.display = 'block';
+      } else {
+        removeKeyBtn.style.display = 'none';
+        resetRemoveKeyBtn();
+      }
+    }
+
+    if (removeKeyBtn) {
+      removeKeyBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!removeKeyBtn.classList.contains('sure')) {
+          removeKeyBtn.textContent = 'Sure?';
+          removeKeyBtn.classList.add('sure');
+          removeKeyTimeout = setTimeout(resetRemoveKeyBtn, 3500);
+        } else {
+          resetRemoveKeyBtn();
+          try {
+            if (window.__TAURI__?.core?.invoke) {
+              await window.__TAURI__.core.invoke('delete_api_key');
+            }
+          } catch (err) {
+            console.warn('Failed to delete API key:', err);
+          }
+          if (apiKeyInput) {
+            apiKeyInput.value = '';
+            await persistAISettings();
+          }
+          updateRemoveKeyVisibility();
+          await refreshAvailableModels();
+        }
+      });
+    }
+
+    if (setupGuideLink) {
+      setupGuideLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        showTab('welcome');
+      });
+    }
+
+    async function loadAISettings() {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          const s = await window.__TAURI__.core.invoke('get_settings');
+          const models = await window.__TAURI__.core.invoke('get_available_models');
+          if (s) {
+            if (s.provider) providerSelect.value = s.provider;
+            if (s.api_key) apiKeyInput.value = s.api_key;
+            if (s.personality) personalityInput.value = s.personality;
+            populateModelSelect(models, s.model || 'gemini-flash-latest');
+          } else {
+            populateModelSelect(models, 'gemini-flash-latest');
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to load AI settings:', err);
+      }
+      updateRemoveKeyVisibility();
+    }
+
+    async function persistAISettings() {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          await window.__TAURI__.core.invoke('save_settings', {
+            settings: {
+              provider: providerSelect.value,
+              api_key: apiKeyInput.value.trim(),
+              model: modelSelect ? modelSelect.value.trim() : 'gemini-flash-latest',
+              personality: personalityInput.value.trim()
+            }
+          });
+        }
+      } catch (err) {
+        console.warn('Failed to save AI settings:', err);
+      }
+      updateRemoveKeyVisibility();
+    }
+
+    if (providerSelect && apiKeyInput && modelSelect && personalityInput) {
+      [providerSelect, apiKeyInput, personalityInput].forEach(el => {
+        el.addEventListener('input', persistAISettings);
+        el.addEventListener('change', persistAISettings);
+      });
+      modelSelect.addEventListener('change', () => {
+        if (modelSwitchNote) {
+          modelSwitchNote.style.display = 'none';
+        }
+        persistAISettings();
+      });
+      loadAISettings();
+      window.addEventListener('focus', loadAISettings);
+    }
+
+    // Test connection button
+    const testBtn = document.getElementById('test-connection-btn');
+    if (testBtn) {
+      testBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const key = apiKeyInput.value.trim();
+        if (!key) {
+          testBtn.textContent = 'Enter API key first';
+          setTimeout(() => { testBtn.textContent = 'Test connection'; }, 2000);
+          return;
+        }
+        testBtn.textContent = 'Testing...';
+        if (modelSwitchNote) modelSwitchNote.style.display = 'none';
+        await persistAISettings();
+        try {
+          if (window.__TAURI__?.core?.invoke) {
+            const res = await window.__TAURI__.core.invoke('test_connection');
+            testBtn.textContent = 'Success!';
+            await refreshAvailableModels();
+            if (typeof res === 'string' && res.includes("Switched to gemini-flash-latest because the chosen model didn't work.")) {
+              if (modelSelect) modelSelect.value = 'gemini-flash-latest';
+              if (modelSwitchNote) modelSwitchNote.style.display = 'inline-block';
+            }
+            setTimeout(() => { testBtn.textContent = 'Test connection'; }, 2000);
+            return;
+          }
+        } catch (err) {
+          testBtn.textContent = 'Failed';
+          setTimeout(() => { testBtn.textContent = 'Test connection'; }, 2000);
+        }
+      });
+    }
+
+    // ----------------------------------------------------------------------
+    // Welcome Panel Setup & Interactions
+    // ----------------------------------------------------------------------
+    const welcomeOpenAiStudioBtn = document.getElementById('welcome-open-ai-studio-btn');
+    const welcomeKeyInput = document.getElementById('welcome-key-input');
+    const welcomeEyeBtn = document.getElementById('welcome-eye-btn');
+    const eyeIconShow = document.getElementById('eye-icon-show');
+    const eyeIconHide = document.getElementById('eye-icon-hide');
+    const welcomeSaveBtn = document.getElementById('welcome-save-btn');
+    const welcomeFeedback = document.getElementById('welcome-feedback');
+    const welcomeStartWrap = document.getElementById('welcome-start-wrap');
+    const welcomeStartBtn = document.getElementById('welcome-start-btn');
+    const welcomeSkipBtn = document.getElementById('welcome-skip-btn');
+
+    async function initWelcomeView() {
+      if (welcomeFeedback) {
+        welcomeFeedback.style.display = 'none';
+        welcomeFeedback.textContent = '';
+        welcomeFeedback.className = 'welcome-feedback-msg';
+      }
+      if (welcomeStartWrap) welcomeStartWrap.style.display = 'none';
+      if (welcomeSaveBtn) {
+        welcomeSaveBtn.style.display = 'inline-block';
+        welcomeSaveBtn.disabled = false;
+        welcomeSaveBtn.textContent = 'Save and test';
+      }
+
+      // Pre-fill existing API key if available
+      try {
+        if (window.__TAURI__?.core?.invoke && welcomeKeyInput) {
+          const k = await window.__TAURI__.core.invoke('get_api_key');
+          if (k && k.trim().length > 0) {
+            welcomeKeyInput.value = k.trim();
+          }
+        }
+      } catch (_) { }
+    }
+
+    if (welcomeOpenAiStudioBtn) {
+      welcomeOpenAiStudioBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const url = 'https://aistudio.google.com/apikey';
+        try {
+          if (window.__TAURI__?.opener?.openUrl) {
+            await window.__TAURI__.opener.openUrl(url);
+            return;
+          }
+        } catch (_) { }
+        try {
+          if (window.__TAURI__?.core?.invoke) {
+            await window.__TAURI__.core.invoke('plugin:opener|open_url', { url });
+            return;
+          }
+        } catch (_) { }
+        window.open(url, '_blank');
+      });
+    }
+
+    if (welcomeEyeBtn && welcomeKeyInput) {
+      welcomeEyeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (welcomeKeyInput.type === 'password') {
+          welcomeKeyInput.type = 'text';
+          if (eyeIconShow) eyeIconShow.style.display = 'none';
+          if (eyeIconHide) eyeIconHide.style.display = 'block';
+        } else {
+          welcomeKeyInput.type = 'password';
+          if (eyeIconShow) eyeIconShow.style.display = 'block';
+          if (eyeIconHide) eyeIconHide.style.display = 'none';
+        }
+      });
+    }
+
+    if (welcomeSaveBtn && welcomeKeyInput) {
+      welcomeSaveBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const key = welcomeKeyInput.value.trim();
+        if (!key) {
+          if (welcomeFeedback) {
+            welcomeFeedback.textContent = 'Please enter an API key first.';
+            welcomeFeedback.className = 'welcome-feedback-msg error';
+            welcomeFeedback.style.display = 'block';
+          }
+          return;
+        }
+
+        welcomeSaveBtn.disabled = true;
+        welcomeSaveBtn.textContent = 'Testing...';
+        if (welcomeFeedback) welcomeFeedback.style.display = 'none';
+        if (welcomeStartWrap) welcomeStartWrap.style.display = 'none';
+
+        try {
+          if (window.__TAURI__?.core?.invoke) {
+            // 1. Save with existing save_api_key command (trim whitespace, do not validate format)
+            await window.__TAURI__.core.invoke('save_api_key', { key });
+
+            // Keep AI section in sync
+            if (apiKeyInput) {
+              apiKeyInput.value = key;
+              updateRemoveKeyVisibility();
+            }
+
+            // 2. Run test_connection
+            await window.__TAURI__.core.invoke('test_connection');
+
+            // Refresh available models now that valid key is saved and verified
+            await refreshAvailableModels();
+
+            // Success: show green Connected ✓ and Start using Dude button
+            if (welcomeFeedback) {
+              welcomeFeedback.textContent = 'Connected ✓';
+              welcomeFeedback.className = 'welcome-feedback-msg success';
+              welcomeFeedback.style.display = 'flex';
+            }
+            welcomeSaveBtn.style.display = 'none';
+            if (welcomeStartWrap) welcomeStartWrap.style.display = 'block';
+          }
+        } catch (err) {
+          welcomeSaveBtn.disabled = false;
+          welcomeSaveBtn.textContent = 'Save and test';
+
+          let readableErr = 'Connection failed. Please check your key or internet connection.';
+          if (typeof err === 'string' && err.trim().length > 0) {
+            if (err === 'NO_API_KEY') {
+              readableErr = 'No API key found. Please paste a valid API key.';
+            } else {
+              readableErr = err;
+            }
+          } else if (err?.message) {
+            readableErr = err.message;
+          }
+
+          if (welcomeFeedback) {
+            welcomeFeedback.textContent = readableErr;
+            welcomeFeedback.className = 'welcome-feedback-msg error';
+            welcomeFeedback.style.display = 'block';
+          }
+        }
+      });
+    }
+
+    if (welcomeStartBtn) {
+      welcomeStartBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          if (window.__TAURI__?.core?.invoke) {
+            await window.__TAURI__.core.invoke('set_onboarded', { onboarded: true });
+          }
+        } catch (err) {
+          console.warn('Failed to set onboarded:', err);
+        }
+        closeSettingsWindow();
+      });
+    }
+
+    if (welcomeSkipBtn) {
+      welcomeSkipBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          if (window.__TAURI__?.core?.invoke) {
+            await window.__TAURI__.core.invoke('set_onboarded', { onboarded: true });
+          }
+        } catch (err) {
+          console.warn('Failed to set onboarded on skip:', err);
+        }
+        closeSettingsWindow();
+      });
+    }
+
+    // Check URL parameters for view=welcome or view=agents
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('view') === 'welcome') {
+      showTab('welcome');
+    } else if (urlParams.get('view') === 'agents') {
+      showTab('agents');
+    }
+
+    // Listen for navigate-view event from backend
+    if (window.__TAURI__?.event?.listen) {
+      window.__TAURI__.event.listen('navigate-view', (event) => {
+        if (event && event.payload === 'welcome') {
+          showTab('welcome');
+        } else if (event && event.payload === 'agents') {
+          showTab('agents');
+        }
+      });
+    }
+
+    // ----------------------------------------------------------------------
+    // Shared Store Plugin Helpers (dude_store.json)
+    // ----------------------------------------------------------------------
+    const STORE_FILE = 'dude_store.json';
+    let storeResource = null;
+
+    async function getStoreHandle() {
+      if (storeResource) return storeResource;
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          const rid = await window.__TAURI__.core.invoke('plugin:store|load', {
+            path: STORE_FILE
+          });
+          storeResource = {
+            rid,
+            async get(key) {
+              try {
+                const [val, exists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid: this.rid, key });
+                return exists ? val : undefined;
+              } catch (e) {
+                console.warn('store get error:', e);
+                return undefined;
+              }
+            },
+            async set(key, value) {
+              try {
+                await window.__TAURI__.core.invoke('plugin:store|set', { rid: this.rid, key, value });
+              } catch (e) {
+                console.warn('store set error:', e);
+              }
+            },
+            async save() {
+              try {
+                await window.__TAURI__.core.invoke('plugin:store|save', { rid: this.rid });
+              } catch (e) {
+                console.warn('store save error:', e);
+              }
+            }
+          };
+          return storeResource;
+        }
+      } catch (err) {
+        console.warn('Could not load store plugin handle:', err);
+      }
+      return {
+        async get(key) {
+          try {
+            const item = localStorage.getItem('dude_store_' + key);
+            return item ? JSON.parse(item) : undefined;
+          } catch (_) { return undefined; }
+        },
+        async set(key, value) {
+          try {
+            localStorage.setItem('dude_store_' + key, JSON.stringify(value));
+          } catch (_) { }
+        },
+        async save() { }
+      };
+    }
+
+    // ----------------------------------------------------------------------
+    // Appearance Section Controls & Auto-Saving (dude_store.json)
+    // ----------------------------------------------------------------------
+    const APPEARANCE_DEFAULTS = {
+      dudeColor: 'cream',
+      pillColor: '#000000',
+      position: 'top-left',
+      roundness: 8,
+      opacity: 100
+    };
+
+    const ALLOWED_DUDE_COLORS = ['pink', 'blue', 'cream', 'black'];
+    const ALLOWED_PILL_COLORS = ['#000000', '#F2F2F2', '#818CF8', '#1A1033', '#0B1B3A', '#0E2A1F', '#4A0E1F'];
+    const ALLOWED_POSITIONS = ['top-left', 'top-center', 'top-right'];
+
+    let currentAppearance = { ...APPEARANCE_DEFAULTS };
+
+    const dudeColorBtns = document.querySelectorAll('.dude-color-btn[data-dude-color]');
+    const pillSwatches = document.querySelectorAll('.pill-swatch[data-pill-color]');
+    const positionSelect = document.getElementById('position-select');
+    const roundnessInput = document.getElementById('roundness-input');
+    const roundnessVal = document.getElementById('roundness-val');
+    const opacityInput = document.getElementById('opacity-input');
+    const opacityVal = document.getElementById('opacity-val');
+    const appearanceSavedIndicator = document.getElementById('appearance-saved-indicator');
+
+    let appearanceAutoSaveTimer = null;
+    let appearanceSavedHideTimer = null;
+
+    function showAppearanceSavedIndicator() {
+      if (!appearanceSavedIndicator) return;
+      appearanceSavedIndicator.classList.add('visible');
+      clearTimeout(appearanceSavedHideTimer);
+      appearanceSavedHideTimer = setTimeout(() => {
+        appearanceSavedIndicator.classList.remove('visible');
+      }, 1600);
+    }
+
+    function debounceAppearanceAutoSave() {
+      clearTimeout(appearanceAutoSaveTimer);
+      appearanceAutoSaveTimer = setTimeout(async () => {
+        await saveAppearanceSettings();
+        showAppearanceSavedIndicator();
+      }, 300);
+    }
+
+    function sanitizeAppearance(raw) {
+      const sanitized = { ...APPEARANCE_DEFAULTS };
+      if (!raw || typeof raw !== 'object') return sanitized;
+
+      // dudeColor
+      if (typeof raw.dudeColor === 'string' && ALLOWED_DUDE_COLORS.includes(raw.dudeColor.toLowerCase())) {
+        sanitized.dudeColor = raw.dudeColor.toLowerCase();
+      }
+
+      // pillColor (support migration from old pill_color)
+      const rawPill = raw.pillColor || raw.pill_color;
+      if (typeof rawPill === 'string') {
+        const upper = rawPill.toUpperCase();
+        const found = ALLOWED_PILL_COLORS.find(c => c.toUpperCase() === upper);
+        if (found) {
+          sanitized.pillColor = found;
+        } else {
+          sanitized.pillColor = '#000000';
+        }
+      }
+
+      // position
+      const rawPos = raw.position;
+      if (typeof rawPos === 'string') {
+        const norm = rawPos.toLowerCase().replace(/\s+/g, '-');
+        if (ALLOWED_POSITIONS.includes(norm)) {
+          sanitized.position = norm;
+        } else {
+          sanitized.position = 'top-left';
+        }
+      }
+
+      // roundness
+      const r = Number(raw.roundness);
+      if (!isNaN(r)) {
+        sanitized.roundness = Math.max(0, Math.min(24, Math.round(r)));
+      }
+
+      // opacity
+      const o = Number(raw.opacity);
+      if (!isNaN(o)) {
+        sanitized.opacity = Math.max(40, Math.min(100, Math.round(o)));
+      }
+
+      return sanitized;
+    }
+
+    function syncAppearanceUI(data) {
+      // Dude Color
+      dudeColorBtns.forEach(btn => {
+        const c = btn.getAttribute('data-dude-color');
+        btn.classList.toggle('active', c === data.dudeColor);
+      });
+
+      // Pill Color
+      pillSwatches.forEach(swatch => {
+        const c = swatch.getAttribute('data-pill-color');
+        swatch.classList.toggle('active', c?.toUpperCase() === data.pillColor.toUpperCase());
+      });
+
+      // Position
+      if (positionSelect) {
+        positionSelect.value = data.position;
+      }
+
+      // Roundness
+      if (roundnessInput) {
+        roundnessInput.value = data.roundness;
+      }
+      if (roundnessVal) {
+        roundnessVal.textContent = data.roundness + 'px';
+      }
+
+      // Opacity
+      if (opacityInput) {
+        opacityInput.value = data.opacity;
+      }
+      if (opacityVal) {
+        opacityVal.textContent = data.opacity + '%';
+      }
+    }
+
+    // Dude Color clicks
+    dudeColorBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const c = btn.getAttribute('data-dude-color');
+        if (ALLOWED_DUDE_COLORS.includes(c)) {
+          currentAppearance.dudeColor = c;
+          syncAppearanceUI(currentAppearance);
+          debounceAppearanceAutoSave();
+        }
+      });
+    });
+
+    // Pill Color clicks
+    pillSwatches.forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        const c = swatch.getAttribute('data-pill-color');
+        if (ALLOWED_PILL_COLORS.includes(c)) {
+          currentAppearance.pillColor = c;
+          syncAppearanceUI(currentAppearance);
+          debounceAppearanceAutoSave();
+        }
+      });
+    });
+
+    // Position select
+    if (positionSelect) {
+      positionSelect.addEventListener('change', () => {
+        currentAppearance.position = positionSelect.value;
+        debounceAppearanceAutoSave();
+      });
+    }
+
+    // Roundness slider
+    if (roundnessInput && roundnessVal) {
+      roundnessInput.addEventListener('input', () => {
+        currentAppearance.roundness = parseInt(roundnessInput.value, 10);
+        roundnessVal.textContent = roundnessInput.value + 'px';
+        debounceAppearanceAutoSave();
+      });
+    }
+
+    // Opacity slider
+    if (opacityInput && opacityVal) {
+      opacityInput.addEventListener('input', () => {
+        currentAppearance.opacity = parseInt(opacityInput.value, 10);
+        opacityVal.textContent = opacityInput.value + '%';
+        debounceAppearanceAutoSave();
+      });
+    }
+
+    // Load appearance settings from store (dude_store.json)
+    async function loadAppearanceSettings() {
+      try {
+        let raw = null;
+        try {
+          const store = await getStoreHandle();
+          raw = await store.get('appearance');
+        } catch (e) {
+          console.warn('Could not read appearance from store:', e);
+        }
+        if (!raw) {
+          try {
+            const local = localStorage.getItem('dude_appearance_settings');
+            if (local) raw = JSON.parse(local);
+          } catch (_) { }
+        }
+        currentAppearance = sanitizeAppearance(raw);
+        syncAppearanceUI(currentAppearance);
+      } catch (err) {
+        console.warn('Failed to load appearance settings:', err);
+        currentAppearance = { ...APPEARANCE_DEFAULTS };
+        syncAppearanceUI(currentAppearance);
+      }
+    }
+
+    // Save appearance settings to store (dude_store.json)
+    async function saveAppearanceSettings() {
+      try {
+        const payload = sanitizeAppearance(currentAppearance);
+        currentAppearance = payload;
+        try {
+          const store = await getStoreHandle();
+          await store.set('appearance', payload);
+          await store.save();
+        } catch (err) {
+          console.warn('Failed to save appearance to store:', err);
+        }
+        try {
+          localStorage.setItem('dude_appearance_settings', JSON.stringify(payload));
+        } catch (_) { }
+        try {
+          if (window.__TAURI__?.event?.emit) {
+            await window.__TAURI__.event.emit('appearance-changed', payload);
+          }
+        } catch (emitErr) {
+          console.warn('Failed to emit appearance-changed event:', emitErr);
+        }
+      } catch (err) {
+        console.warn('Failed to save appearance settings:', err);
+      }
+    }
+
+    // Initial load for appearance settings
+    loadAppearanceSettings();
+
+    // ----------------------------------------------------------------------
+    // Behavior & Startup Settings: Defaults, UI & Debounce Save
+    // ----------------------------------------------------------------------
+    const BEHAVIOR_DEFAULTS = {
+      eyesFollow: true,
+      blink: true,
+      blushSmile: true,
+      reactToReplies: true,
+      autoCollapse: false,
+      fastAnimations: false
+    };
+
+    const STARTUP_DEFAULTS = {
+      startWithWindows: false,
+      showMascotOnStartup: true,
+      shortcutToggleEnabled: true,
+      shortcutChatEnabled: true
+    };
+
+    let currentBehavior = { ...BEHAVIOR_DEFAULTS };
+    let currentStartup = { ...STARTUP_DEFAULTS };
+
+    let behaviorSaveTimer = null;
+    let startupSaveTimer = null;
+    let behaviorSavedHideTimer = null;
+    let startupSavedHideTimer = null;
+
+    // Merge helper: a missing, undefined or wrongly typed value must never mean OFF
+    function mergeWithDefaults(saved, defaults) {
+      const merged = { ...defaults };
+      if (saved && typeof saved === 'object') {
+        for (const key of Object.keys(defaults)) {
+          if (typeof saved[key] === 'boolean') {
+            merged[key] = saved[key];
+          }
+        }
+      }
+      return merged;
+    }
+
+    function showBehaviorSaved() {
+      const el = document.getElementById('behavior-saved-indicator');
+      if (!el) return;
+      el.textContent = 'Saved';
+      el.classList.remove('error');
+      el.classList.add('visible');
+      clearTimeout(behaviorSavedHideTimer);
+      behaviorSavedHideTimer = setTimeout(() => {
+        el.classList.remove('visible');
+      }, 1600);
+    }
+
+    function showBehaviorSaveError() {
+      const el = document.getElementById('behavior-saved-indicator');
+      if (!el) return;
+      el.textContent = 'Save failed';
+      el.classList.add('error', 'visible');
+      clearTimeout(behaviorSavedHideTimer);
+      behaviorSavedHideTimer = setTimeout(() => {
+        el.classList.remove('visible', 'error');
+        el.textContent = 'Saved';
+      }, 2500);
+    }
+
+    function showStartupSaved() {
+      const el = document.getElementById('startup-saved-indicator');
+      if (!el) return;
+      el.textContent = 'Saved';
+      el.classList.remove('error');
+      el.classList.add('visible');
+      clearTimeout(startupSavedHideTimer);
+      startupSavedHideTimer = setTimeout(() => {
+        el.classList.remove('visible');
+      }, 1600);
+    }
+
+    function showStartupSaveError() {
+      const el = document.getElementById('startup-saved-indicator');
+      if (!el) return;
+      el.textContent = 'Save failed';
+      el.classList.add('error', 'visible');
+      clearTimeout(startupSavedHideTimer);
+      startupSavedHideTimer = setTimeout(() => {
+        el.classList.remove('visible', 'error');
+        el.textContent = 'Saved';
+      }, 2500);
+    }
+
+    function syncToggleUI(section, key, value) {
+      const panel = section === 'behavior' ? behaviorPanel : startupPanel;
+      if (!panel) return;
+      const track = panel.querySelector(`.toggle-track[data-toggle="${key}"]`);
+      if (track) {
+        track.classList.toggle('active', Boolean(value));
+        track.setAttribute('aria-checked', String(Boolean(value)));
+      }
+    }
+
+    // ----------------------------------------------------------------------
+    // Autostart Plugin Helpers
+    // ----------------------------------------------------------------------
+    async function getRealAutostartState() {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          const enabled = await window.__TAURI__.core.invoke('plugin:autostart|is_enabled');
+          return Boolean(enabled);
+        }
+      } catch (err) {
+        console.warn('Failed to query autostart status from OS:', err);
+      }
+      return false;
+    }
+
+    async function setAutostartState(enable) {
+      if (window.__TAURI__?.core?.invoke) {
+        if (enable) {
+          await window.__TAURI__.core.invoke('plugin:autostart|enable');
+        } else {
+          await window.__TAURI__.core.invoke('plugin:autostart|disable');
+        }
+      }
+    }
+
+    // ----------------------------------------------------------------------
+    // Global Shortcut Plugin Helpers
+    // ----------------------------------------------------------------------
+    let shortcutErrorTimer = null;
+    function showShortcutError() {
+      const el = document.getElementById('shortcut-conflict-msg');
+      if (!el) return;
+      el.classList.add('visible');
+      clearTimeout(shortcutErrorTimer);
+      shortcutErrorTimer = setTimeout(() => {
+        el.classList.remove('visible');
+      }, 3000);
+    }
+
+    async function registerGlobalShortcut(shortcut, onTrigger) {
+      if (!window.__TAURI__?.core?.invoke) {
+        throw new Error('Tauri API not available');
+      }
+      const channel = new window.__TAURI__.core.Channel();
+      channel.onmessage = (event) => {
+        if (event && (event.state === 'Pressed' || event === 'Pressed')) {
+          try {
+            onTrigger();
+          } catch (err) {
+            console.warn('Error in shortcut handler:', err);
+          }
+        }
+      };
+      return await window.__TAURI__.core.invoke('plugin:global-shortcut|register', {
+        shortcuts: [shortcut],
+        handler: channel
+      });
+    }
+
+    async function unregisterGlobalShortcut(shortcut) {
+      if (window.__TAURI__?.core?.invoke) {
+        return await window.__TAURI__.core.invoke('plugin:global-shortcut|unregister', {
+          shortcuts: [shortcut]
+        });
+      }
+    }
+
+    async function isShortcutRegistered(shortcut) {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          return await window.__TAURI__.core.invoke('plugin:global-shortcut|is_registered', {
+            shortcut
+          });
+        }
+      } catch (_) { }
+      return false;
+    }
+
+    async function handleToggleShortcut() {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          await window.__TAURI__.core.invoke('toggle_mascot_window');
+        }
+      } catch (err) {
+        console.warn('Failed to toggle mascot window via shortcut:', err);
+      }
+    }
+
+    async function handleChatShortcut() {
+      try {
+        if (window.__TAURI__?.event?.emit) {
+          await window.__TAURI__.event.emit('open-mascot-chat');
+        }
+      } catch (err) {
+        console.warn('Failed to emit open-mascot-chat event:', err);
+      }
+    }
+
+    async function registerShortcutSafe(combo, handler, settingKey) {
+      try {
+        try {
+          const registered = await isShortcutRegistered(combo);
+          if (registered) {
+            await unregisterGlobalShortcut(combo);
+          }
+        } catch (_) { }
+
+        await registerGlobalShortcut(combo, handler);
+        return true;
+      } catch (err) {
+        console.warn(`Failed to register ${combo}:`, err);
+        if (settingKey) {
+          currentStartup[settingKey] = false;
+          syncToggleUI('startup', settingKey, false);
+          showShortcutError();
+          debounceStartupSave();
+        }
+        return false;
+      }
+    }
+
+    function debounceStartupSave() {
+      clearTimeout(startupSaveTimer);
+      startupSaveTimer = setTimeout(async () => {
+        try {
+          const store = await getStoreHandle();
+          await store.set('startup', currentStartup);
+          await store.save();
+          try {
+            localStorage.setItem('dude_store_startup', JSON.stringify(currentStartup));
+          } catch (_) { }
+          showStartupSaved();
+        } catch (err) {
+          console.error('Error saving startup settings:', err);
+          showStartupSaveError();
+        }
+      }, 300);
+    }
+
+    async function loadBehaviorSettings() {
+      try {
+        const store = await getStoreHandle();
+        const raw = await store.get('behavior');
+        currentBehavior = mergeWithDefaults(raw, BEHAVIOR_DEFAULTS);
+        for (const [k, v] of Object.entries(currentBehavior)) {
+          syncToggleUI('behavior', k, v);
+        }
+      } catch (err) {
+        console.warn('Failed to load behavior settings:', err);
+      }
+    }
+
+    async function loadStartupSettings() {
+      try {
+        const store = await getStoreHandle();
+        const raw = await store.get('startup');
+        currentStartup = mergeWithDefaults(raw, STARTUP_DEFAULTS);
+
+        // Always read the real state from the OS (not only from the store),
+        // because the user can disable it in Windows Task Manager.
+        const realAutostart = await getRealAutostartState();
+        currentStartup.startWithWindows = realAutostart;
+
+        for (const [k, v] of Object.entries(currentStartup)) {
+          syncToggleUI('startup', k, v);
+        }
+
+        // Register enabled shortcuts on startup
+        if (currentStartup.shortcutToggleEnabled) {
+          await registerShortcutSafe('Ctrl+Shift+M', handleToggleShortcut, 'shortcutToggleEnabled');
+        }
+        if (currentStartup.shortcutChatEnabled) {
+          await registerShortcutSafe('Ctrl+Shift+Space', handleChatShortcut, 'shortcutChatEnabled');
+        }
+      } catch (err) {
+        console.warn('Failed to load startup settings:', err);
+      }
+    }
+
+    // Handle toggle click in Behavior or Startup
+    function handleToggleClick(section, key) {
+      if (section === 'behavior') {
+        const target = !currentBehavior[key];
+        currentBehavior[key] = target;
+        syncToggleUI('behavior', key, target);
+        clearTimeout(behaviorSaveTimer);
+        behaviorSaveTimer = setTimeout(async () => {
+          try {
+            const store = await getStoreHandle();
+            await store.set('behavior', currentBehavior);
+            await store.save();
+            try { localStorage.setItem('dude_store_behavior', JSON.stringify(currentBehavior)); } catch (_) { }
+            try {
+              if (window.__TAURI__?.event?.emit) {
+                await window.__TAURI__.event.emit('behavior-changed', { ...currentBehavior });
+              }
+            } catch (emitErr) {
+              console.warn('Failed to emit behavior-changed event:', emitErr);
+            }
+            showBehaviorSaved();
+          } catch (err) {
+            console.error('Error saving behavior settings:', err);
+            showBehaviorSaveError();
+          }
+        }, 300);
+      } else if (section === 'startup') {
+        if (key === 'startWithWindows') {
+          const target = !currentStartup.startWithWindows;
+          currentStartup.startWithWindows = target;
+          syncToggleUI('startup', 'startWithWindows', target);
+          try {
+            setAutostartState(target);
+          } catch (err) {
+            console.warn('Failed to update autostart setting in OS:', err);
+          }
+          debounceStartupSave();
+        } else if (key === 'showMascotOnStartup') {
+          const target = !currentStartup.showMascotOnStartup;
+          currentStartup.showMascotOnStartup = target;
+          syncToggleUI('startup', 'showMascotOnStartup', target);
+          debounceStartupSave();
+        } else if (key === 'shortcutToggleEnabled') {
+          const target = !currentStartup.shortcutToggleEnabled;
+          currentStartup.shortcutToggleEnabled = target;
+          syncToggleUI('startup', 'shortcutToggleEnabled', target);
+          if (target) {
+            registerShortcutSafe('Ctrl+Shift+M', handleToggleShortcut, 'shortcutToggleEnabled').then((ok) => {
+              if (ok) {
+                debounceStartupSave();
+              }
+            });
+          } else {
+            try {
+              unregisterGlobalShortcut('Ctrl+Shift+M');
+            } catch (err) {
+              console.warn('Failed to unregister Ctrl+Shift+M:', err);
+            }
+            debounceStartupSave();
+          }
+        } else if (key === 'shortcutChatEnabled') {
+          const target = !currentStartup.shortcutChatEnabled;
+          currentStartup.shortcutChatEnabled = target;
+          syncToggleUI('startup', 'shortcutChatEnabled', target);
+          if (target) {
+            registerShortcutSafe('Ctrl+Shift+Space', handleChatShortcut, 'shortcutChatEnabled').then((ok) => {
+              if (ok) {
+                debounceStartupSave();
+              }
+            });
+          } else {
+            try {
+              unregisterGlobalShortcut('Ctrl+Shift+Space');
+            } catch (err) {
+              console.warn('Failed to unregister Ctrl+Shift+Space:', err);
+            }
+            debounceStartupSave();
+          }
+        }
+      }
+    }
+
+    // ONE delegated click handler for toggles across all sections (attached once at startup)
+    document.addEventListener('click', (e) => {
+      // Do not intercept Agents section toggles here (Agents handles its own flow)
+      if (e.target.closest('#agents-panel')) return;
+
+      const tile = e.target.closest('.tile');
+      const track = e.target.closest('.toggle-track');
+      if (!tile && !track) return;
+
+      const targetTile = tile || track.closest('.tile');
+      const key = (targetTile ? targetTile.getAttribute('data-setting') : null) || (track ? track.getAttribute('data-toggle') : null);
+      const section = (targetTile ? targetTile.getAttribute('data-section') : null) ||
+        (e.target.closest('#behavior-panel') ? 'behavior' :
+          (e.target.closest('#startup-panel') ? 'startup' : null));
+
+      if (section && key) {
+        handleToggleClick(section, key);
+      }
+    });
+
+    // ----------------------------------------------------------------------
+    // About Section: Identity, Actions, Reset to Defaults & Footer
+    // ----------------------------------------------------------------------
+    const AUTHOR_NAME = 'Shubham Kale';
+
+    const aboutVersionDisplay = document.getElementById('about-version-display');
+    const aboutAuthorDisplay = document.getElementById('about-author-display');
+    const aboutFooterAuthor = document.getElementById('about-footer-author');
+    const aboutSetupGuideBtn = document.getElementById('about-setup-guide-btn');
+    const aboutCopyDiagBtn = document.getElementById('about-copy-diag-btn');
+    const aboutResetBtn = document.getElementById('about-reset-btn');
+
+    let cachedAppVersion = null;
+    async function fetchAppVersion() {
+      if (cachedAppVersion) return cachedAppVersion;
+      try {
+        if (window.__TAURI__?.app?.getVersion) {
+          cachedAppVersion = await window.__TAURI__.app.getVersion();
+          return cachedAppVersion;
+        }
+        if (window.__TAURI__?.core?.invoke) {
+          cachedAppVersion = await window.__TAURI__.core.invoke('plugin:app|version');
+          return cachedAppVersion;
+        }
+      } catch (err) {
+        console.warn('Failed to retrieve app version via Tauri API:', err);
+      }
+      return '0.1.0';
+    }
+
+    async function loadAboutSection() {
+      if (aboutAuthorDisplay) aboutAuthorDisplay.textContent = AUTHOR_NAME;
+      if (aboutFooterAuthor) aboutFooterAuthor.textContent = AUTHOR_NAME;
+      const ver = await fetchAppVersion();
+      if (aboutVersionDisplay) aboutVersionDisplay.textContent = ver;
+
+      if (aboutSetupGuideBtn) {
+        if (welcomePanel) {
+          aboutSetupGuideBtn.disabled = false;
+          aboutSetupGuideBtn.removeAttribute('title');
+        } else {
+          aboutSetupGuideBtn.disabled = true;
+          aboutSetupGuideBtn.title = 'Coming soon';
+        }
+      }
+    }
+
+    // "Setup guide" button: opens Welcome setup view if it exists, otherwise disabled
+    if (aboutSetupGuideBtn) {
+      aboutSetupGuideBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (welcomePanel) {
+          showTab('welcome');
+        } else {
+          aboutSetupGuideBtn.disabled = true;
+          aboutSetupGuideBtn.title = 'Coming soon';
+        }
+      });
+    }
+
+    // "Copy diagnostic info" button: copies clean plain text block without keys/paths/chats
+    let copyDiagFeedbackTimer = null;
+    if (aboutCopyDiagBtn) {
+      aboutCopyDiagBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const ver = await fetchAppVersion();
+        let osInfo = 'Windows';
+        try {
+          if (window.__TAURI__?.core?.invoke) {
+            osInfo = await window.__TAURI__.core.invoke('get_os_diagnostic_info');
+          }
+        } catch (_) {
+          osInfo = 'Windows 10/11';
+        }
+
+        const screenW = window.screen?.width || window.innerWidth || 1920;
+        const screenH = window.screen?.height || window.innerHeight || 1080;
+        const dpr = (window.devicePixelRatio || 1).toFixed(2).replace(/\.00$/, '');
+        const lang = navigator.language || 'en';
+
+        const diagText = [
+          'Dude Diagnostic Info',
+          `- App Version: ${ver}`,
+          `- OS: ${osInfo}`,
+          `- Display: ${screenW}x${screenH} (Scale: ${dpr}x)`,
+          `- System Language: ${lang}`
+        ].join('\n');
+
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(diagText);
+          } else {
+            const ta = document.createElement('textarea');
+            ta.value = diagText;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+          }
+          aboutCopyDiagBtn.textContent = 'Copied';
+          clearTimeout(copyDiagFeedbackTimer);
+          copyDiagFeedbackTimer = setTimeout(() => {
+            aboutCopyDiagBtn.textContent = 'Copy';
+          }, 1500);
+        } catch (copyErr) {
+          console.warn('Failed to copy diagnostic info to clipboard:', copyErr);
+        }
+      });
+    }
+
+    // "Reset to defaults" button:
+    // First click -> "Sure?" for 3 seconds.
+    // Second click in that time -> resets Appearance, Behavior, Startup to defaults,
+    // emits appearance-changed and behavior-changed, updates mascot window, shows "Done" for 1.5s.
+    // Does NOT delete API key or onboarding flag.
+    let resetConfirmTimer = null;
+    let resetDoneTimer = null;
+    let isResetConfirming = false;
+
+    if (aboutResetBtn) {
+      aboutResetBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!isResetConfirming) {
+          isResetConfirming = true;
+          aboutResetBtn.textContent = 'Sure?';
+          clearTimeout(resetConfirmTimer);
+          resetConfirmTimer = setTimeout(() => {
+            isResetConfirming = false;
+            aboutResetBtn.textContent = 'Reset';
+          }, 3000);
+          return;
+        }
+
+        // Second click within 3 seconds: perform reset
+        clearTimeout(resetConfirmTimer);
+        isResetConfirming = false;
+
+        try {
+          // 1. Reset Appearance to defaults
+          currentAppearance = { ...APPEARANCE_DEFAULTS };
+          try {
+            const store = await getStoreHandle();
+            await store.set('appearance', currentAppearance);
+            await store.save();
+          } catch (err) {
+            console.warn('Failed to save appearance on reset:', err);
+          }
+          try {
+            localStorage.setItem('dude_appearance_settings', JSON.stringify(currentAppearance));
+          } catch (_) { }
+          try {
+            if (window.__TAURI__?.event?.emit) {
+              await window.__TAURI__.event.emit('appearance-changed', currentAppearance);
+            }
+          } catch (_) { }
+          syncAppearanceUI(currentAppearance);
+
+          // 2. Reset Behavior to defaults
+          currentBehavior = { ...BEHAVIOR_DEFAULTS };
+          const store = await getStoreHandle();
+          await store.set('behavior', currentBehavior);
+          await store.save();
+          try {
+            localStorage.setItem('dude_store_behavior', JSON.stringify(currentBehavior));
+          } catch (_) { }
+          try {
+            if (window.__TAURI__?.event?.emit) {
+              await window.__TAURI__.event.emit('behavior-changed', { ...currentBehavior });
+            }
+          } catch (emitErr) {
+            console.warn('Failed to emit behavior-changed event:', emitErr);
+          }
+          for (const [k, v] of Object.entries(currentBehavior)) {
+            syncToggleUI('behavior', k, v);
+          }
+
+          // 3. Reset Startup to defaults (disable autostart, restore default shortcuts)
+          currentStartup = { ...STARTUP_DEFAULTS };
+          try {
+            await setAutostartState(false);
+          } catch (err) {
+            console.warn('Failed to disable autostart:', err);
+          }
+          await registerShortcutSafe('Ctrl+Shift+M', handleToggleShortcut, 'shortcutToggleEnabled');
+          await registerShortcutSafe('Ctrl+Shift+Space', handleChatShortcut, 'shortcutChatEnabled');
+          await store.set('startup', currentStartup);
+          await store.save();
+          try {
+            localStorage.setItem('dude_store_startup', JSON.stringify(currentStartup));
+          } catch (_) { }
+          for (const [k, v] of Object.entries(currentStartup)) {
+            syncToggleUI('startup', k, v);
+          }
+
+          // Show "Done" for 1.5 seconds
+          aboutResetBtn.textContent = 'Done';
+          clearTimeout(resetDoneTimer);
+          resetDoneTimer = setTimeout(() => {
+            aboutResetBtn.textContent = 'Reset';
+          }, 1500);
+        } catch (resetErr) {
+          console.warn('Error during reset to defaults:', resetErr);
+          aboutResetBtn.textContent = 'Reset';
+        }
+      });
+    }
+
+    // ----------------------------------------------------------------------
+    // Theme Management (Light / Dark Mode with Persistence)
+    // ----------------------------------------------------------------------
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+
+    function updateThemeButtonUI(theme, withAnimation = false) {
+      if (!themeToggleBtn) return;
+      const isDark = theme === 'dark';
+      const label = isDark ? 'Light mode' : 'Dark mode';
+      themeToggleBtn.setAttribute('title', label);
+      themeToggleBtn.setAttribute('aria-label', label);
+
+      if (withAnimation) {
+        themeToggleBtn.classList.remove('swapping');
+        void themeToggleBtn.offsetWidth; // force reflow
+        themeToggleBtn.classList.add('swapping');
+        setTimeout(() => {
+          themeToggleBtn.classList.remove('swapping');
+        }, 160);
+      }
+    }
+
+    function applyTheme(theme, animate = false) {
+      if (animate) {
+        document.documentElement.classList.add('theme-transitioning');
+        document.documentElement.setAttribute('data-theme', theme);
+        updateThemeButtonUI(theme, true);
+        setTimeout(() => {
+          document.documentElement.classList.remove('theme-transitioning');
+        }, 220);
+      } else {
+        document.documentElement.setAttribute('data-theme', theme);
+        updateThemeButtonUI(theme, false);
+      }
+    }
+
+    async function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+
+      // 1. Apply immediately with 200ms transition and icon swap animation
+      applyTheme(next, true);
+
+      // 2. Synchronously mirror in localStorage ("dude-theme")
+      try {
+        localStorage.setItem('dude-theme', next);
+      } catch (_) { }
+
+      // 3. Persist in Tauri store plugin (dude_store.json, key 'theme')
+      try {
+        const store = await getStoreHandle();
+        await store.set('theme', next);
+        await store.save();
+      } catch (err) {
+        console.warn('Failed to save theme to store plugin:', err);
+      }
+      // Note: Do NOT emit any event to the mascot window
+    }
+
+    async function initTheme() {
+      let activeTheme = 'light';
+      try {
+        const local = localStorage.getItem('dude-theme');
+        if (local === 'dark' || local === 'light') {
+          activeTheme = local;
+        }
+      } catch (_) { }
+
+      // Synchronize button tooltip and state immediately without transition
+      updateThemeButtonUI(activeTheme, false);
+
+      // Reconcile with Tauri store value asynchronously
+      try {
+        const store = await getStoreHandle();
+        const storedTheme = await store.get('theme');
+        if (storedTheme === 'dark' || storedTheme === 'light') {
+          if (storedTheme !== activeTheme) {
+            activeTheme = storedTheme;
+            try {
+              localStorage.setItem('dude-theme', activeTheme);
+            } catch (_) { }
+            applyTheme(activeTheme, false);
+          }
+        } else {
+          // Store doesn't have theme yet; save current theme
+          await store.set('theme', activeTheme);
+          await store.save();
+        }
+      } catch (err) {
+        console.warn('Failed to reconcile theme with store:', err);
+      }
+    }
+
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleTheme();
+      });
+    }
+
+    // ----------------------------------------------------------------------
+    // Agents Section Settings & Hooks Management
+    // ----------------------------------------------------------------------
+    let currentAgentsStatus = null;
+    let agentsPollInterval = null;
+    let uninstallConfirmTimer = null;
+
+    const antigravityTile = document.getElementById('antigravity-tile');
+    const antigravityToggle = document.getElementById('antigravity-toggle');
+    const antigravityPathText = document.getElementById('antigravity-path-text');
+    const antigravityInstallBtn = document.getElementById('antigravity-install-btn');
+    const antigravityReinstallBtn = document.getElementById('antigravity-reinstall-btn');
+    const antigravityUninstallBtn = document.getElementById('antigravity-uninstall-btn');
+    const cursorPathText = document.getElementById('cursor-path-text');
+    const agentsStatusLine = document.getElementById('agents-status-line');
+
+    const agentsInstallModal = document.getElementById('agents-install-modal');
+    const modalTargetPath = document.getElementById('modal-target-path');
+    const modalBackupPath = document.getElementById('modal-backup-path');
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+    const modalConfirmInstallBtn = document.getElementById('modal-confirm-install-btn');
+
+    function updateAgentsUI(statusInfo) {
+      currentAgentsStatus = statusInfo;
+      if (!statusInfo) return;
+
+      if (antigravityPathText) {
+        antigravityPathText.textContent = statusInfo.hooks_path || '';
+        antigravityPathText.title = statusInfo.hooks_path || '';
+      }
+
+      if (cursorPathText) {
+        cursorPathText.textContent = statusInfo.cursor_hooks_path || '';
+        cursorPathText.title = statusInfo.cursor_hooks_path || '';
+      }
+
+      if (statusInfo.error) {
+        if (agentsStatusLine) {
+          agentsStatusLine.textContent = statusInfo.error;
+          agentsStatusLine.classList.add('error');
+        }
+        if (antigravityToggle) {
+          antigravityToggle.classList.remove('active');
+          antigravityToggle.setAttribute('aria-checked', 'false');
+        }
+        if (antigravityInstallBtn) antigravityInstallBtn.style.display = 'block';
+        if (antigravityReinstallBtn) antigravityReinstallBtn.style.display = 'none';
+        if (antigravityUninstallBtn) antigravityUninstallBtn.style.display = 'none';
+        return;
+      }
+
+      if (!statusInfo.installed) {
+        // Not installed: toggle OFF, only "install" button
+        if (antigravityToggle) {
+          antigravityToggle.classList.remove('active');
+          antigravityToggle.setAttribute('aria-checked', 'false');
+        }
+        if (antigravityInstallBtn) antigravityInstallBtn.style.display = 'block';
+        if (antigravityReinstallBtn) antigravityReinstallBtn.style.display = 'none';
+        if (antigravityUninstallBtn) antigravityUninstallBtn.style.display = 'none';
+        if (agentsStatusLine) {
+          agentsStatusLine.textContent = '';
+          agentsStatusLine.classList.remove('error');
+        }
+      } else {
+        // Installed: "Reinstall" and "Uninstall" buttons
+        if (antigravityInstallBtn) antigravityInstallBtn.style.display = 'none';
+        if (antigravityReinstallBtn) antigravityReinstallBtn.style.display = 'block';
+        if (antigravityUninstallBtn) antigravityUninstallBtn.style.display = 'block';
+
+        if (statusInfo.enabled) {
+          if (antigravityToggle) {
+            antigravityToggle.classList.add('active');
+            antigravityToggle.setAttribute('aria-checked', 'true');
+          }
+        } else {
+          if (antigravityToggle) {
+            antigravityToggle.classList.remove('active');
+            antigravityToggle.setAttribute('aria-checked', 'false');
+          }
+        }
+
+        if (statusInfo.status === 'needs repair') {
+          if (agentsStatusLine) {
+            agentsStatusLine.textContent = 'Status: needs repair (dude-hook.exe missing at configured path)';
+            agentsStatusLine.classList.add('error');
+          }
+        } else {
+          pollAgentsLastEvent();
+        }
+      }
+    }
+
+    async function loadAgentsSettings() {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          const res = await window.__TAURI__.core.invoke('agents_status');
+          updateAgentsUI(res);
+          try {
+            if (window.__TAURI__?.event?.emit) {
+              await window.__TAURI__.event.emit('agents-settings-changed', res);
+            }
+          } catch (_) { }
+        }
+      } catch (err) {
+        console.warn('Failed to load agents status:', err);
+        if (agentsStatusLine) {
+          agentsStatusLine.textContent = String(err);
+          agentsStatusLine.classList.add('error');
+        }
+      }
+    }
+
+    async function pollAgentsLastEvent() {
+      if (!currentAgentsStatus?.installed || currentAgentsStatus?.status === 'needs repair') {
+        return;
+      }
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          const last = await window.__TAURI__.core.invoke('agents_last_event');
+          if (agentsStatusLine) {
+            if (last) {
+              agentsStatusLine.classList.remove('error', 'warning');
+              agentsStatusLine.textContent = `Last event: ${last.event}, ${last.seconds_ago}s ago`;
+            } else if (!agentsStatusLine.classList.contains('warning')) {
+              agentsStatusLine.classList.remove('error');
+              agentsStatusLine.textContent = 'No events yet. Fully quit and reopen Antigravity IDE, then run a task.';
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to poll last event:', err);
+      }
+    }
+
+    function startAgentsEventPolling() {
+      stopAgentsEventPolling();
+      pollAgentsLastEvent();
+      agentsPollInterval = setInterval(pollAgentsLastEvent, 2000);
+    }
+
+    function stopAgentsEventPolling() {
+      if (agentsPollInterval) {
+        clearInterval(agentsPollInterval);
+        agentsPollInterval = null;
+      }
+    }
+
+    function showInstallConfirmationModal() {
+      if (!currentAgentsStatus) return;
+      if (modalTargetPath) modalTargetPath.textContent = currentAgentsStatus.hooks_path;
+      if (modalBackupPath) modalBackupPath.textContent = currentAgentsStatus.backup_path;
+      if (modalConfirmInstallBtn) {
+        modalConfirmInstallBtn.textContent = 'Install';
+        modalConfirmInstallBtn.disabled = false;
+      }
+      if (agentsInstallModal) agentsInstallModal.style.display = 'flex';
+    }
+
+    function hideInstallConfirmationModal() {
+      if (agentsInstallModal) agentsInstallModal.style.display = 'none';
+    }
+
+    if (modalCancelBtn) {
+      modalCancelBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hideInstallConfirmationModal();
+      });
+    }
+
+    if (modalConfirmInstallBtn) {
+      modalConfirmInstallBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        modalConfirmInstallBtn.textContent = 'Installing...';
+        modalConfirmInstallBtn.disabled = true;
+        try {
+          let msg = '';
+          if (window.__TAURI__?.core?.invoke) {
+            msg = await window.__TAURI__.core.invoke('agents_install');
+          }
+          hideInstallConfirmationModal();
+          await loadAgentsSettings();
+          if (msg && msg.includes('PowerShell check was slow')) {
+            if (agentsStatusLine) {
+              agentsStatusLine.textContent = msg;
+              agentsStatusLine.classList.remove('error');
+              agentsStatusLine.classList.add('warning');
+            }
+          }
+        } catch (err) {
+          hideInstallConfirmationModal();
+          if (agentsStatusLine) {
+            agentsStatusLine.textContent = `Install failed: ${err}`;
+            agentsStatusLine.classList.remove('warning');
+            agentsStatusLine.classList.add('error');
+          }
+        }
+      });
+    }
+
+    // Agents Toggle click handler
+    async function handleAgentsToggleClick(e) {
+      e.stopPropagation();
+      if (!currentAgentsStatus) return;
+
+      if (!currentAgentsStatus.installed) {
+        // Clicking toggle while not installed runs install flow
+        showInstallConfirmationModal();
+        return;
+      }
+
+      const nextEnabled = !currentAgentsStatus.enabled;
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          await window.__TAURI__.core.invoke('agents_set_enabled', { enabled: nextEnabled });
+          await loadAgentsSettings();
+        }
+      } catch (err) {
+        if (agentsStatusLine) {
+          agentsStatusLine.textContent = `Failed to update toggle: ${err}`;
+          agentsStatusLine.classList.add('error');
+        }
+      }
+    }
+
+    if (antigravityToggle) {
+      antigravityToggle.addEventListener('click', handleAgentsToggleClick);
+    }
+
+    if (antigravityTile) {
+      antigravityTile.addEventListener('click', (e) => {
+        if (e.target === antigravityToggle || antigravityToggle.contains(e.target)) return;
+        handleAgentsToggleClick(e);
+      });
+    }
+
+    // Install button click
+    if (antigravityInstallBtn) {
+      antigravityInstallBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showInstallConfirmationModal();
+      });
+    }
+
+    // Reinstall button click
+    if (antigravityReinstallBtn) {
+      antigravityReinstallBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const origText = antigravityReinstallBtn.textContent;
+        antigravityReinstallBtn.textContent = '...';
+        antigravityReinstallBtn.disabled = true;
+        try {
+          let msg = '';
+          if (window.__TAURI__?.core?.invoke) {
+            msg = await window.__TAURI__.core.invoke('agents_reinstall');
+          }
+          await loadAgentsSettings();
+          if (msg && msg.includes('PowerShell check was slow')) {
+            if (agentsStatusLine) {
+              agentsStatusLine.textContent = msg;
+              agentsStatusLine.classList.remove('error');
+              agentsStatusLine.classList.add('warning');
+            }
+          }
+        } catch (err) {
+          if (agentsStatusLine) {
+            agentsStatusLine.textContent = `Reinstall failed: ${err}`;
+            agentsStatusLine.classList.remove('warning');
+            agentsStatusLine.classList.add('error');
+          }
+        } finally {
+          antigravityReinstallBtn.textContent = origText;
+          antigravityReinstallBtn.disabled = false;
+        }
+      });
+    }
+
+    // Uninstall button click with "Sure?" 3-second timer
+    if (antigravityUninstallBtn) {
+      antigravityUninstallBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (antigravityUninstallBtn.textContent !== 'Sure?') {
+          antigravityUninstallBtn.textContent = 'Sure?';
+          clearTimeout(uninstallConfirmTimer);
+          uninstallConfirmTimer = setTimeout(() => {
+            antigravityUninstallBtn.textContent = 'Uninstall';
+          }, 3000);
+        } else {
+          clearTimeout(uninstallConfirmTimer);
+          antigravityUninstallBtn.textContent = '...';
+          antigravityUninstallBtn.disabled = true;
+          try {
+            if (window.__TAURI__?.core?.invoke) {
+              await window.__TAURI__.core.invoke('agents_uninstall');
+            }
+            antigravityUninstallBtn.textContent = 'Uninstall';
+            await loadAgentsSettings();
+          } catch (err) {
+            antigravityUninstallBtn.textContent = 'Uninstall';
+            if (agentsStatusLine) {
+              agentsStatusLine.textContent = `Uninstall failed: ${err}`;
+              agentsStatusLine.classList.add('error');
+            }
+          } finally {
+            antigravityUninstallBtn.disabled = false;
+          }
+        }
+      });
+    }
+
+    // Listen to real-time agent-event from Tauri
+    if (window.__TAURI__?.event?.listen) {
+      window.__TAURI__.event.listen('agent-event', () => {
+        pollAgentsLastEvent();
+      });
+    }
+
+    // Initial load on startup
+    try {
+      initTheme();
+    } catch (e) {
+      console.error('Error initializing theme:', e);
+    }
+    try {
+      loadBehaviorSettings();
+    } catch (e) {
+      console.error('Error initializing behavior settings:', e);
+    }
+    try {
+      loadStartupSettings();
+    } catch (e) {
+      console.error('Error initializing startup settings:', e);
+    }
+    try {
+      loadAgentsSettings();
+    } catch (e) {
+      console.error('Error initializing agents settings:', e);
+    }
+    try {
+      loadAboutSection();
+    } catch (e) {
+      console.error('Error initializing about section:', e);
+    }
+  </script>
+</body>
+
+</html>
