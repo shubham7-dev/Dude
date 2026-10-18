@@ -1731,6 +1731,91 @@
       font-weight: 500;
     }
 
+    .agents-approvals-card {
+      top: 373px;
+      height: 150px;
+    }
+
+    .agents-approval-tile {
+      top: 45px;
+    }
+
+    .agents-allowed-tile {
+      top: 95px;
+      cursor: default;
+    }
+
+    .agents-tile-text-wrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-left: 12px;
+      pointer-events: none;
+      user-select: none;
+      max-width: 410px;
+    }
+
+    .agents-tile-title {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #000000;
+      line-height: 1.15;
+    }
+
+    .agents-tile-subtitle {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      color: #555555;
+      line-height: 1.15;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .agents-btn-clear-allowed {
+      position: absolute;
+      right: 12px;
+      width: 74px;
+      height: 26px;
+      background-color: #D98095;
+      color: #000000;
+      border: 1px solid #000000;
+      border-radius: 4px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: opacity 120ms ease, background-color 150ms ease;
+      z-index: 25;
+    }
+
+    .agents-btn-clear-allowed:hover {
+      opacity: 0.88;
+    }
+
+    .agents-btn-clear-allowed.sure {
+      background-color: #FF4D4F;
+      color: #FFFFFF;
+    }
+
+    .agents-approval-warning {
+      position: absolute;
+      right: 21px;
+      top: 17px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: #D97706;
+      user-select: none;
+    }
+
     /* Confirmation Modal */
     .agents-modal-overlay {
       position: absolute;
@@ -2500,6 +2585,32 @@
 
         <!-- Status line in bottom padding: 11px gray text at left 21px -->
         <div class="agents-status-line" id="agents-status-line"></div>
+      </div>
+
+      <!-- Approvals Card: left 31px, top 373px, 558 x 150px, group title "Approvals" -->
+      <div class="section-card agents-card agents-approvals-card" id="agents-approvals-card">
+        <div class="group-title agents-group-title">Approvals</div>
+        <div class="agents-approval-warning" id="agents-approval-warning" style="display: none;">Install or reinstall the hooks first</div>
+
+        <!-- Tile A: 514 x 44px, left 21px, top 45px -->
+        <div class="tile agents-tile agents-approval-tile" id="agents-approve-tile">
+          <div class="agents-tile-text-wrap">
+            <span class="agents-tile-title">Approve commands from Dude</span>
+            <span class="agents-tile-subtitle">Dude asks before Antigravity runs a command. No answer in 40 seconds: Antigravity asks you itself.</span>
+          </div>
+          <div class="toggle-track" id="agents-approve-toggle" role="switch" aria-checked="false">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+
+        <!-- Tile B: 514 x 44px, left 21px, top 95px -->
+        <div class="tile agents-tile agents-allowed-tile" id="agents-allowed-tile">
+          <div class="agents-tile-text-wrap">
+            <span class="agents-tile-title">Allowed commands</span>
+            <span class="agents-tile-subtitle" id="agents-allowed-count">0 saved</span>
+          </div>
+          <button type="button" class="agents-btn-clear-allowed" id="agents-clear-allowed-btn">Clear all</button>
+        </div>
       </div>
 
       <!-- Confirmation Modal for Installation -->
@@ -4204,21 +4315,6 @@
         cursorPathText.title = statusInfo.cursor_hooks_path || '';
       }
 
-      if (statusInfo.error) {
-        if (agentsStatusLine) {
-          agentsStatusLine.textContent = statusInfo.error;
-          agentsStatusLine.classList.add('error');
-        }
-        if (antigravityToggle) {
-          antigravityToggle.classList.remove('active');
-          antigravityToggle.setAttribute('aria-checked', 'false');
-        }
-        if (antigravityInstallBtn) antigravityInstallBtn.style.display = 'block';
-        if (antigravityReinstallBtn) antigravityReinstallBtn.style.display = 'none';
-        if (antigravityUninstallBtn) antigravityUninstallBtn.style.display = 'none';
-        return;
-      }
-
       if (!statusInfo.installed) {
         // Not installed: toggle OFF, only "install" button
         if (antigravityToggle) {
@@ -4229,8 +4325,9 @@
         if (antigravityReinstallBtn) antigravityReinstallBtn.style.display = 'none';
         if (antigravityUninstallBtn) antigravityUninstallBtn.style.display = 'none';
         if (agentsStatusLine) {
-          agentsStatusLine.textContent = '';
-          agentsStatusLine.classList.remove('error');
+          agentsStatusLine.textContent = statusInfo.error || '';
+          if (statusInfo.error) agentsStatusLine.classList.add('error');
+          else agentsStatusLine.classList.remove('error');
         }
       } else {
         // Installed: "Reinstall" and "Uninstall" buttons
@@ -4252,23 +4349,237 @@
 
         if (statusInfo.status === 'needs repair') {
           if (agentsStatusLine) {
-            agentsStatusLine.textContent = 'Status: needs repair (dude-hook.exe missing at configured path)';
+            const reason = statusInfo.error ? ` (${statusInfo.error})` : '';
+            agentsStatusLine.textContent = `Status: needs repair${reason}`;
             agentsStatusLine.classList.add('error');
           }
         } else {
           pollAgentsLastEvent();
         }
       }
+
+      updateApprovalsUI();
+    }
+
+    // ----------------------------------------------------------------------
+    // Approvals Management
+    // ----------------------------------------------------------------------
+    let agentsApproveCommandsSetting = false;
+    let agentsAllowedCommandsList = [];
+    let clearAllowedConfirmTimer = null;
+    let approvalWarningTimer = null;
+
+    const agentsApproveTile = document.getElementById('agents-approve-tile');
+    const agentsApproveToggle = document.getElementById('agents-approve-toggle');
+    const agentsApprovalWarning = document.getElementById('agents-approval-warning');
+    const agentsAllowedTile = document.getElementById('agents-allowed-tile');
+    const agentsAllowedCount = document.getElementById('agents-allowed-count');
+    const agentsClearAllowedBtn = document.getElementById('agents-clear-allowed-btn');
+
+    function updateApprovalsUI() {
+      // 1. Update allowed commands count
+      const count = Array.isArray(agentsAllowedCommandsList) ? agentsAllowedCommandsList.length : 0;
+      if (agentsAllowedCount) {
+        agentsAllowedCount.textContent = `${count} saved`;
+      }
+
+      // 2. Check hook status
+      const hooksNotInstalled = !currentAgentsStatus || !currentAgentsStatus.installed;
+      const hooksNeedRepair = currentAgentsStatus && currentAgentsStatus.status === 'needs repair';
+      const hasOldTimeout = currentAgentsStatus && currentAgentsStatus.error === 'approval timeout';
+
+      if (agentsApproveCommandsSetting) {
+        if (hooksNotInstalled || hooksNeedRepair) {
+          // Rule 4: "When the setting is ON but the installed hooks still use the old 5-second timeout, treat it as OFF and show "Reinstall needed" in the settings."
+          if (hasOldTimeout) {
+            if (agentsApprovalWarning) {
+              agentsApprovalWarning.textContent = 'Reinstall needed';
+              agentsApprovalWarning.style.display = 'block';
+            }
+          }
+          // Treat as OFF
+          if (agentsApproveToggle) {
+            agentsApproveToggle.classList.remove('active');
+            agentsApproveToggle.setAttribute('aria-checked', 'false');
+          }
+          return;
+        }
+      }
+
+      if (!hasOldTimeout && agentsApprovalWarning && agentsApprovalWarning.textContent === 'Reinstall needed') {
+        agentsApprovalWarning.style.display = 'none';
+      }
+
+      if (agentsApproveToggle) {
+        if (agentsApproveCommandsSetting && !hooksNotInstalled && !hooksNeedRepair) {
+          agentsApproveToggle.classList.add('active');
+          agentsApproveToggle.setAttribute('aria-checked', 'true');
+        } else {
+          agentsApproveToggle.classList.remove('active');
+          agentsApproveToggle.setAttribute('aria-checked', 'false');
+        }
+      }
+    }
+
+    async function loadApprovalsSettings() {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          const rid = await window.__TAURI__.core.invoke('plugin:store|load', {
+            path: 'dude_store.json'
+          });
+          const [agentsVal, exists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents' });
+          if (exists && agentsVal && typeof agentsVal === 'object') {
+            if (typeof agentsVal.approveCommands === 'boolean') {
+              agentsApproveCommandsSetting = agentsVal.approveCommands;
+            }
+            if (Array.isArray(agentsVal.allowedCommands)) {
+              agentsAllowedCommandsList = agentsVal.allowedCommands;
+            }
+          }
+          const [apprVal, apprExists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents.approveCommands' });
+          if (apprExists && typeof apprVal === 'boolean') {
+            agentsApproveCommandsSetting = apprVal;
+          }
+          const [allowedVal, allowedExists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents.allowedCommands' });
+          if (allowedExists && Array.isArray(allowedVal)) {
+            agentsAllowedCommandsList = allowedVal;
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to load approvals settings from store:', err);
+      }
+      updateApprovalsUI();
+    }
+
+    async function handleApproveCommandsToggleClick(e) {
+      if (e) e.stopPropagation();
+
+      const hooksNotInstalled = !currentAgentsStatus || !currentAgentsStatus.installed;
+      const hooksNeedRepair = currentAgentsStatus && currentAgentsStatus.status === 'needs repair';
+
+      if (hooksNotInstalled || hooksNeedRepair) {
+        // Rule 8: "turning it ON when the hooks are not installed or need repair shows the amber text "Install or reinstall the hooks first" and keeps it OFF;"
+        if (agentsApprovalWarning) {
+          agentsApprovalWarning.textContent = 'Install or reinstall the hooks first';
+          agentsApprovalWarning.style.display = 'block';
+          if (approvalWarningTimer) clearTimeout(approvalWarningTimer);
+          approvalWarningTimer = setTimeout(() => {
+            if (currentAgentsStatus?.error === 'approval timeout' && agentsApproveCommandsSetting) {
+              agentsApprovalWarning.textContent = 'Reinstall needed';
+            } else {
+              agentsApprovalWarning.style.display = 'none';
+            }
+          }, 4000);
+        }
+        if (agentsApproveToggle) {
+          agentsApproveToggle.classList.remove('active');
+          agentsApproveToggle.setAttribute('aria-checked', 'false');
+        }
+        return;
+      }
+
+      agentsApproveCommandsSetting = !agentsApproveCommandsSetting;
+      if (agentsApprovalWarning) {
+        agentsApprovalWarning.style.display = 'none';
+      }
+      updateApprovalsUI();
+
+      // Persist to store
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          const rid = await window.__TAURI__.core.invoke('plugin:store|load', {
+            path: 'dude_store.json'
+          });
+          const [agentsVal, exists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents' });
+          const current = (exists && agentsVal && typeof agentsVal === 'object') ? agentsVal : {};
+          current.approveCommands = agentsApproveCommandsSetting;
+          current.allowedCommands = agentsAllowedCommandsList;
+          await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents', value: current });
+          await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents.approveCommands', value: agentsApproveCommandsSetting });
+          await window.__TAURI__.core.invoke('plugin:store|save', { rid });
+        }
+        if (window.__TAURI__?.event?.emit) {
+          await window.__TAURI__.event.emit('agents-settings-changed', {
+            status: currentAgentsStatus,
+            approveCommands: agentsApproveCommandsSetting,
+            allowedCommands: agentsAllowedCommandsList
+          });
+        }
+      } catch (err) {
+        console.warn('Failed to save approveCommands setting:', err);
+      }
+    }
+
+    if (agentsApproveToggle) {
+      agentsApproveToggle.addEventListener('click', handleApproveCommandsToggleClick);
+    }
+    if (agentsApproveTile) {
+      agentsApproveTile.addEventListener('click', (e) => {
+        if (e.target === agentsApproveToggle || agentsApproveToggle.contains(e.target)) return;
+        handleApproveCommandsToggleClick(e);
+      });
+    }
+
+    if (agentsClearAllowedBtn) {
+      agentsClearAllowedBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (agentsClearAllowedBtn.textContent !== 'Sure?') {
+          agentsClearAllowedBtn.textContent = 'Sure?';
+          agentsClearAllowedBtn.classList.add('sure');
+          if (clearAllowedConfirmTimer) clearTimeout(clearAllowedConfirmTimer);
+          clearAllowedConfirmTimer = setTimeout(() => {
+            agentsClearAllowedBtn.textContent = 'Clear all';
+            agentsClearAllowedBtn.classList.remove('sure');
+          }, 3000);
+        } else {
+          if (clearAllowedConfirmTimer) clearTimeout(clearAllowedConfirmTimer);
+          agentsClearAllowedBtn.textContent = 'Clear all';
+          agentsClearAllowedBtn.classList.remove('sure');
+          agentsAllowedCommandsList = [];
+          if (agentsAllowedCount) {
+            agentsAllowedCount.textContent = '0 saved';
+          }
+          // Persist to store
+          try {
+            if (window.__TAURI__?.core?.invoke) {
+              const rid = await window.__TAURI__.core.invoke('plugin:store|load', {
+                path: 'dude_store.json'
+              });
+              const [agentsVal, exists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents' });
+              const current = (exists && agentsVal && typeof agentsVal === 'object') ? agentsVal : {};
+              current.allowedCommands = [];
+              current.approveCommands = agentsApproveCommandsSetting;
+              await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents', value: current });
+              await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents.allowedCommands', value: [] });
+              await window.__TAURI__.core.invoke('plugin:store|save', { rid });
+            }
+            if (window.__TAURI__?.event?.emit) {
+              await window.__TAURI__.event.emit('agents-settings-changed', {
+                status: currentAgentsStatus,
+                approveCommands: agentsApproveCommandsSetting,
+                allowedCommands: []
+              });
+            }
+          } catch (err) {
+            console.warn('Failed to clear allowed commands:', err);
+          }
+        }
+      });
     }
 
     async function loadAgentsSettings() {
       try {
+        await loadApprovalsSettings();
         if (window.__TAURI__?.core?.invoke) {
           const res = await window.__TAURI__.core.invoke('agents_status');
           updateAgentsUI(res);
           try {
             if (window.__TAURI__?.event?.emit) {
-              await window.__TAURI__.event.emit('agents-settings-changed', res);
+              await window.__TAURI__.event.emit('agents-settings-changed', {
+                status: res,
+                approveCommands: agentsApproveCommandsSetting,
+                allowedCommands: agentsAllowedCommandsList
+              });
             }
           } catch (_) { }
         }

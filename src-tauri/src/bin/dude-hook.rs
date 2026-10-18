@@ -93,14 +93,153 @@ fn main() {
         }
     }
 
-    // 3. Serialize and keep under 48KB
+    // Check for PreToolUse with run_command
+    let mut is_run_command = false;
+    let mut command_line = String::new();
+    let mut cwd_str = String::new();
+
+    if let Ok(Value::Object(map)) = serde_json::from_slice::<Value>(&stdin_bytes) {
+        if let Some(tc) = map.get("toolCall").and_then(|v| v.as_object()) {
+            if let Some(name) = tc.get("name").and_then(|s| s.as_str()) {
+                if name == "run_command" {
+                    is_run_command = true;
+                }
+            }
+            if let Some(args_val) = tc.get("args") {
+                if let Some(args_obj) = args_val.as_object() {
+                    if let Some(c) = args_obj.get("CommandLine").or_else(|| args_obj.get("commandLine")).or_else(|| args_obj.get("command")).and_then(|v| v.as_str()) {
+                        command_line = c.to_string();
+                    }
+                    if let Some(w) = args_obj.get("Cwd").or_else(|| args_obj.get("cwd")).and_then(|v| v.as_str()) {
+                        cwd_str = w.to_string();
+                    }
+                } else if let Some(s) = args_val.as_str() {
+                    if let Ok(Value::Object(sub_map)) = serde_json::from_str::<Value>(s) {
+                        if let Some(c) = sub_map.get("CommandLine").or_else(|| sub_map.get("commandLine")).or_else(|| sub_map.get("command")).and_then(|v| v.as_str()) {
+                            command_line = c.to_string();
+                        }
+                        if let Some(w) = sub_map.get("Cwd").or_else(|| sub_map.get("cwd")).and_then(|v| v.as_str()) {
+                            cwd_str = w.to_string();
+                        }
+                    } else {
+                        command_line = s.to_string();
+                    }
+                }
+            }
+        }
+    }
+
+    // 3. Approval Flow for PreToolUse with run_command ONLY
+    if event == "PreToolUse" && is_run_command {
+        let req_id = format!(
+            "req-{:x}-{:x}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_nanos())
+                .unwrap_or(0),
+            std::process::id()
+        );
+
+        let conv_id = forwarded
+            .get("conversationId")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string();
+
+        let ws_path = forwarded
+            .get("workspacePath")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string();
+
+        let approval_payload = json!({
+            "type": "approval",
+            "id": req_id,
+            "conversationId": conv_id,
+            "workspacePath": ws_path,
+            "command": command_line,
+            "cwd": cwd_str
+        });
+
+        let mut approval_str = serde_json::to_string(&approval_payload).unwrap_or_else(|_| "{}".to_string());
+        if approval_str.len() > 64 * 1024 {
+            approval_str.truncate(64 * 1024);
+        }
+
+        // Open named pipe with read and write
+        use std::fs::OpenOptions;
+        use std::io::{BufRead, BufReader, Write};
+
+        let pipe_res = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(r"\\.\pipe\dude-agent-events");
+
+        let mut pipe = match pipe_res {
+            Ok(p) => p,
+            Err(_) => {
+                // Dude not running or pipe missing -> {"decision":"allow"} (exactly as today)
+                println!(r#"{{"decision":"allow"}}"#);
+                std::process::exit(0);
+            }
+        };
+
+        // Send approval message with newline
+        if pipe.write_all(format!("{}\n", approval_str).as_bytes()).is_err() || pipe.flush().is_err() {
+            println!(r#"{{"decision":"ask"}}"#);
+            std::process::exit(0);
+        }
+
+        // WAIT for one reply line on the same connection, internal deadline 47s
+        let (tx_reply, rx_reply) = mpsc::channel();
+        std::thread::spawn(move || {
+            let mut reader = BufReader::new(pipe);
+            let mut line = String::new();
+            let res = reader.read_line(&mut line).map(|_| line);
+            let _ = tx_reply.send(res);
+        });
+
+        match rx_reply.recv_timeout(Duration::from_secs(47)) {
+            Ok(Ok(line)) => {
+                let reply = line.trim();
+                match reply {
+                    "once" | "conversation" | "always" => {
+                        println!(r#"{{"decision":"auto_approve","reason":"Approved from Dude"}}"#);
+                    }
+                    "deny" => {
+                        println!(r#"{{"decision":"deny","reason":"Denied from Dude by the user"}}"#);
+                    }
+                    "allow" => {
+                        println!(r#"{{"decision":"allow"}}"#);
+                    }
+                    "ask" | "dismiss" => {
+                        println!(r#"{{"decision":"ask"}}"#);
+                    }
+                    _ => {
+                        println!(r#"{{"decision":"ask"}}"#);
+                    }
+                }
+            }
+            Ok(Err(_)) => {
+                // Broken connection or read error -> {"decision":"ask"}
+                println!(r#"{{"decision":"ask"}}"#);
+            }
+            Err(_) => {
+                // Deadline reached (47s) -> {"decision":"ask"}
+                println!(r#"{{"decision":"ask"}}"#);
+            }
+        }
+        std::process::exit(0);
+    }
+
+    // 4. Default Non-approval Forwarding (for all other events and tools)
     let mut payload_str = serde_json::to_string(&Value::Object(forwarded)).unwrap_or_else(|_| "{}".to_string());
     const MAX_SIZE: usize = 48 * 1024;
     if payload_str.len() > MAX_SIZE {
         payload_str.truncate(MAX_SIZE);
     }
 
-    // 4. Forward to named pipe \\.\pipe\dude-agent-events with 300ms connect timeout
+    // Forward to named pipe \\.\pipe\dude-agent-events with 300ms connect timeout
     let (tx_pipe, rx_pipe) = mpsc::channel();
     let pipe_payload = payload_str;
     std::thread::spawn(move || {
@@ -114,7 +253,7 @@ fn main() {
     });
     let _ = rx_pipe.recv_timeout(Duration::from_millis(300));
 
-    // 5. Output exactly one JSON line to stdout and exit 0
+    // Output exactly one JSON line to stdout and exit 0
     let response = match event.as_str() {
         "PreToolUse" => r#"{"decision":"allow"}"#,
         "Stop" => r#"{"decision":"allow"}"#,

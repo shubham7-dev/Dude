@@ -67,6 +67,11 @@
       height: 271px;
     }
 
+    .widget.expanded.panel-open.tab-agents.approval-state {
+      width: 478px;
+      height: 295px;
+    }
+
     .widget.expanded.panel-open.tab-chat {
       width: 542px;
       height: 223px;
@@ -428,20 +433,26 @@
       height: 100%;
     }
 
-    /* Dark panel: relative to pill's top-left, left 15px, top 56px, 448 x 199px, radius 8px, background #151B28 */
+    /* Dark panel: relative to pill's top-left, left 15px, top 56px, 448 x 200px, radius 8px, background #151B28 */
     .agents-dark-panel {
       position: absolute;
       left: 15px;
       top: 56px;
       width: 448px;
-      height: 199px;
+      height: 200px;
       background-color: #151B28;
+      border: 1px solid #FFFFFF;
       border-radius: 8px;
       box-sizing: border-box;
       overflow: hidden;
       user-select: none;
       -webkit-user-select: none;
       z-index: 1;
+      transition: height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .widget.expanded.panel-open.tab-agents.approval-state .agents-dark-panel {
+      height: 224px;
     }
 
     /* Name "Antigravity": left 10px, top about 76px, Inter bold 11px, white */
@@ -541,6 +552,12 @@
     .agent-step-row.done .step-running-icon { display: none; }
     .agent-step-row.done .step-done-icon { display: block; }
     .agent-step-row.done .agent-step-label { color: #B8BCC8; }
+
+    .agent-step-row.agent-bash-flash {
+      background-color: rgba(76, 216, 0, 0.45) !important;
+      border-radius: 4px;
+      transition: background-color 150ms ease;
+    }
 
     @keyframes stepSpin {
       0% { transform: rotate(0deg); }
@@ -726,6 +743,225 @@
 
     .agent-empty-btn:active {
       transform: scale(0.97);
+    }
+
+    /* ============================================================
+       APPROVAL STATE (Image 2: Pill 478 x 295, Panel 448 x 224)
+       ============================================================ */
+    .widget.approval-state .agent-code-component {
+      display: none !important;
+    }
+    .agent-approval-component {
+      display: none;
+    }
+    .widget.approval-state .agent-approval-component {
+      display: block;
+    }
+
+    /* Approval box: relative to panel's top-left: left 110px, top 10px, 329 x 179px, background #000000, radius 6px, border 1.5px solid #2AA5E0 */
+    .agent-approval-box {
+      position: absolute;
+      left: 110px;
+      top: 10px;
+      width: 329px;
+      height: 179px;
+      background-color: #000000;
+      border-radius: 6px;
+      border: 1.5px solid #2AA5E0;
+      box-sizing: border-box;
+      overflow: hidden;
+      overscroll-behavior: contain;
+      z-index: 2;
+    }
+
+    /* Title row: Inter bold 12px, white at left 24px, vertically centered about 15px from box top */
+    .agent-approval-header {
+      position: absolute;
+      left: 24px;
+      right: 12px;
+      top: 6px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .agent-approval-title {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 18px;
+      white-space: nowrap;
+    }
+
+    .agent-approval-meta {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      color: #8A8F9C;
+      line-height: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .agent-approval-queue {
+      display: none;
+    }
+
+    .agent-approval-queue.visible {
+      display: inline;
+    }
+
+    /* Command block: left 6px, top 26px inside box, 270px wide, up to 42px tall, bg #373764, radius 5px, padding 6px 8px, text white 11px monospace */
+    .agent-approval-command {
+      position: absolute;
+      left: 6px;
+      top: 26px;
+      width: 270px;
+      max-height: 42px;
+      background-color: #373764;
+      border-radius: 5px;
+      padding: 6px 8px;
+      box-sizing: border-box;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      line-height: 14px;
+      color: #FFFFFF;
+      white-space: pre-wrap;
+      word-break: break-all;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    .agent-approval-command.fits {
+      overflow-y: hidden;
+      overscroll-behavior: auto;
+    }
+
+    .agent-approval-command.overflowing {
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    .agent-approval-command::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    /* Options list: left 9px, top 70px, 311px wide, down to box bottom; scrollable */
+    .agent-approval-options {
+      position: absolute;
+      left: 9px;
+      top: 70px;
+      width: 311px;
+      height: 106px;
+      max-height: 106px;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding-bottom: 4px;
+      box-sizing: border-box;
+    }
+
+    .agent-approval-options::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    .agent-approval-box ::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    /* Option rows: min-height 22px, padding 3px 8px, Inter 11.5px, line-height 20px, white, wrapped lines indented by 10px, radius 4px, selected bg #666666 */
+    .agent-approval-option-row {
+      flex-shrink: 0;
+      min-height: 22px;
+      padding: 3px 8px 3px 18px;
+      text-indent: -10px;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11.5px;
+      line-height: 20px;
+      color: #FFFFFF;
+      border-radius: 4px;
+      box-sizing: border-box;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      background-color: transparent;
+      transition: background-color 100ms ease;
+      word-break: break-word;
+    }
+
+    .agent-approval-option-row.selected {
+      background-color: #666666;
+    }
+
+    /* Submit button: left 375px, top 197px inside panel, 62 x 21px, bg #0A78D6, radius 4px, text "Submit" bold white 11px + small enter-arrow icon */
+    .agent-approval-submit-btn {
+      position: absolute;
+      left: 375px;
+      top: 197px;
+      width: 62px;
+      height: 21px;
+      background-color: #0A78D6;
+      border-radius: 4px;
+      border: none;
+      color: #FFFFFF;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: background-color 120ms ease, transform 80ms ease;
+      z-index: 2;
+    }
+
+    .agent-approval-submit-btn:hover {
+      background-color: #1288E8;
+    }
+
+    .agent-approval-submit-btn:active {
+      transform: scale(0.97);
+    }
+
+    .agent-approval-submit-btn svg {
+      width: 10px;
+      height: 10px;
+      display: block;
+      stroke: #FFFFFF;
+      stroke-width: 1.8;
+      pointer-events: none;
     }
 
     /* Mascot Agent Badge (top-left of mascot) */
@@ -1950,6 +2186,27 @@
             <div class="agent-empty-desc" id="agent-empty-desc">Install Dude's hooks for Antigravity in Settings, then restart Antigravity IDE.</div>
             <button type="button" class="agent-empty-btn" id="agent-empty-btn">Open Agents settings</button>
           </div>
+        </div>
+
+        <!-- Approval Component (Image 2) -->
+        <div class="agent-approval-component" id="agent-approval-component">
+          <div class="agent-approval-box" id="agent-approval-box">
+            <div class="agent-approval-header">
+              <div class="agent-approval-title" id="agent-approval-title">Allow command?</div>
+              <div class="agent-approval-meta">
+                <span class="agent-approval-queue" id="agent-approval-queue"></span>
+                <span class="agent-approval-seconds" id="agent-approval-seconds"></span>
+              </div>
+            </div>
+            <div class="agent-approval-command" id="agent-approval-command"></div>
+            <div class="agent-approval-options" id="agent-approval-options" role="listbox"></div>
+          </div>
+          <button type="button" class="agent-approval-submit-btn" id="agent-approval-submit-btn">
+            <span>Submit</span>
+            <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 2.5 v3.5 H2.5 M4.5 4 L2.5 6 L4.5 8" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -3230,6 +3487,7 @@
         }
         // 4. Stop
         else if (eventName === 'Stop') {
+          dismissApprovalsForConversation(convId);
           const fullyIdle = payload.fullyIdle === true;
           if (fullyIdle) {
             conv.categories = { read: 'done', edit: 'done', bash: 'done', done: 'done' };
@@ -3485,12 +3743,651 @@
       }, 1200);
     }
 
+    // ============================================================
+    // AGENTS TAB APPROVAL STATE (Permission Request)
+    // ============================================================
+    const approvalQueue = [];
+    let activeApproval = null;
+    let approvalCountdownInterval = null;
+    let currentRequestShownAt = 0;
+    let previousPillState = null;
+    let currentApprovalOptions = [];
+    let selectedOptionIndex = 0;
+
+    // Allow-lists & Settings State
+    let approveCommandsSetting = false;
+    let persistentAllowedCommands = []; // max 200 items: { command: string, date: string }
+    const conversationAllowLists = new Map(); // conversationId -> Set<string>
+
+    function normalizeCommand(cmd) {
+      if (typeof cmd !== 'string') return '';
+      return cmd.trim().replace(/\s+/g, ' ');
+    }
+
+    function isDangerousCommand(cmd) {
+      if (!cmd || typeof cmd !== 'string') return false;
+      const c = cmd.trim();
+
+      // rm -rf / rm -r
+      if (/\brm\s+(-[a-zA-Z]*r[a-zA-Z]*|-rf|-r)\b/i.test(c)) return true;
+      // del /s
+      if (/\bdel\b[^\n]*\/s\b/i.test(c)) return true;
+      // rmdir /s or rd /s
+      if (/\b(rmdir|rd)\b[^\n]*\/s\b/i.test(c)) return true;
+      // Remove-Item with -Recurse
+      if (/\b(Remove-Item|ri|rmdir|rm)\b[^\n]*-(Recurse|r)\b/i.test(c)) return true;
+      // format
+      if (/\bformat\b/i.test(c)) return true;
+      // diskpart
+      if (/\bdiskpart\b/i.test(c)) return true;
+      // git push with --force or -f
+      if (/\bgit\s+push\b[^\n]*\s+(-f|--force)\b/i.test(c)) return true;
+      // git reset --hard
+      if (/\bgit\s+reset\b[^\n]*--hard\b/i.test(c)) return true;
+      // git clean
+      if (/\bgit\s+clean\b/i.test(c)) return true;
+      // curl or wget or Invoke-WebRequest or iwr piped to a shell or iex
+      if (/\b(curl|wget|Invoke-WebRequest|iwr)\b[^|]*\|\s*(bash|sh|cmd|powershell|pwsh|iex|Invoke-Expression)\b/i.test(c)) return true;
+      // Invoke-Expression or iex
+      if (/\b(Invoke-Expression|iex)\b/i.test(c)) return true;
+      // -EncodedCommand or -enc
+      if (/-(EncodedCommand|enc)\b/i.test(c)) return true;
+      // reg add or reg delete
+      if (/\breg\s+(add|delete)\b/i.test(c)) return true;
+      // schtasks
+      if (/\bschtasks\b/i.test(c)) return true;
+      // net user
+      if (/\bnet\s+user\b/i.test(c)) return true;
+      // net localgroup
+      if (/\bnet\s+localgroup\b/i.test(c)) return true;
+      // shutdown
+      if (/\bshutdown\b/i.test(c)) return true;
+      // Set-ExecutionPolicy
+      if (/\bSet-ExecutionPolicy\b/i.test(c)) return true;
+      // certutil -urlcache
+      if (/\bcertutil\b[^\n]*-urlcache\b/i.test(c)) return true;
+      // bitsadmin
+      if (/\bbitsadmin\b/i.test(c)) return true;
+      // sc delete
+      if (/\bsc\s+delete\b/i.test(c)) return true;
+      // taskkill /f
+      if (/\btaskkill\b[^\n]*\/f\b/i.test(c)) return true;
+
+      return false;
+    }
+
+    function flashBashRowGreen() {
+      const row = document.getElementById('agent-step-bash');
+      if (!row) return;
+      row.classList.remove('agent-bash-flash');
+      void row.offsetWidth;
+      row.classList.add('agent-bash-flash');
+      setTimeout(() => {
+        row.classList.remove('agent-bash-flash');
+      }, 450);
+    }
+
+    async function loadAgentsSettingsFromStore() {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          const rid = await window.__TAURI__.core.invoke('plugin:store|load', {
+            path: 'dude_store.json'
+          });
+          const [agentsVal, exists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents' });
+          if (exists && agentsVal && typeof agentsVal === 'object') {
+            if (typeof agentsVal.approveCommands === 'boolean') {
+              approveCommandsSetting = agentsVal.approveCommands;
+            }
+            if (Array.isArray(agentsVal.allowedCommands)) {
+              persistentAllowedCommands = agentsVal.allowedCommands;
+            }
+          }
+          const [apprVal, apprExists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents.approveCommands' });
+          if (apprExists && typeof apprVal === 'boolean') {
+            approveCommandsSetting = apprVal;
+          }
+          const [allowedVal, allowedExists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents.allowedCommands' });
+          if (allowedExists && Array.isArray(allowedVal)) {
+            persistentAllowedCommands = allowedVal;
+          }
+        }
+      } catch (e) {
+        console.warn('Could not read agents settings from store plugin:', e);
+      }
+    }
+
+    async function saveAgentsPersistentListToStore() {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          const rid = await window.__TAURI__.core.invoke('plugin:store|load', {
+            path: 'dude_store.json'
+          });
+          const [agentsVal, exists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents' });
+          const current = (exists && agentsVal && typeof agentsVal === 'object') ? agentsVal : {};
+          current.allowedCommands = persistentAllowedCommands;
+          current.approveCommands = approveCommandsSetting;
+          await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents', value: current });
+          await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents.allowedCommands', value: persistentAllowedCommands });
+          await window.__TAURI__.core.invoke('plugin:store|save', { rid });
+          if (window.__TAURI__?.event?.emit) {
+            window.__TAURI__.event.emit('agents-settings-changed', {
+              approveCommands: approveCommandsSetting,
+              allowedCommands: persistentAllowedCommands
+            }).catch(() => {});
+          }
+        }
+      } catch (e) {
+        console.warn('Could not save agents settings to store plugin:', e);
+      }
+    }
+
+    function dismissApprovalsForConversation(convId) {
+      if (!convId) return;
+      if (activeApproval && activeApproval.conversationId === convId) {
+        finishActiveApproval('dismiss');
+      }
+      for (let i = approvalQueue.length - 1; i >= 0; i--) {
+        if (approvalQueue[i].conversationId === convId) {
+          const item = approvalQueue.splice(i, 1)[0];
+          if (item && item.resolve) {
+            item.resolve({ choice: 'dismiss' });
+          }
+        }
+      }
+      const queueEl = document.getElementById('agent-approval-queue');
+      if (queueEl) {
+        if (approvalQueue.length > 1) {
+          queueEl.textContent = `1 of ${approvalQueue.length}`;
+          queueEl.classList.add('visible');
+        } else {
+          queueEl.textContent = '';
+          queueEl.classList.remove('visible');
+        }
+      }
+    }
+
+    async function handleApprovalRequest(req) {
+      if (!req || !req.id) return;
+
+      if (!lastKnownAgentsStatus) {
+        try {
+          if (window.__TAURI__?.core?.invoke) {
+            lastKnownAgentsStatus = await window.__TAURI__.core.invoke('agents_status');
+          }
+        } catch (_) {}
+      }
+
+      const hooksNeedRepair = !lastKnownAgentsStatus?.installed ||
+                              lastKnownAgentsStatus?.status === 'needs repair' ||
+                              lastKnownAgentsStatus?.error === 'approval timeout';
+
+      // Rule 4: When OFF, Dude replies "allow" immediately to every approval message.
+      // When ON but the installed hooks still use the old 5-second timeout, treat it as OFF.
+      if (!approveCommandsSetting || hooksNeedRepair) {
+        if (window.__TAURI__?.core?.invoke) {
+          window.__TAURI__.core.invoke('resolve_agent_approval', { id: req.id, choice: 'allow' }).catch(() => {});
+        }
+        return;
+      }
+
+      const rawCmd = String(req.command || '');
+      const normCmd = normalizeCommand(rawCmd);
+      const dangerous = isDangerousCommand(rawCmd);
+
+      // Rule 5: If a command is in either list AND is not flagged dangerous, Dude replies "once" immediately
+      const inConv = req.conversationId && conversationAllowLists.get(req.conversationId)?.has(normCmd);
+      const inPersist = persistentAllowedCommands.some(it => normalizeCommand(it.command) === normCmd);
+
+      if (!dangerous && (inConv || inPersist)) {
+        flashBashRowGreen();
+        if (window.__TAURI__?.core?.invoke) {
+          window.__TAURI__.core.invoke('resolve_agent_approval', { id: req.id, choice: 'once' }).catch(() => {});
+        }
+        return;
+      }
+
+      // Show approval UI with 40s timeout (Dude answers before hook's 47-second deadline)
+      const res = await showApproval({
+        id: req.id,
+        conversationId: req.conversationId,
+        command: rawCmd,
+        dangerous,
+        timeoutMs: 40000
+      });
+
+      const choice = res?.choice || 'dismiss';
+
+      if (choice === 'conversation') {
+        if (req.conversationId) {
+          if (!conversationAllowLists.has(req.conversationId)) {
+            conversationAllowLists.set(req.conversationId, new Set());
+          }
+          conversationAllowLists.get(req.conversationId).add(normCmd);
+        }
+      } else if (choice === 'always') {
+        persistentAllowedCommands = persistentAllowedCommands.filter(
+          it => normalizeCommand(it.command) !== normCmd
+        );
+        persistentAllowedCommands.unshift({
+          command: normCmd,
+          date: new Date().toISOString()
+        });
+        if (persistentAllowedCommands.length > 200) {
+          persistentAllowedCommands = persistentAllowedCommands.slice(0, 200);
+        }
+        await saveAgentsPersistentListToStore();
+      }
+
+      // Map reply: once, conversation, always, deny, dismiss -> ask
+      const replyChoice = (choice === 'dismiss') ? 'ask' : choice;
+      if (window.__TAURI__?.core?.invoke) {
+        window.__TAURI__.core.invoke('resolve_agent_approval', { id: req.id, choice: replyChoice }).catch(() => {});
+      }
+    }
+
+    function redactSecrets(text) {
+      if (!text || typeof text !== 'string') return '';
+      return text
+        .replace(/(Bearer\s+)[A-Za-z0-9_\-\.]{20,}/gi, '$1••••')
+        .replace(/AIza[0-9A-Za-z\-_]{16,}/g, '••••')
+        .replace(/AQ[0-9A-Za-z\-_]{14,}/g, '••••')
+        .replace(/sk-[0-9A-Za-z\-_]{14,}/g, '••••')
+        .replace(/ghp_[0-9A-Za-z\-_]{14,}/g, '••••');
+    }
+
+    function shortenCommand(cmd, maxLen = 60) {
+      if (!cmd || typeof cmd !== 'string') return '';
+      const clean = cmd.replace(/[\r\n]+/g, ' ').trim();
+      if (clean.length <= maxLen) return clean;
+      return clean.slice(0, maxLen - 3) + '...';
+    }
+
+    function enterApprovalState() {
+      if (!previousPillState) {
+        const isExpanded = widget.classList.contains('expanded');
+        const isPanel = isPanelOpen();
+        const prevTab = currentTab;
+        previousPillState = {
+          wasCollapsed: !isExpanded,
+          wasPlainExpanded: isExpanded && !isPanel,
+          wasPanelOpen: isPanel,
+          prevTab: prevTab
+        };
+      }
+
+      // 1. Mascot hops
+      triggerMascotHopReaction();
+
+      // 2. Mascot badge turns orange (#FF9F0A) with white "!"
+      const badgeEl = document.getElementById('mascot-agent-badge');
+      if (badgeEl) {
+        badgeEl.classList.remove('thinking', 'working');
+        badgeEl.classList.add('needs_you');
+      }
+
+      // 3. Hamburger icon gets orange dot if Agents tab was not the one open
+      const hamburgerDot = document.getElementById('hamburger-badge-dot');
+      if (hamburgerDot) {
+        if (previousPillState.wasCollapsed || !previousPillState.wasPanelOpen || previousPillState.prevTab !== 'agents') {
+          hamburgerDot.classList.add('visible');
+        }
+      }
+
+      // 4. Morph pill to Agents tab approval state WITHOUT taking focus
+      widget.classList.add('expanded', 'panel-open', 'tab-agents', 'approval-state');
+      widget.classList.remove('tab-chat', 'tab-controls', 'chat-open', 'control-center-open', 'chat-closing');
+      currentTab = 'agents';
+
+      // Update top bar icons
+      if (topBarAgentsBtn) topBarAgentsBtn.classList.add('active');
+      if (topBarChatBtn) topBarChatBtn.classList.remove('active');
+      if (topBarControlsBtn) topBarControlsBtn.classList.remove('active');
+      if (topBarBatteryIndicator) topBarBatteryIndicator.style.display = 'none';
+
+      // Strict content isolation
+      if (tabContentAgents) {
+        tabContentAgents.classList.add('active');
+        tabContentAgents.style.display = 'block';
+        tabContentAgents.style.pointerEvents = 'auto';
+      }
+      if (tabContentChat) {
+        tabContentChat.classList.remove('active');
+        tabContentChat.style.display = 'none';
+        tabContentChat.style.pointerEvents = 'none';
+      }
+      if (tabContentControls) {
+        tabContentControls.classList.remove('active');
+        tabContentControls.style.display = 'none';
+        tabContentControls.style.pointerEvents = 'none';
+      }
+
+      if (chatInput) chatInput.blur();
+      stopControlCenterPolling();
+      recordActivity();
+      updateEyeTracking();
+      monitorTransitionClickThrough();
+    }
+
+    function exitApprovalState() {
+      widget.classList.remove('approval-state');
+
+      if (approvalCountdownInterval) {
+        clearInterval(approvalCountdownInterval);
+        approvalCountdownInterval = null;
+      }
+
+      // Restore mascot badge
+      updateMascotBadgeUI();
+
+      // Clear hamburger dot if we had set it
+      const hamburgerDot = document.getElementById('hamburger-badge-dot');
+      if (hamburgerDot && (previousPillState?.wasCollapsed || !previousPillState?.wasPanelOpen || previousPillState?.prevTab !== 'agents')) {
+        hamburgerDot.classList.remove('visible');
+      }
+
+      const saved = previousPillState;
+      previousPillState = null;
+
+      if (saved) {
+        if (saved.wasCollapsed) {
+          closePanel(true);
+          widget.classList.remove('expanded');
+          triggerFurWiggle();
+        } else if (saved.wasPlainExpanded) {
+          closePanel(true);
+        } else if (saved.wasPanelOpen && saved.prevTab && saved.prevTab !== 'agents') {
+          switchTab(saved.prevTab);
+        }
+      }
+
+      recordActivity();
+      updateEyeTracking();
+      monitorTransitionClickThrough();
+    }
+
+    function scrollOptionIntoView(optionsContainer, rowEl, smooth = true) {
+      if (!optionsContainer || !rowEl) return;
+      const cRect = optionsContainer.getBoundingClientRect();
+      const rRect = rowEl.getBoundingClientRect();
+
+      if (rRect.top < cRect.top) {
+        optionsContainer.scrollBy({
+          top: rRect.top - cRect.top,
+          behavior: smooth ? 'smooth' : 'auto'
+        });
+      } else if (rRect.bottom > cRect.bottom) {
+        optionsContainer.scrollBy({
+          top: rRect.bottom - cRect.bottom,
+          behavior: smooth ? 'smooth' : 'auto'
+        });
+      }
+    }
+
+    function selectApprovalOption(idx, shouldScroll = false) {
+      if (idx < 0 || idx >= currentApprovalOptions.length) return;
+      selectedOptionIndex = idx;
+      const optionsContainer = document.getElementById('agent-approval-options');
+      if (!optionsContainer) return;
+      const rows = optionsContainer.querySelectorAll('.agent-approval-option-row');
+      rows.forEach((r, i) => {
+        const isSel = i === selectedOptionIndex;
+        r.classList.toggle('selected', isSel);
+        r.setAttribute('aria-selected', isSel ? 'true' : 'false');
+        if (isSel && shouldScroll) {
+          scrollOptionIntoView(optionsContainer, r, true);
+        }
+      });
+    }
+
+    function submitSelectedApproval() {
+      if (!activeApproval) return;
+      // Ignore Submit and Enter for the first 400ms after request appears (anti-misclick)
+      if (Date.now() - currentRequestShownAt < 400) return;
+      const chosen = currentApprovalOptions[selectedOptionIndex];
+      if (chosen) {
+        finishActiveApproval(chosen.choice);
+      }
+    }
+
+    function finishActiveApproval(choice) {
+      if (!activeApproval) return;
+      if (approvalCountdownInterval) {
+        clearInterval(approvalCountdownInterval);
+        approvalCountdownInterval = null;
+      }
+
+      const current = activeApproval;
+      activeApproval = null;
+
+      // Remove from head of queue and resolve Promise
+      const idx = approvalQueue.indexOf(current);
+      if (idx !== -1) {
+        approvalQueue.splice(idx, 1);
+      }
+      current.resolve({ choice });
+
+      // Check if more requests are queued
+      if (approvalQueue.length > 0) {
+        processNextApprovalRequest();
+      } else {
+        exitApprovalState();
+      }
+    }
+
+    function processNextApprovalRequest() {
+      if (approvalQueue.length === 0) {
+        exitApprovalState();
+        return;
+      }
+
+      activeApproval = approvalQueue[0];
+      currentRequestShownAt = Date.now();
+
+      enterApprovalState();
+
+      // Title & Title Row Meta
+      const titleEl = document.getElementById('agent-approval-title');
+      if (titleEl) {
+        titleEl.textContent = 'Allow command?';
+      }
+
+      const queueEl = document.getElementById('agent-approval-queue');
+      if (queueEl) {
+        if (approvalQueue.length > 1) {
+          queueEl.textContent = `1 of ${approvalQueue.length}`;
+          queueEl.classList.add('visible');
+        } else {
+          queueEl.textContent = '';
+          queueEl.classList.remove('visible');
+        }
+      }
+
+      // Command text with redacted secrets
+      const cmdEl = document.getElementById('agent-approval-command');
+      if (cmdEl) {
+        cmdEl.textContent = redactSecrets(activeApproval.command);
+        cmdEl.scrollTop = 0;
+        if (cmdEl.scrollHeight > cmdEl.clientHeight) {
+          cmdEl.classList.add('overflowing');
+          cmdEl.classList.remove('fits');
+        } else {
+          cmdEl.classList.add('fits');
+          cmdEl.classList.remove('overflowing');
+        }
+      }
+
+      // Options list
+      const shortCmd = shortenCommand(activeApproval.command, 60);
+      if (activeApproval.dangerous) {
+        currentApprovalOptions = [
+          { text: '1. Yes, allow this time', choice: 'once' },
+          { text: '2. No, deny', choice: 'deny' }
+        ];
+      } else {
+        currentApprovalOptions = [
+          { text: '1. Yes, allow this time', choice: 'once' },
+          { text: `2. Yes, and always allow ${shortCmd} in this conversation`, choice: 'conversation' },
+          { text: `3. Yes, and always allow ${shortCmd}`, choice: 'always' },
+          { text: '4. No, deny', choice: 'deny' }
+        ];
+      }
+
+      selectedOptionIndex = 0;
+      const optionsContainer = document.getElementById('agent-approval-options');
+      if (optionsContainer) {
+        optionsContainer.innerHTML = '';
+        currentApprovalOptions.forEach((opt, idx) => {
+          const row = document.createElement('div');
+          row.className = 'agent-approval-option-row' + (idx === 0 ? ' selected' : '');
+          row.setAttribute('role', 'option');
+          row.setAttribute('aria-selected', idx === 0 ? 'true' : 'false');
+          row.textContent = opt.text;
+          row.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectApprovalOption(idx, false);
+          });
+          optionsContainer.appendChild(row);
+        });
+        optionsContainer.scrollTop = 0;
+      }
+
+      // Countdown timer (40 seconds default)
+      if (approvalCountdownInterval) {
+        clearInterval(approvalCountdownInterval);
+        approvalCountdownInterval = null;
+      }
+      const timeoutMs = typeof activeApproval.timeoutMs === 'number' && activeApproval.timeoutMs > 0
+        ? activeApproval.timeoutMs
+        : 40000;
+      const endTime = currentRequestShownAt + timeoutMs;
+      const secEl = document.getElementById('agent-approval-seconds');
+
+      function updateCountdown() {
+        const remainingMs = Math.max(0, endTime - Date.now());
+        const remainingSec = Math.ceil(remainingMs / 1000);
+        if (secEl) {
+          secEl.textContent = `${remainingSec}s`;
+        }
+        if (remainingMs <= 0) {
+          if (approvalCountdownInterval) {
+            clearInterval(approvalCountdownInterval);
+            approvalCountdownInterval = null;
+          }
+          finishActiveApproval('dismiss');
+        }
+      }
+
+      updateCountdown();
+      approvalCountdownInterval = setInterval(updateCountdown, 250);
+    }
+
+    function showApproval({ id, conversationId, command, dangerous, timeoutMs }) {
+      return new Promise((resolve) => {
+        approvalQueue.push({
+          id: id || ('req-' + Date.now()),
+          conversationId: conversationId || '',
+          command: String(command || ''),
+          dangerous: Boolean(dangerous),
+          timeoutMs: typeof timeoutMs === 'number' ? timeoutMs : 40000,
+          resolve
+        });
+
+        if (!activeApproval) {
+          processNextApprovalRequest();
+        } else {
+          // Update queue count on existing active approval
+          const queueEl = document.getElementById('agent-approval-queue');
+          if (queueEl && approvalQueue.length > 1) {
+            queueEl.textContent = `1 of ${approvalQueue.length}`;
+            queueEl.classList.add('visible');
+          }
+        }
+      });
+    }
+
+    // Expose to window for external/tests access
+    window.showApproval = showApproval;
+
+    // Submit button event listener
+    const approvalSubmitBtn = document.getElementById('agent-approval-submit-btn');
+    if (approvalSubmitBtn) {
+      approvalSubmitBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        submitSelectedApproval();
+      });
+      approvalSubmitBtn.addEventListener('mousedown', (e) => e.stopPropagation());
+    }
+
+    // Approval Keyboard Interaction:
+    // Works ONLY when pill window already has focus because user clicked it.
+    window.addEventListener('keydown', (e) => {
+      if (!activeApproval) return;
+      if (e.isComposing || e.keyCode === 229) return;
+      if (!document.hasFocus()) return;
+
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectApprovalOption(Math.max(0, selectedOptionIndex - 1), true);
+        return;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectApprovalOption(Math.min(currentApprovalOptions.length - 1, selectedOptionIndex + 1), true);
+        return;
+      }
+      if (e.key >= '1' && e.key <= '4') {
+        const targetIdx = parseInt(e.key, 10) - 1;
+        if (targetIdx >= 0 && targetIdx < currentApprovalOptions.length) {
+          e.preventDefault();
+          selectApprovalOption(targetIdx, true);
+        }
+        return;
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitSelectedApproval();
+        return;
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        finishActiveApproval('dismiss');
+        return;
+      }
+    });
+
+    // Debug keyboard triggers (A, S, D)
     window.addEventListener('keydown', (e) => {
       if (!isDebugMode) return;
-      if ((e.key === 'd' || e.key === 'D') && !e.repeat && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
-        if (currentTab === 'agents' && isPanelOpen()) {
+      if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+
+      if (currentTab === 'agents' && isPanelOpen()) {
+        if (e.key === 'd' || e.key === 'D') {
           runAgentStepsDemo();
+        } else if (e.key === 'a' || e.key === 'A') {
+          e.preventDefault();
+          showApproval({
+            id: 'sample-' + Date.now(),
+            conversationId: 'sample-conv',
+            command: 'Get-ChildItem -Path "src-tauri" -Recurse -Filter "*.rs" | Select-String -Pattern "agent|approval|permission|hook" | Select-Object Path, LineNumber, Line',
+            dangerous: false,
+            timeoutMs: 40000
+          }).then((res) => {
+            console.log('[DEBUG] Sample Approval Result:', res);
+            logAgentDebugMessage('SampleApproval', JSON.stringify(res));
+          });
+        } else if (e.key === 's' || e.key === 'S') {
+          e.preventDefault();
+          showApproval({
+            id: 'sample-danger-' + Date.now(),
+            conversationId: 'sample-conv',
+            command: 'git diff --stat HEAD~3..HEAD; cargo clippy --workspace --all-targets --all-features -- -D warnings; npm run build -- --mode production',
+            dangerous: false,
+            timeoutMs: 30000
+          }).then((res) => {
+            console.log('[DEBUG] Sample Dangerous Approval Result:', res);
+            logAgentDebugMessage('SampleDangerousApproval', JSON.stringify(res));
+          });
         }
       }
     });
@@ -5055,12 +5952,26 @@
             const pillScreenTop = winPos.y + widgetRect.top * dpr;
             const pillScreenBottom = winPos.y + widgetRect.bottom * dpr;
 
-            const isOverPill = (
+            let isOverPill = (
               pos.x >= pillScreenLeft &&
               pos.x <= pillScreenRight &&
               pos.y >= pillScreenTop &&
               pos.y <= pillScreenBottom
             );
+
+            if (!isOverPill && widget.classList.contains('approval-state')) {
+              const approvalBox = document.getElementById('agent-approval-box');
+              if (approvalBox) {
+                const abRect = approvalBox.getBoundingClientRect();
+                const abLeft = winPos.x + abRect.left * dpr;
+                const abRight = winPos.x + abRect.right * dpr;
+                const abTop = winPos.y + abRect.top * dpr;
+                const abBottom = winPos.y + abRect.bottom * dpr;
+                if (pos.x >= abLeft && pos.x <= abRight && pos.y >= abTop && pos.y <= abBottom) {
+                  isOverPill = true;
+                }
+              }
+            }
 
             if (isOverPill) {
               // Enable cursor events when cursor is over the pill
@@ -5124,12 +6035,23 @@
         try {
           // Realtime check against current pill bounding rect
           const widgetRect = widget.getBoundingClientRect();
-          const isOverPill = (
+          let isOverPill = (
             e.clientX >= widgetRect.left &&
             e.clientX <= widgetRect.right &&
             e.clientY >= widgetRect.top &&
             e.clientY <= widgetRect.bottom
           );
+
+          if (!isOverPill && widget.classList.contains('approval-state')) {
+            const approvalBox = document.getElementById('agent-approval-box');
+            if (approvalBox) {
+              const abRect = approvalBox.getBoundingClientRect();
+              if (e.clientX >= abRect.left && e.clientX <= abRect.right &&
+                  e.clientY >= abRect.top && e.clientY <= abRect.bottom) {
+                isOverPill = true;
+              }
+            }
+          }
           if (!isOverPill) {
             setIgnoreCursor(true);
             if (isHovered) {
@@ -5813,6 +6735,31 @@
         }
       } catch (_) {}
     }, 350);
+
+    loadAgentsSettingsFromStore();
+    checkAgentsHookStatus();
+
+    // Listen for live "agent-approval-request" Tauri event
+    if (window.__TAURI__?.event?.listen) {
+      window.__TAURI__.event.listen('agent-approval-request', (event) => {
+        if (event && event.payload) {
+          handleApprovalRequest(event.payload);
+        }
+      });
+
+      window.__TAURI__.event.listen('agents-settings-changed', async (event) => {
+        if (event?.payload?.status) {
+          lastKnownAgentsStatus = event.payload;
+        }
+        if (typeof event?.payload?.approveCommands === 'boolean') {
+          approveCommandsSetting = event.payload.approveCommands;
+        }
+        if (Array.isArray(event?.payload?.allowedCommands)) {
+          persistentAllowedCommands = event.payload.allowedCommands;
+        }
+        await loadAgentsSettingsFromStore();
+      });
+    }
 
     // Listen for live "appearance-changed" Tauri event
     if (window.__TAURI__?.event?.listen) {

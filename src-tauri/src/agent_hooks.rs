@@ -256,7 +256,7 @@ fn build_dude_hook_object(hook_exe_path: &Path, enabled: bool) -> Value {
                     {
                         "type": "command",
                         "command": cmd("PreToolUse"),
-                        "timeout": 5
+                        "timeout": 60
                     }
                 ]
             }
@@ -317,7 +317,7 @@ fn execute_command_with_stdin(
     args: &[&str],
     timeout_ms: u64,
 ) -> SingleRunOutput {
-    let sample_payload = r#"{"toolCall":{"name":"test"}}"#;
+    let sample_payload = r#"{"event":"PreToolUse","toolCall":{"name":"test"}}"#;
     let start = std::time::Instant::now();
 
     let mut command = std::process::Command::new(prog);
@@ -568,31 +568,40 @@ pub fn agents_status_internal() -> Result<AgentsStatusInfo, String> {
 
     let enabled = dude_obj.get("enabled").and_then(|v| v.as_bool()).unwrap_or(true);
 
-    // Verify exe path
+    // Verify exe path and timeout
     let mut exe_exists = false;
-    if let Some(cmd_val) = dude_obj
+    let mut timeout_ok = false;
+
+    if let Some(ptu_hook) = dude_obj
         .get("PreToolUse")
         .and_then(|v| v.as_array())
         .and_then(|a| a.first())
         .and_then(|g| g.get("hooks"))
         .and_then(|h| h.as_array())
         .and_then(|a| a.first())
-        .and_then(|item| item.get("command"))
-        .and_then(|c| c.as_str())
     {
-        if let Some(exe_p) = extract_exe_path_from_command(cmd_val) {
-            if exe_p.exists() {
-                exe_exists = true;
+        if let Some(cmd_val) = ptu_hook.get("command").and_then(|c| c.as_str()) {
+            if let Some(exe_p) = extract_exe_path_from_command(cmd_val) {
+                if exe_p.exists() {
+                    exe_exists = true;
+                }
+            }
+        }
+        if let Some(t) = ptu_hook.get("timeout").and_then(|t| t.as_i64()) {
+            if t == 60 {
+                timeout_ok = true;
             }
         }
     }
 
-    let status = if !exe_exists {
-        "needs repair".to_string()
+    let (status, error) = if !exe_exists {
+        ("needs repair".to_string(), Some("hook binary missing".to_string()))
+    } else if !timeout_ok {
+        ("needs repair".to_string(), Some("approval timeout".to_string()))
     } else if enabled {
-        "installed and enabled".to_string()
+        ("installed and enabled".to_string(), None)
     } else {
-        "installed but disabled".to_string()
+        ("installed but disabled".to_string(), None)
     };
 
     Ok(AgentsStatusInfo {
@@ -604,7 +613,7 @@ pub fn agents_status_internal() -> Result<AgentsStatusInfo, String> {
         events,
         backup_path,
         hook_exe_path,
-        error: None,
+        error,
     })
 }
 
@@ -844,7 +853,7 @@ mod tests {
             obj["PreToolUse"][0]["hooks"][0]["command"],
             r"C:\ProgramData\Dude\hooks\dude-hook.exe antigravity PreToolUse"
         );
-        assert_eq!(obj["PreToolUse"][0]["hooks"][0]["timeout"], 5);
+        assert_eq!(obj["PreToolUse"][0]["hooks"][0]["timeout"], 60);
 
         assert_eq!(obj["PostToolUse"][0]["matcher"], "*");
         assert_eq!(obj["PostToolUse"][0]["hooks"][0]["type"], "command");

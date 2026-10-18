@@ -1,14 +1,57 @@
+use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Mutex;
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Emitter};
 use tokio::io::AsyncReadExt;
 use tokio::net::windows::named_pipe::ServerOptions;
+use tokio::sync::oneshot;
 
 pub const PIPE_NAME: &str = r"\\.\pipe\dude-agent-events";
 const MAX_PAYLOAD_SIZE: usize = 65536; // 64 KB
 
 static LAST_AGENT_EVENT: Mutex<Option<(String, Instant)>> = Mutex::new(None);
+
+pub type ApprovalSender = oneshot::Sender<String>;
+static PENDING_APPROVALS: Mutex<Option<HashMap<String, (String, ApprovalSender)>>> = Mutex::new(None);
+
+pub fn register_pending_approval(id: String, conv_id: String, tx: ApprovalSender) {
+    let mut lock = PENDING_APPROVALS.lock().unwrap();
+    if lock.is_none() {
+        *lock = Some(HashMap::new());
+    }
+    if let Some(ref mut map) = *lock {
+        map.insert(id, (conv_id, tx));
+    }
+}
+
+pub fn resolve_pending_approval(id: &str, choice: String) -> bool {
+    let mut lock = PENDING_APPROVALS.lock().unwrap();
+    if let Some(ref mut map) = *lock {
+        if let Some((_, tx)) = map.remove(id) {
+            let _ = tx.send(choice);
+            return true;
+        }
+    }
+    false
+}
+
+pub fn dismiss_pending_approvals_for_conversation(conv_id: &str) {
+    let mut lock = PENDING_APPROVALS.lock().unwrap();
+    if let Some(ref mut map) = *lock {
+        let matching_ids: Vec<String> = map
+            .iter()
+            .filter(|(_, (c, _))| c == conv_id)
+            .map(|(k, _)| k.clone())
+            .collect();
+
+        for id in matching_ids {
+            if let Some((_, tx)) = map.remove(&id) {
+                let _ = tx.send("ask".to_string());
+            }
+        }
+    }
+}
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct AgentLastEventInfo {
@@ -118,7 +161,6 @@ pub fn normalize_payload(raw: RawClaudeHookEvent) -> AgentEvent {
 
     let tool = raw.tool_name.clone();
 
-    // Generate label
     let label = if let Some(ref t) = raw.tool_name {
         let t_lower = t.to_ascii_lowercase();
         if t_lower == "read" || t_lower == "grep" || t_lower == "glob" {
@@ -181,19 +223,133 @@ pub fn normalize_payload(raw: RawClaudeHookEvent) -> AgentEvent {
     }
 }
 
-pub async fn start_agent_pipe_server(app: AppHandle) {
-    let mut server = match ServerOptions::new()
-        .first_pipe_instance(true)
-        .create(PIPE_NAME)
-    {
-        Ok(s) => s,
-        Err(_) => match ServerOptions::new().create(PIPE_NAME) {
-            Ok(s) => s,
-            Err(e) => {
-                log::error!("Failed to create agent pipe server: {}", e);
-                return;
+struct CurrentUserSecurityAttributes {
+    sa: windows::Win32::Security::SECURITY_ATTRIBUTES,
+    sd_ptr: usize,
+}
+
+unsafe impl Send for CurrentUserSecurityAttributes {}
+unsafe impl Sync for CurrentUserSecurityAttributes {}
+
+impl Drop for CurrentUserSecurityAttributes {
+    fn drop(&mut self) {
+        if self.sd_ptr != 0 {
+            unsafe {
+                let _ = windows::Win32::Foundation::LocalFree(windows::Win32::Foundation::HLOCAL(self.sd_ptr as *mut _));
             }
-        },
+        }
+    }
+}
+
+fn create_current_user_security_attributes() -> Option<CurrentUserSecurityAttributes> {
+    use windows::Win32::Foundation::*;
+    use windows::Win32::Security::Authorization::*;
+    use windows::Win32::Security::*;
+    use windows::Win32::System::Threading::*;
+    use windows::core::HSTRING;
+
+    unsafe {
+        let mut token_handle = HANDLE(std::ptr::null_mut());
+        if OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut token_handle).is_err() {
+            return None;
+        }
+
+        let mut returned_len = 0u32;
+        let _ = GetTokenInformation(token_handle, TokenUser, None, 0, &mut returned_len);
+        if returned_len == 0 {
+            let _ = CloseHandle(token_handle);
+            return None;
+        }
+
+        let mut buf = vec![0u8; returned_len as usize];
+        if GetTokenInformation(
+            token_handle,
+            TokenUser,
+            Some(buf.as_mut_ptr() as *mut _),
+            returned_len,
+            &mut returned_len,
+        )
+        .is_err()
+        {
+            let _ = CloseHandle(token_handle);
+            return None;
+        }
+        let _ = CloseHandle(token_handle);
+
+        let token_user = &*(buf.as_ptr() as *const TOKEN_USER);
+        let mut string_sid: windows::core::PWSTR = windows::core::PWSTR::null();
+        if ConvertSidToStringSidW(token_user.User.Sid, &mut string_sid).is_err() {
+            return None;
+        }
+
+        let sid_str = string_sid.to_string().unwrap_or_default();
+        let _ = LocalFree(HLOCAL(string_sid.0 as _));
+
+        if sid_str.is_empty() {
+            return None;
+        }
+
+        // SDDL: DACL protected (P), allow Generic All (GA) to current user SID
+        let sddl = format!("D:P(A;;GA;;;{})", sid_str);
+        let sddl_hstring = HSTRING::from(sddl);
+
+        let mut p_sd = PSECURITY_DESCRIPTOR(std::ptr::null_mut());
+        if ConvertStringSecurityDescriptorToSecurityDescriptorW(
+            windows::core::PCWSTR(sddl_hstring.as_ptr()),
+            SDDL_REVISION_1,
+            &mut p_sd,
+            None,
+        )
+        .is_err()
+            || p_sd.0.is_null()
+        {
+            return None;
+        }
+
+        let sa = SECURITY_ATTRIBUTES {
+            nLength: std::mem::size_of::<SECURITY_ATTRIBUTES>() as u32,
+            lpSecurityDescriptor: p_sd.0,
+            bInheritHandle: BOOL(0),
+        };
+
+        Some(CurrentUserSecurityAttributes {
+            sa,
+            sd_ptr: p_sd.0 as usize,
+        })
+    }
+}
+
+pub async fn start_agent_pipe_server(app: AppHandle) {
+    let sa_guard = create_current_user_security_attributes();
+
+    let create_server_instance = |is_first: bool| {
+        let raw_sa = sa_guard.as_ref().map(|g| &g.sa as *const _ as *mut std::ffi::c_void).unwrap_or(std::ptr::null_mut());
+        if is_first {
+            if !raw_sa.is_null() {
+                if let Ok(s) = unsafe { ServerOptions::new().first_pipe_instance(true).create_with_security_attributes_raw(PIPE_NAME, raw_sa) } {
+                    return Ok(s);
+                }
+            }
+            if let Ok(s) = ServerOptions::new().first_pipe_instance(true).create(PIPE_NAME) {
+                return Ok(s);
+            }
+            ServerOptions::new().create(PIPE_NAME)
+        } else {
+            if !raw_sa.is_null() {
+                if let Ok(s) = unsafe { ServerOptions::new().create_with_security_attributes_raw(PIPE_NAME, raw_sa) } {
+                    return Ok(s);
+                }
+            }
+            ServerOptions::new().create(PIPE_NAME)
+        }
+    };
+
+    let mut server = match create_server_instance(true) {
+        Ok(s) => s,
+        Err(e) => {
+            log::error!("Failed to create agent pipe server: {}", e);
+            return;
+        }
     };
 
     loop {
@@ -206,7 +362,7 @@ pub async fn start_agent_pipe_server(app: AppHandle) {
             }
             let mut connected_server = server;
             // Create next server instance to accept future clients
-            match ServerOptions::new().create(PIPE_NAME) {
+            match create_server_instance(false) {
                 Ok(next_server) => {
                     server = next_server;
                 }
@@ -229,6 +385,9 @@ pub async fn start_agent_pipe_server(app: AppHandle) {
                                 // Payload over 64 KB, reject connection
                                 return;
                             }
+                            if buf.contains(&b'\n') {
+                                break;
+                            }
                         }
                         Err(_) => return,
                     }
@@ -241,10 +400,47 @@ pub async fn start_agent_pipe_server(app: AppHandle) {
                 let val: serde_json::Value = match serde_json::from_slice(&buf) {
                     Ok(v) => v,
                     Err(_) => {
-                        // Invalid JSON, reject
+                        // Malformed JSON, reject
                         return;
                     }
                 };
+
+                // Check for approval request
+                if val.get("type").and_then(|v| v.as_str()) == Some("approval") {
+                    let req_id = val.get("id").and_then(|v| v.as_str()).unwrap_or("").to_string();
+                    let conv_id = val.get("conversationId").and_then(|v| v.as_str()).unwrap_or("").to_string();
+                    let cmd = val.get("command").and_then(|v| v.as_str()).unwrap_or("").to_string();
+
+                    if req_id.is_empty() || cmd.is_empty() {
+                        use tokio::io::AsyncWriteExt;
+                        let _ = connected_server.write_all(b"ask\n").await;
+                        let _ = connected_server.flush().await;
+                        return;
+                    }
+
+                    let (tx, rx) = oneshot::channel::<String>();
+                    register_pending_approval(req_id.clone(), conv_id, tx);
+
+                    let _ = app_clone.emit("agent-approval-request", val);
+
+                    let reply = match tokio::time::timeout(tokio::time::Duration::from_secs(45), rx).await {
+                        Ok(Ok(choice)) => choice,
+                        _ => "ask".to_string(),
+                    };
+
+                    {
+                        let mut lock = PENDING_APPROVALS.lock().unwrap();
+                        if let Some(ref mut map) = *lock {
+                            map.remove(&req_id);
+                        }
+                    }
+
+                    use tokio::io::AsyncWriteExt;
+                    let reply_line = format!("{}\n", reply);
+                    let _ = connected_server.write_all(reply_line.as_bytes()).await;
+                    let _ = connected_server.flush().await;
+                    return;
+                }
 
                 // Antigravity hook event handling
                 if let Some(agent_name) = val.get("agent").and_then(|a| a.as_str()) {
@@ -254,6 +450,12 @@ pub async fn start_agent_pipe_server(app: AppHandle) {
                             .and_then(|e| e.as_str())
                             .unwrap_or("unknown")
                             .to_string();
+
+                        if event_name == "Stop" {
+                            if let Some(conv_id) = val.get("conversationId").and_then(|c| c.as_str()) {
+                                dismiss_pending_approvals_for_conversation(conv_id);
+                            }
+                        }
 
                         // Keep last event in memory
                         {

@@ -2224,6 +2224,12 @@ fn agents_last_event() -> Result<Option<agent_receiver::AgentLastEventInfo>, Str
     Ok(agent_receiver::get_last_agent_event())
 }
 
+#[tauri::command]
+fn resolve_agent_approval(id: String, choice: String) -> Result<(), String> {
+    agent_receiver::resolve_pending_approval(&id, choice);
+    Ok(())
+}
+
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct AgentFileReadResult {
@@ -2446,7 +2452,8 @@ pub fn run() {
             agents_last_event,
             read_agent_file,
             log_agent_debug,
-            is_debug
+            is_debug,
+            resolve_agent_approval
         ])
         .setup(|app| {
             init_brightness_worker(app.handle().clone());
