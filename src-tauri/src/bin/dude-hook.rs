@@ -204,7 +204,7 @@ fn main() {
                 let reply = line.trim();
                 match reply {
                     "once" | "conversation" | "always" => {
-                        println!(r#"{{"decision":"auto_approve","reason":"Approved from Dude"}}"#);
+                        println!(r#"{{"decision":"allow","reason":"Approved from Dude"}}"#);
                     }
                     "deny" => {
                         println!(r#"{{"decision":"deny","reason":"Denied from Dude by the user"}}"#);
