@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="images/mascot.png" alt="Dude Mascot" width="180">
+</p>
+
+<h1 align="center">Dude</h1>
+
+<p align="center">
+  Your tiny AI companion for Windows.
+</p>
 # Dude
 
 A mascot AI assistant and laptop controls at the top of your Windows screen.
