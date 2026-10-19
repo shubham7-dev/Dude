@@ -131,7 +131,6 @@ Read the full [Privacy Policy](docs/PRIVACY.md) for details.
 ## Credits
 
 - **Made by**: Shubham Kale.
-- Inspired by the notch-companion idea and by [Coucou](https://github.com/Louis-CFM/coucou) (MIT). This is an independent project and is not affiliated with or endorsed by it.
 
 ---
 
