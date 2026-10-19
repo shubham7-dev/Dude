@@ -42,6 +42,43 @@ fn log_frontend_error(window: tauri::Window, message: String, stack: Option<Stri
     }
 }
 
+#[tauri::command]
+fn log_perf_metric(message: String) {
+    #[cfg(debug_assertions)]
+    {
+        println!("{}", message);
+    }
+    #[cfg(not(debug_assertions))]
+    {
+        let _ = message;
+    }
+}
+
+#[tauri::command]
+fn save_asset_webp(base64_data: String) -> Result<(), String> {
+    use base64::Engine;
+    let decoded = base64::engine::general_purpose::STANDARD
+        .decode(&base64_data)
+        .map_err(|e| e.to_string())?;
+
+    let asset_path = std::path::Path::new("assets").join("appearance-tree.webp");
+    if !asset_path.exists() {
+        if let Some(parent) = asset_path.parent() {
+            let _ = std::fs::create_dir_all(parent);
+        }
+        let _ = std::fs::write(&asset_path, &decoded);
+    }
+
+    let dist_dir = std::path::Path::new("dist").join("assets");
+    if dist_dir.exists() {
+        let dist_path = dist_dir.join("appearance-tree.webp");
+        if !dist_path.exists() {
+            let _ = std::fs::write(&dist_path, &decoded);
+        }
+    }
+    Ok(())
+}
+
 // --- Windows Core Audio (Volume & Mute) Cached ---
 use windows::Win32::Media::Audio::Endpoints::IAudioEndpointVolume;
 use windows::Win32::Media::Audio::{
@@ -2453,7 +2490,9 @@ pub fn run() {
             read_agent_file,
             log_agent_debug,
             is_debug,
-            resolve_agent_approval
+            resolve_agent_approval,
+            log_perf_metric,
+            save_asset_webp
         ])
         .setup(|app| {
             init_brightness_worker(app.handle().clone());

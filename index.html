@@ -8,6 +8,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Montserrat:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    @property --a {
+      syntax: '<angle>';
+      inherits: false;
+      initial-value: 0deg;
+    }
+
+    :root {
+      --glow-strength: 1;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -55,6 +65,171 @@
       right: 12px;
       margin-left: 0;
       margin-right: 0;
+    }
+
+    /* --- Startup Animation (3000ms) --- */
+    .widget.startup-animating {
+      animation: startupPillEntrance 450ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      transform-origin: center center;
+      overflow: visible !important;
+    }
+
+    /* 2px Gradient Border Ring */
+    .widget.startup-animating::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: calc(var(--pill-radius, 8px) + 2px);
+      padding: 2px;
+      background: conic-gradient(from var(--a), #22D3EE, #8B5CF6, #22D3EE);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      pointer-events: none !important;
+      z-index: 100;
+      box-sizing: border-box;
+      animation: rotateStartupBorder 3000ms cubic-bezier(0.22, 0.7, 0.3, 1) forwards,
+                 startupBorderFade 3000ms linear forwards;
+    }
+
+    /* Keep 2px border ring fully visible at window edges */
+    .widget.startup-animating:not(.pos-top-center):not(.pos-top-right)::before {
+      top: 0;
+      left: 0;
+    }
+    .widget.startup-animating.pos-top-center::before {
+      top: 0;
+    }
+    .widget.startup-animating.pos-top-right::before {
+      top: 0;
+    }
+
+    /* Glow Pseudo-Element */
+    .widget.startup-animating::after {
+      content: '';
+      position: absolute;
+      inset: -14px;
+      border-radius: calc(var(--pill-radius, 8px) + 14px);
+      background: conic-gradient(from var(--a), rgba(34, 211, 238, 0.30), rgba(139, 92, 246, 0.20), rgba(34, 211, 238, 0.30));
+      filter: blur(14px);
+      pointer-events: none !important;
+      z-index: -1;
+      opacity: var(--glow-strength, 1);
+      box-sizing: border-box;
+      animation: rotateStartupBorder 3000ms cubic-bezier(0.22, 0.7, 0.3, 1) forwards,
+                 startupGlowFade 3000ms linear forwards;
+    }
+
+    /* Fast Fade-Out on User Interruption (200ms) */
+    .widget.startup-fading-out::before,
+    .widget.startup-fading-out::after {
+      animation: none !important;
+      transition: opacity 200ms ease !important;
+      opacity: 0 !important;
+    }
+
+    @keyframes rotateStartupBorder {
+      0% {
+        --a: 0deg;
+      }
+      100% {
+        --a: 600deg;
+      }
+    }
+
+    @keyframes startupPillEntrance {
+      0% {
+        opacity: 0;
+        transform: scale(0.92);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes startupBorderFade {
+      0% {
+        opacity: 0;
+      }
+      15% {
+        opacity: 1;
+      }
+      76.67% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes startupGlowFade {
+      0% {
+        opacity: 0;
+      }
+      15% {
+        opacity: var(--glow-strength, 1);
+      }
+      76.67% {
+        opacity: var(--glow-strength, 1);
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    /* prefers-reduced-motion: no rotation, no scale, static ring and glow (1600ms total) */
+    @media (prefers-reduced-motion: reduce) {
+      .widget.startup-animating {
+        animation: startupPillFadeInReduced 400ms ease forwards !important;
+        transform: none !important;
+      }
+      .widget.startup-animating::before {
+        animation: startupBorderFadeReduced 1600ms ease forwards !important;
+      }
+      .widget.startup-animating::after {
+        animation: startupGlowFadeReduced 1600ms ease forwards !important;
+      }
+    }
+
+    @keyframes startupPillFadeInReduced {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes startupBorderFadeReduced {
+      0% {
+        opacity: 0;
+      }
+      25% {
+        opacity: 1;
+      }
+      75% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes startupGlowFadeReduced {
+      0% {
+        opacity: 0;
+      }
+      25% {
+        opacity: var(--glow-strength, 1);
+      }
+      75% {
+        opacity: var(--glow-strength, 1);
+      }
+      100% {
+        opacity: 0;
+      }
     }
 
     .widget.expanded {
@@ -743,6 +918,218 @@
 
     .agent-empty-btn:active {
       transform: scale(0.97);
+    }
+
+    /* ============================================================
+       COMPACT APPROVAL STATE (New Permission Card for Collapsed Pill)
+       ============================================================ */
+    :root {
+      --compact-k: calc(24 / 21);
+      --premium-purple-1: #151323;
+      --premium-purple-2: #292343;
+      --premium-purple-3: #443568;
+    }
+
+    .widget.approval-compact {
+      width: calc(393px * var(--compact-k));
+      height: calc(129px * var(--compact-k));
+    }
+
+    .widget.approval-compact .mascot-wrapper {
+      width: calc(54px * var(--compact-k));
+      left: calc(29px * var(--compact-k));
+      top: calc(54px * var(--compact-k));
+      opacity: 1;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .widget.approval-compact .shared-top-bar {
+      opacity: 1;
+      pointer-events: auto;
+      transition: opacity 150ms ease 150ms;
+    }
+
+    .widget.approval-compact #top-bar-agents-btn {
+      color: #8B5CF6;
+    }
+
+    .widget.approval-compact #top-bar-chat-btn,
+    .widget.approval-compact #top-bar-controls-btn {
+      color: #FFFFFF;
+    }
+
+    .widget.approval-compact #top-bar-battery-indicator {
+      display: none !important;
+    }
+
+    .widget.approval-compact .collapsed-agent-dot {
+      display: none !important;
+    }
+
+    .widget.approval-compact .hamburger-badge-dot {
+      display: none !important;
+    }
+
+    /* Card: left 13k, top 33k, 367k x 83k, radius 6k */
+    .compact-approval-card {
+      position: absolute;
+      left: calc(13px * var(--compact-k));
+      top: calc(33px * var(--compact-k));
+      width: calc(367px * var(--compact-k));
+      height: calc(83px * var(--compact-k));
+      border-radius: calc(6px * var(--compact-k));
+      background: linear-gradient(100deg, var(--premium-purple-1) 0%, var(--premium-purple-2) 55%, var(--premium-purple-3) 100%);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      box-sizing: border-box;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 150ms ease;
+      cursor: default;
+      z-index: 6;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .widget.approval-compact .compact-approval-card {
+      opacity: 1;
+      pointer-events: auto;
+      transition: opacity 200ms ease 100ms;
+    }
+
+    /* Header row: left 84k, vertically centered at y 12k */
+    .compact-card-header {
+      position: absolute;
+      left: calc(84px * var(--compact-k));
+      top: calc(12px * var(--compact-k));
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: calc(9px * var(--compact-k));
+      width: calc(268px * var(--compact-k));
+      box-sizing: border-box;
+      line-height: 1;
+    }
+
+    .compact-card-title {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: calc(9.5px * var(--compact-k));
+      font-weight: 600;
+      color: #FFFFFF;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .compact-card-subtitle {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: calc(9.5px * var(--compact-k));
+      font-weight: 400;
+      color: #C9C2E0;
+      white-space: nowrap;
+    }
+
+    .compact-card-risky {
+      margin-left: auto;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: calc(9px * var(--compact-k));
+      font-weight: 700;
+      color: #FF8A8A;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Command box (glass): left 83k, top 22k, 268k x 23k, radius 5k */
+    .compact-cmd-box {
+      position: absolute;
+      left: calc(83px * var(--compact-k));
+      top: calc(22px * var(--compact-k));
+      width: calc(268px * var(--compact-k));
+      height: calc(23px * var(--compact-k));
+      border-radius: calc(5px * var(--compact-k));
+      background: rgba(255, 255, 255, 0.26);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-sizing: border-box;
+      padding-left: calc(6px * var(--compact-k));
+      padding-right: calc(6px * var(--compact-k));
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .compact-cmd-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(9.5px * var(--compact-k));
+      font-weight: 500;
+      color: #FFFFFF;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      width: 100%;
+      line-height: 1;
+      letter-spacing: -0.01em;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    /* Buttons: Deny at left 83k, top 52k, 69k x 24k; Allow at left 158k, top 52k, 69k x 24k */
+    .compact-btn {
+      position: absolute;
+      top: calc(52px * var(--compact-k));
+      width: calc(69px * var(--compact-k));
+      height: calc(24px * var(--compact-k));
+      border-radius: calc(12px * var(--compact-k));
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: calc(9.5px * var(--compact-k));
+      font-weight: 500;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-sizing: border-box;
+      padding: 0;
+      outline: none;
+      transition: filter 100ms ease, transform 100ms ease, opacity 150ms ease;
+      line-height: 1;
+    }
+
+    .compact-btn:hover:not(:disabled) {
+      filter: brightness(1.15);
+    }
+
+    .compact-btn:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    .compact-btn:disabled {
+      opacity: 0.6 !important;
+      cursor: not-allowed;
+      filter: none !important;
+      transform: none !important;
+    }
+
+    .compact-btn-deny {
+      left: calc(83px * var(--compact-k));
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.30);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .compact-btn-allow {
+      left: calc(158px * var(--compact-k));
+      background: linear-gradient(180deg, #1B63B5, #0E4C8A);
+      border: 1px solid rgba(255, 255, 255, 0.40);
+    }
+
+    .compact-btn-hint {
+      opacity: 0.7;
+      margin-left: 4px;
+      font-size: 0.95em;
     }
 
     /* ============================================================
@@ -2069,6 +2456,24 @@
       </button>
     </div>
 
+    <!-- Compact Approval Card (Permission Request for collapsed pill) -->
+    <div class="compact-approval-card" id="compact-approval-card">
+      <div class="compact-card-header">
+        <span class="compact-card-title">Antigravity IDE</span>
+        <span class="compact-card-subtitle">Allow Command ?</span>
+        <span class="compact-card-risky" id="compact-card-risky" style="display: none;">Risky</span>
+      </div>
+      <div class="compact-cmd-box" id="compact-cmd-box" title="">
+        <span class="compact-cmd-text" id="compact-cmd-text"></span>
+      </div>
+      <button type="button" class="compact-btn compact-btn-deny" id="compact-btn-deny">
+        Deny <span class="compact-btn-hint">N</span>
+      </button>
+      <button type="button" class="compact-btn compact-btn-allow" id="compact-btn-allow">
+        Allow <span class="compact-btn-hint">Y</span>
+      </button>
+    </div>
+
     <!-- AGENTS TAB (Pill: 478 x 271 px) -->
     <div class="tab-content tab-content-agents" id="tab-content-agents">
       <!-- Dark Panel: left 15px, top 56px, 448 x 199px, radius 8px, background #151B28 -->
@@ -2758,7 +3163,8 @@
         !widget.classList.contains('tab-controls') &&
         !widget.classList.contains('chat-open') &&
         !widget.classList.contains('control-center-open') &&
-        !widget.classList.contains('chat-closing');
+        !widget.classList.contains('chat-closing') &&
+        !widget.classList.contains('approval-compact');
     }
 
     function collapsePill() {
@@ -2845,7 +3251,7 @@
       // Ensure widget is expanded and panel-open
       widget.classList.add('expanded');
       widget.classList.add('panel-open');
-      widget.classList.remove('chat-closing');
+      widget.classList.remove('chat-closing', 'approval-compact');
 
       // Update tab classes on widget
       widget.classList.toggle('tab-agents', tabName === 'agents');
@@ -2963,7 +3369,7 @@
         chatClosingTimeout = null;
       }
 
-      widget.classList.remove('panel-open', 'tab-agents', 'tab-chat', 'tab-controls', 'chat-open', 'control-center-open');
+      widget.classList.remove('panel-open', 'tab-agents', 'tab-chat', 'tab-controls', 'chat-open', 'control-center-open', 'approval-compact');
 
       if (animate && widget.classList.contains('expanded')) {
         widget.classList.add('chat-closing');
@@ -4392,6 +4798,285 @@
       }
     });
 
+    // ============================================================
+    // COMPACT APPROVAL STATE (Collapsed Pill Permission Flow)
+    // ============================================================
+    const compactApprovalQueue = [];
+    let activeCompactApproval = null;
+    let compactApprovalTimeout = null;
+    let compactApprovalAllowTimer = null;
+    let compactApprovalShownAt = 0;
+
+    function processNextCompactApproval() {
+      if (compactApprovalQueue.length === 0) {
+        activeCompactApproval = null;
+        updateMascotBadgeUI();
+        return;
+      }
+
+      activeCompactApproval = compactApprovalQueue.shift();
+
+      // Rule 1: New state "approval-compact", entered only from the collapsed state.
+      // Morph pill from collapsed size to 393k x 129k with existing spring.
+      widget.classList.add('approval-compact');
+      widget.classList.remove('expanded', 'panel-open', 'tab-agents', 'tab-chat', 'tab-controls', 'chat-open', 'control-center-open', 'chat-closing');
+
+      // Update mascot badge to needs_you (orange with '!')
+      const badgeEl = document.getElementById('mascot-agent-badge');
+      if (badgeEl) {
+        badgeEl.classList.remove('thinking', 'working');
+        badgeEl.classList.add('needs_you');
+      }
+
+      // Populate header row
+      const riskyTag = document.getElementById('compact-card-risky');
+      if (riskyTag) {
+        riskyTag.style.display = activeCompactApproval.dangerous ? 'inline-block' : 'none';
+      }
+
+      // Populate command box: format "<shell> - <command>" if shell is present, else just command
+      const cmdTextEl = document.getElementById('compact-cmd-text');
+      const cmdBoxEl = document.getElementById('compact-cmd-box');
+      const rawCmd = activeCompactApproval.command || '';
+      const shell = activeCompactApproval.shell ? String(activeCompactApproval.shell).trim() : '';
+      const cleanCmd = redactSecrets(rawCmd);
+      const displayText = shell ? `${shell} - ${cleanCmd}` : cleanCmd;
+      if (cmdTextEl) {
+        cmdTextEl.textContent = displayText;
+      }
+      if (cmdBoxEl) {
+        cmdBoxEl.setAttribute('title', cleanCmd.slice(0, 300));
+      }
+
+      // Allow button handling: if dangerous, disabled (60% opacity) for first 1000ms
+      const allowBtn = document.getElementById('compact-btn-allow');
+      if (allowBtn) {
+        if (activeCompactApproval.dangerous) {
+          allowBtn.disabled = true;
+          allowBtn.style.opacity = '0.6';
+          allowBtn.style.pointerEvents = 'none';
+          if (compactApprovalAllowTimer) clearTimeout(compactApprovalAllowTimer);
+          compactApprovalAllowTimer = setTimeout(() => {
+            if (activeCompactApproval && activeCompactApproval.dangerous) {
+              allowBtn.disabled = false;
+              allowBtn.style.opacity = '1';
+              allowBtn.style.pointerEvents = 'auto';
+            }
+            compactApprovalAllowTimer = null;
+          }, 1000);
+        } else {
+          allowBtn.disabled = false;
+          allowBtn.style.opacity = '1';
+          allowBtn.style.pointerEvents = 'auto';
+        }
+      }
+
+      // Anti-misclick timestamp: ignore Allow, Deny, Y, N for first 400ms
+      compactApprovalShownAt = Date.now();
+
+      // Timeout handling (no countdown displayed, resolves "dismiss")
+      if (compactApprovalTimeout) {
+        clearTimeout(compactApprovalTimeout);
+        compactApprovalTimeout = null;
+      }
+      const timeoutMs = typeof activeCompactApproval.timeoutMs === 'number' && activeCompactApproval.timeoutMs > 0
+        ? activeCompactApproval.timeoutMs
+        : 40000;
+      compactApprovalTimeout = setTimeout(() => {
+        resolveCompactApproval('dismiss');
+      }, timeoutMs);
+
+      recordActivity();
+      updateEyeTracking();
+      monitorTransitionClickThrough();
+    }
+
+    function resolveCompactApproval(choice) {
+      if (!activeCompactApproval) return;
+
+      if (compactApprovalTimeout) {
+        clearTimeout(compactApprovalTimeout);
+        compactApprovalTimeout = null;
+      }
+      if (compactApprovalAllowTimer) {
+        clearTimeout(compactApprovalAllowTimer);
+        compactApprovalAllowTimer = null;
+      }
+
+      const currentReq = activeCompactApproval;
+      activeCompactApproval = null;
+
+      const finishAndCollapse = () => {
+        widget.classList.remove('approval-compact');
+        triggerFurWiggle();
+        recordActivity();
+        monitorTransitionClickThrough();
+
+        const mult = getSpeedMultiplier();
+        const morphDuration = Math.round(500 / mult);
+        setTimeout(() => {
+          if (compactApprovalQueue.length > 0) {
+            processNextCompactApproval();
+          } else {
+            updateMascotBadgeUI();
+          }
+        }, morphDuration);
+
+        currentReq.resolve({ choice });
+      };
+
+      // Rule 11: After the answer: Allow = a small happy reaction (the existing one),
+      // Deny = the "o" mouth for about 1.5s; then the pill morphs back to the collapsed state with the same spring.
+      if (choice === 'once') {
+        triggerHappyReply();
+        setTimeout(finishAndCollapse, 1500);
+      } else if (choice === 'deny') {
+        isMouthO = true;
+        morphToPath(MOUTH_O, 150);
+        setTimeout(() => {
+          isMouthO = false;
+          morphToPath(behavior.blushSmile ? SMILE_WIDE : SMILE_NORMAL, 250);
+          finishAndCollapse();
+        }, 1500);
+      } else {
+        // 'dismiss'
+        finishAndCollapse();
+      }
+    }
+
+    function showCompactApproval({ id, conversationId, command, shell, dangerous, timeoutMs }) {
+      return new Promise((resolve) => {
+        const req = {
+          id: id || ('req-compact-' + Date.now()),
+          conversationId: conversationId || '',
+          command: String(command || ''),
+          shell: shell ? String(shell) : '',
+          dangerous: Boolean(dangerous),
+          timeoutMs: typeof timeoutMs === 'number' ? timeoutMs : 40000,
+          resolve
+        };
+
+        compactApprovalQueue.push(req);
+
+        // Rule 10: While a request waits, the mascot hops once and a small orange (#FF9F0A)
+        // circle badge with a white "!" appears at the mascot's corner.
+        triggerMascotHopReaction();
+        const badgeEl = document.getElementById('mascot-agent-badge');
+        if (badgeEl) {
+          badgeEl.classList.remove('thinking', 'working');
+          badgeEl.classList.add('needs_you');
+        }
+
+        if (!activeCompactApproval) {
+          processNextCompactApproval();
+        }
+      });
+    }
+
+    window.showCompactApproval = showCompactApproval;
+
+    // Compact Approval Button Listeners
+    const compactBtnAllow = document.getElementById('compact-btn-allow');
+    if (compactBtnAllow) {
+      compactBtnAllow.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!activeCompactApproval) return;
+        if (Date.now() - compactApprovalShownAt < 400) return;
+        if (compactBtnAllow.disabled) return;
+        resolveCompactApproval('once');
+      });
+      compactBtnAllow.addEventListener('mousedown', (e) => e.stopPropagation());
+    }
+
+    const compactBtnDeny = document.getElementById('compact-btn-deny');
+    if (compactBtnDeny) {
+      compactBtnDeny.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!activeCompactApproval) return;
+        if (Date.now() - compactApprovalShownAt < 400) return;
+        resolveCompactApproval('deny');
+      });
+      compactBtnDeny.addEventListener('mousedown', (e) => e.stopPropagation());
+    }
+
+    const compactApprovalCardEl = document.getElementById('compact-approval-card');
+    if (compactApprovalCardEl) {
+      compactApprovalCardEl.addEventListener('click', (e) => e.stopPropagation());
+      compactApprovalCardEl.addEventListener('mousedown', (e) => e.stopPropagation());
+    }
+
+    // Compact Approval Keyboard Interaction
+    // The Y and N keys work ONLY when the pill window already has keyboard focus because the user clicked it.
+    window.addEventListener('keydown', (e) => {
+      if (!activeCompactApproval) return;
+      if (e.isComposing || e.keyCode === 229) return;
+      if (!document.hasFocus()) return;
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        resolveCompactApproval('dismiss');
+        return;
+      }
+
+      if (e.key === 'y' || e.key === 'Y') {
+        e.preventDefault();
+        // Ignore for first 400ms after card appears (anti-misclick)
+        if (Date.now() - compactApprovalShownAt < 400) return;
+        // Keep Allow button disabled for first 1000ms if dangerous
+        if (activeCompactApproval.dangerous && Date.now() - compactApprovalShownAt < 1000) return;
+        resolveCompactApproval('once');
+        return;
+      }
+
+      if (e.key === 'n' || e.key === 'N') {
+        e.preventDefault();
+        // Ignore for first 400ms after card appears (anti-misclick)
+        if (Date.now() - compactApprovalShownAt < 400) return;
+        resolveCompactApproval('deny');
+        return;
+      }
+    });
+
+    // Rule 12: DEBUG builds only (wrapped in import.meta.env.DEV so it is removed from release builds)
+    if (import.meta.env.DEV) {
+      window.addEventListener('keydown', (e) => {
+        if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+
+        // while the pill is collapsed:
+        const isCollapsed = !widget.classList.contains('expanded') &&
+                            !widget.classList.contains('approval-compact') &&
+                            !isPanelOpen();
+        if (!isCollapsed) return;
+
+        if (e.key === 'c' || e.key === 'C') {
+          e.preventDefault();
+          showCompactApproval({
+            id: 'sample-' + Date.now(),
+            conversationId: 'sample-conv',
+            shell: 'PowerShell',
+            command: 'node app.js',
+            dangerous: false,
+            timeoutMs: 40000
+          }).then((res) => {
+            console.log('[DEBUG Compact Approval Result]:', res);
+          });
+        } else if (e.key === 'x' || e.key === 'X') {
+          e.preventDefault();
+          showCompactApproval({
+            id: 'sample-risky-' + Date.now(),
+            conversationId: 'sample-conv',
+            shell: 'PowerShell',
+            command: 'Remove-Item -Recurse -Force .\\build',
+            dangerous: true,
+            timeoutMs: 40000
+          }).then((res) => {
+            console.log('[DEBUG Compact Risky Approval Result]:', res);
+          });
+        }
+      });
+    }
+
     // --- Control Center Real Windows Integration ---
     let controlCenterInterval = null;
     let mediaPositionInterval = null;
@@ -5393,6 +6078,7 @@
 
       // Clicks inside interactive components across tabs and top bar must not toggle widget
       if (e.target.closest('#shared-top-bar') ||
+          e.target.closest('#compact-approval-card') ||
           e.target.closest('.agents-dark-panel') ||
           e.target.closest('#chat-input-bar') ||
           e.target.closest('#chat-answer-box') ||
@@ -5404,9 +6090,9 @@
         return;
       }
 
-      // Inside a tab (Agents, Chat or Controls), a single click on the pill's empty area or on the mascot
+      // Inside a tab (Agents, Chat or Controls) or during compact approval, a single click on the pill's empty area or on the mascot
       // must NOT collapse the pill (to avoid accidents while typing or dragging sliders); it only plays the mascot's click reaction.
-      if (isPanelOpen() || widget.classList.contains('chat-closing')) {
+      if (isPanelOpen() || widget.classList.contains('chat-closing') || widget.classList.contains('approval-compact')) {
         triggerFurWiggle();
         recordActivity();
         setTimeout(() => triggerBlink(), 100);
@@ -6004,6 +6690,14 @@
       } catch (e) {
       } finally {
         isPollingCursor = false;
+        if (!hasPlayedStartupAnimation) {
+          try {
+            const win = window.__TAURI__?.window?.getCurrentWindow?.();
+            if (win && (await win.isVisible?.())) {
+              maybePlayStartupAnimation();
+            }
+          } catch (_) {}
+        }
       }
     }
 
@@ -6106,6 +6800,7 @@
         }
 
         const isExpanded = widget.classList.contains('expanded');
+        const isCompactApproval = widget.classList.contains('approval-compact');
         const isAgents = currentTab === 'agents' || widget.classList.contains('tab-agents');
         const isChat = currentTab === 'chat' || widget.classList.contains('tab-chat') || widget.classList.contains('chat-open');
         const isCC = currentTab === 'controls' || (currentTab === null && (widget.classList.contains('tab-controls') || widget.classList.contains('control-center-open')));
@@ -6113,10 +6808,11 @@
         // Expanded mode (mascot: 115px)  -> eye deflection 3.1px, face deflection 1.4px
         // Agents tab    (mascot: 80px)   -> eye deflection 2.5px, face deflection 1.0px
         // Chat tab      (mascot: 102px)  -> eye deflection 2.8px, face deflection 1.2px
+        // Compact approval (mascot: ~62px) -> eye deflection 2.1px, face deflection 0.9px
         // Controls tab  (mascot faded)   -> 0
         // Collapsed mode (mascot: 52px)  -> eye deflection 1.8px, face deflection 0.8px
-        const maxEye = isCC ? 0 : (isAgents ? 2.5 : (isChat ? 2.8 : (isExpanded ? 3.1 : 1.8)));
-        const maxFace = isCC ? 0 : (isAgents ? 1.0 : (isChat ? 1.2 : (isExpanded ? 1.4 : 0.8)));
+        const maxEye = isCC ? 0 : (isAgents ? 2.5 : (isChat ? 2.8 : (isExpanded ? 3.1 : (isCompactApproval ? 2.1 : 1.8))));
+        const maxFace = isCC ? 0 : (isAgents ? 1.0 : (isChat ? 1.2 : (isExpanded ? 1.4 : (isCompactApproval ? 0.9 : 0.8))));
 
         // Smooth engagement: grows rapidly within 50px of mascot, and stays engaged anywhere on screen
         const intensity = Math.min(1, dist / 50);
@@ -6140,6 +6836,8 @@
 
     // --- Appearance Live Sync & Positioning ---
     let lastAppliedPosSettings = null;
+    let lastAppliedAppearance = null;
+    let lastAppliedBehavior = null;
 
     function hexToRgba(hex, alphaPercent = 100) {
       const alpha = Math.max(0, Math.min(100, Number(alphaPercent ?? 100))) / 100;
@@ -6416,6 +7114,16 @@
     async function applyAppearance(settings, initial = false) {
       if (!settings) return;
 
+      lastAppliedAppearance = {
+        dudeColor: settings.dudeColor || 'cream',
+        pillColor: settings.pillColor || settings.pill_color || '#000000',
+        opacity: settings.opacity !== undefined && settings.opacity !== null ? Number(settings.opacity) : 100,
+        roundness: settings.roundness !== undefined && settings.roundness !== null ? Number(settings.roundness) : 8,
+        position: settings.position || 'top-left',
+        position_x: settings.position_x !== undefined && settings.position_x !== null ? Number(settings.position_x) : 0,
+        position_y: settings.position_y !== undefined && settings.position_y !== null ? Number(settings.position_y) : 0,
+      };
+
       // 1. Dude Color (swap base image with 150ms crossfade)
       const dudeColor = settings.dudeColor || 'cream';
       setMascotBaseColor(dudeColor, !initial);
@@ -6476,6 +7184,7 @@
 
       // Store in shared behavior object
       Object.assign(behavior, merged);
+      lastAppliedBehavior = { ...merged };
 
       // Flag 1: eyesFollow
       try {
@@ -6648,6 +7357,163 @@
       return undefined;
     }
 
+    // --- Startup Animation Controller (3000ms once per app run) ---
+    let hasPlayedStartupAnimation = false;
+    let isStartupAnimating = false;
+    let startupAnimationTimeout = null;
+
+    async function shouldPlayStartupAnimationFromStore() {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          const rid = await window.__TAURI__.core.invoke('plugin:store|load', {
+            path: 'dude_store.json'
+          });
+          const [val, exists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'startup' });
+          if (exists && val && typeof val === 'object') {
+            if (val.playStartupAnimation === false) {
+              return false;
+            }
+            if (val.playStartupAnimation === undefined) {
+              val.playStartupAnimation = true;
+              await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'startup', value: val });
+              await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'startup.playStartupAnimation', value: true });
+              await window.__TAURI__.core.invoke('plugin:store|save', { rid });
+            }
+            return true;
+          } else {
+            const defStartup = { showMascotOnStartup: true, playStartupAnimation: true };
+            await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'startup', value: defStartup });
+            await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'startup.playStartupAnimation', value: true });
+            await window.__TAURI__.core.invoke('plugin:store|save', { rid });
+          }
+        }
+      } catch (err) {
+        console.warn('Could not read/store playStartupAnimation from store plugin:', err);
+      }
+      try {
+        const local = localStorage.getItem('dude_store_startup');
+        if (local) {
+          const parsed = JSON.parse(local);
+          if (parsed && parsed.playStartupAnimation === false) return false;
+        }
+      } catch (_) {}
+      return true;
+    }
+
+    async function maybePlayStartupAnimation(force = false) {
+      if (hasPlayedStartupAnimation && !force) return;
+      if (!force) {
+        const allowed = await shouldPlayStartupAnimationFromStore();
+        if (!allowed) {
+          hasPlayedStartupAnimation = true;
+          return;
+        }
+      }
+
+      hasPlayedStartupAnimation = true;
+
+      // Ensure mascot image is fully loaded before playing
+      const baseImg = document.getElementById('mascot-base-img');
+      if (baseImg && !baseImg.complete) {
+        await new Promise((resolve) => {
+          baseImg.onload = resolve;
+          baseImg.onerror = resolve;
+          setTimeout(resolve, 200);
+        });
+      }
+
+      playStartupAnimation();
+    }
+
+    function playStartupAnimation() {
+      if (!widget) return;
+
+      if (startupAnimationTimeout) {
+        clearTimeout(startupAnimationTimeout);
+        startupAnimationTimeout = null;
+      }
+      widget.classList.remove('startup-animating', 'startup-fading-out');
+      // Trigger reflow to restart CSS animation cleanly
+      void widget.offsetWidth;
+
+      isStartupAnimating = true;
+      widget.classList.add('startup-animating');
+
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const totalDuration = prefersReduced ? 1600 : 3000;
+
+      startupAnimationTimeout = setTimeout(() => {
+        isStartupAnimating = false;
+        widget.classList.remove('startup-animating', 'startup-fading-out');
+        startupAnimationTimeout = null;
+      }, totalDuration);
+    }
+
+    function cancelStartupAnimation(fastFade = true) {
+      if (!isStartupAnimating) return;
+      isStartupAnimating = false;
+      if (startupAnimationTimeout) {
+        clearTimeout(startupAnimationTimeout);
+        startupAnimationTimeout = null;
+      }
+
+      if (fastFade) {
+        widget.classList.add('startup-fading-out');
+        setTimeout(() => {
+          widget.classList.remove('startup-animating', 'startup-fading-out');
+        }, 200);
+      } else {
+        widget.classList.remove('startup-animating', 'startup-fading-out');
+      }
+    }
+
+    // Interruption handling: click or expand during startup animation fades out over 200ms
+    widget.addEventListener('click', () => {
+      if (isStartupAnimating) {
+        cancelStartupAnimation(true);
+      }
+    }, { capture: true });
+
+    const startupExpandObserver = new MutationObserver(() => {
+      if (isStartupAnimating && widget.classList.contains('expanded')) {
+        cancelStartupAnimation(true);
+      }
+    });
+    startupExpandObserver.observe(widget, { attributes: true, attributeFilter: ['class'] });
+
+    // Debug only: pressing "G" replays startup animation
+    try {
+      if (window.__TAURI__?.core?.invoke) {
+        window.__TAURI__.core.invoke('is_debug').then((res) => {
+          if (res) {
+            window.addEventListener('keydown', (e) => {
+              if (e.key === 'g' || e.key === 'G') {
+                maybePlayStartupAnimation(true);
+              }
+            });
+          }
+        }).catch(() => {});
+      }
+    } catch (_) {}
+
+    // Trigger on first window focus if mascot was hidden on startup
+    window.addEventListener('focus', () => {
+      if (!hasPlayedStartupAnimation) {
+        maybePlayStartupAnimation();
+      }
+    });
+
+    try {
+      const win = window.__TAURI__?.window?.getCurrentWindow?.();
+      if (win?.listen) {
+        win.listen('tauri://focus', () => {
+          if (!hasPlayedStartupAnimation) {
+            maybePlayStartupAnimation();
+          }
+        });
+      }
+    } catch (_) {}
+
     // Startup: load saved values and apply before showing the window
     async function initAppearanceOnStartup() {
       await ensureWindowSize();
@@ -6706,6 +7572,9 @@
             await win.show();
           }
         } catch (_) {}
+
+        // Play startup animation once settings, appearance, and mascot images are loaded & applied
+        await maybePlayStartupAnimation();
       }
 
       // First-run Welcome check: if no key is saved AND onboarded is false, open Welcome view
@@ -6732,6 +7601,7 @@
         const win = window.__TAURI__?.window?.getCurrentWindow?.();
         if (win && !(await win.isVisible?.())) {
           await win.show();
+          await maybePlayStartupAnimation();
         }
       } catch (_) {}
     }, 350);
@@ -6747,17 +7617,253 @@
         }
       });
 
-      window.__TAURI__.event.listen('agents-settings-changed', async (event) => {
-        if (event?.payload?.status) {
-          lastKnownAgentsStatus = event.payload;
+      let lastAgentsHash = '';
+      let agentsRafId = null;
+      window.__TAURI__.event.listen('agents-settings-changed', (event) => {
+        const payload = event?.payload;
+        if (!payload) return;
+        const hash = JSON.stringify({
+          status: payload.status?.status,
+          enabled: payload.status?.enabled,
+          installed: payload.status?.installed,
+          approveCommands: payload.approveCommands,
+          allowedCount: payload.allowedCommands?.length
+        });
+        if (hash === lastAgentsHash) return; // Duplicate event, skip
+        lastAgentsHash = hash;
+
+        if (agentsRafId) cancelAnimationFrame(agentsRafId);
+        agentsRafId = requestAnimationFrame(async () => {
+          agentsRafId = null;
+          if (payload.status) {
+            lastKnownAgentsStatus = payload.status;
+          }
+          if (typeof payload.approveCommands === 'boolean') {
+            approveCommandsSetting = payload.approveCommands;
+          }
+          if (Array.isArray(payload.allowedCommands)) {
+            persistentAllowedCommands = payload.allowedCommands;
+          }
+          await loadAgentsSettingsFromStore();
+        });
+      });
+    }
+
+    // High-performance event diffing and rAF batching for mascot window
+    let appearanceRafId = null;
+
+    function handleAppearanceEvent(payload) {
+      if (!payload || typeof payload !== 'object') return;
+      // Deduplicate: ignore identical appearance payload
+      if (lastAppliedAppearance &&
+          lastAppliedAppearance.dudeColor === payload.dudeColor &&
+          lastAppliedAppearance.pillColor === payload.pillColor &&
+          lastAppliedAppearance.opacity === payload.opacity &&
+          lastAppliedAppearance.roundness === payload.roundness &&
+          lastAppliedAppearance.position === payload.position &&
+          lastAppliedAppearance.position_x === payload.position_x &&
+          lastAppliedAppearance.position_y === payload.position_y) {
+        return;
+      }
+
+      if (appearanceRafId) cancelAnimationFrame(appearanceRafId);
+      appearanceRafId = requestAnimationFrame(async () => {
+        appearanceRafId = null;
+        const prev = lastAppliedAppearance;
+        lastAppliedAppearance = { ...payload };
+
+        // 1. Dude Color (only swap base image if color changed)
+        const dudeColor = payload.dudeColor || 'cream';
+        if (!prev || prev.dudeColor !== dudeColor) {
+          setMascotBaseColor(dudeColor, !prev);
         }
-        if (typeof event?.payload?.approveCommands === 'boolean') {
-          approveCommandsSetting = event.payload.approveCommands;
+
+        if (mascotWrapper) {
+          mascotWrapper.style.setProperty('--mascot-scale', '1');
         }
-        if (Array.isArray(event?.payload?.allowedCommands)) {
-          persistentAllowedCommands = event.payload.allowedCommands;
+
+        // 2. Pill Color, Opacity & Contrast (only update if color/opacity changed)
+        const pillColor = payload.pillColor || payload.pill_color || '#000000';
+        const opacity = payload.opacity !== undefined && payload.opacity !== null ? Number(payload.opacity) : 100;
+        if (!prev || prev.pillColor !== pillColor || prev.opacity !== opacity) {
+          const rgbaColor = hexToRgba(pillColor, opacity);
+          const contrastColor = calculateWCAGContrast(pillColor);
+          if (widget) {
+            widget.style.setProperty('--pill-bg', rgbaColor);
+            widget.style.setProperty('--pill-contrast', contrastColor);
+          }
         }
-        await loadAgentsSettingsFromStore();
+
+        // 3. Roundness (only update if roundness changed)
+        const roundness = payload.roundness !== undefined && payload.roundness !== null ? Number(payload.roundness) : 8;
+        if (!prev || prev.roundness !== roundness) {
+          if (widget) {
+            widget.style.setProperty('--pill-radius', `${roundness}px`);
+          }
+        }
+
+        // 4. Position (only update if position values changed)
+        const pos = payload.position || 'top-left';
+        const posX = payload.position_x !== undefined && payload.position_x !== null ? Number(payload.position_x) : 0;
+        const posY = payload.position_y !== undefined && payload.position_y !== null ? Number(payload.position_y) : 0;
+        if (!prev || prev.position !== pos || prev.position_x !== posX || prev.position_y !== posY) {
+          await applyPositionSetting(pos, posX, posY);
+        }
+      });
+    }
+
+    let behaviorRafId = null;
+
+    function handleBehaviorEvent(raw) {
+      if (!raw || typeof raw !== 'object') return;
+
+      const merged = { ...BEHAVIOR_DEFAULTS };
+      for (const key of Object.keys(BEHAVIOR_DEFAULTS)) {
+        const val = raw[key];
+        if (typeof val === 'boolean') {
+          merged[key] = val;
+        } else if (val === 'true' || val === 1) {
+          merged[key] = true;
+        } else if (val === 'false' || val === 0) {
+          merged[key] = false;
+        } else {
+          merged[key] = BEHAVIOR_DEFAULTS[key];
+        }
+      }
+
+      // Check if identical to last applied
+      if (lastAppliedBehavior) {
+        let hasDiff = false;
+        for (const key of Object.keys(merged)) {
+          if (lastAppliedBehavior[key] !== merged[key]) {
+            hasDiff = true;
+            break;
+          }
+        }
+        if (!hasDiff) return; // Duplicate event, skip
+      }
+
+      if (behaviorRafId) cancelAnimationFrame(behaviorRafId);
+      behaviorRafId = requestAnimationFrame(() => {
+        behaviorRafId = null;
+        const prev = lastAppliedBehavior || { ...behavior };
+        lastAppliedBehavior = { ...merged };
+
+        // Apply ONLY changed keys
+        Object.assign(behavior, merged);
+
+        // Flag 1: eyesFollow
+        if (prev.eyesFollow !== merged.eyesFollow) {
+          try {
+            if (!behavior.eyesFollow) {
+              if (mascotWrapper && !isThinking) {
+                mascotWrapper.style.setProperty('--eye-x', '0px');
+                mascotWrapper.style.setProperty('--eye-y', '0px');
+                mascotWrapper.style.setProperty('--face-x', '0px');
+                mascotWrapper.style.setProperty('--face-y', '0px');
+              }
+            } else if (behavior.eyesFollow && !isAsleep) {
+              updateEyeTracking();
+            }
+          } catch (e) {
+            console.warn('Error applying eyesFollow:', e);
+          }
+        }
+
+        // Flag 2: blink
+        if (prev.blink !== merged.blink) {
+          try {
+            if (!behavior.blink) {
+              if (blinkTimeoutId) {
+                clearTimeout(blinkTimeoutId);
+                blinkTimeoutId = null;
+              }
+              if (leftPupil) leftPupil.classList.remove('blinking');
+              if (rightPupil) rightPupil.classList.remove('blinking');
+            } else if (behavior.blink && !isAsleep) {
+              scheduleNextBlink();
+            }
+          } catch (e) {
+            console.warn('Error applying blink:', e);
+          }
+        }
+
+        // Flag 3: blushSmile
+        if (prev.blushSmile !== merged.blushSmile) {
+          try {
+            if (!behavior.blushSmile) {
+              if (widget) widget.classList.add('no-blush-pulse');
+              if (!isAsleep) {
+                if (isMouthO && !errorMouthTimeout) {
+                  isMouthO = false;
+                }
+                morphToPath(SMILE_NORMAL, 250);
+              }
+            } else {
+              if (widget) widget.classList.remove('no-blush-pulse');
+              if (isHovered && !isAsleep && !isMouthO) {
+                morphToPath(SMILE_WIDE, 250);
+              }
+            }
+          } catch (e) {
+            console.warn('Error applying blushSmile:', e);
+          }
+        }
+
+        // Flag 4: reactToReplies
+        if (prev.reactToReplies !== merged.reactToReplies) {
+          try {
+            if (!behavior.reactToReplies) {
+              if (happyTimeout) {
+                clearTimeout(happyTimeout);
+                happyTimeout = null;
+              }
+              if (errorMouthTimeout) {
+                clearTimeout(errorMouthTimeout);
+                errorMouthTimeout = null;
+                isMouthO = false;
+              }
+              if (mascotBody) mascotBody.classList.remove('happy-bounce');
+              if (widget) widget.classList.remove('deep-blush');
+              if (!isAsleep && !isHovered) {
+                morphToPath(SMILE_NORMAL, 250);
+              } else if (!isAsleep && isHovered) {
+                morphToPath(behavior.blushSmile ? SMILE_WIDE : SMILE_NORMAL, 250);
+              }
+            }
+          } catch (e) {
+            console.warn('Error applying reactToReplies:', e);
+          }
+        }
+
+        // Flag 5: autoCollapse
+        if (prev.autoCollapse !== merged.autoCollapse) {
+          try {
+            if (!behavior.autoCollapse) {
+              if (autoCollapseTimer) {
+                clearTimeout(autoCollapseTimer);
+                autoCollapseTimer = null;
+              }
+            } else {
+              resetAutoCollapseTimer();
+            }
+          } catch (e) {
+            console.warn('Error applying autoCollapse:', e);
+          }
+        }
+
+        // Flag 6: fastAnimations
+        if (prev.fastAnimations !== merged.fastAnimations) {
+          try {
+            const mult = getSpeedMultiplier();
+            document.documentElement.style.setProperty('--speed', mult.toString());
+            if (widget) {
+              widget.style.setProperty('--speed', mult.toString());
+            }
+          } catch (e) {
+            console.warn('Error applying fastAnimations:', e);
+          }
+        }
       });
     }
 
@@ -6765,7 +7871,7 @@
     if (window.__TAURI__?.event?.listen) {
       window.__TAURI__.event.listen('appearance-changed', (event) => {
         if (event && event.payload) {
-          applyAppearance(event.payload);
+          handleAppearanceEvent(event.payload);
         }
       });
     }
@@ -6775,7 +7881,7 @@
       window.__TAURI__.event.listen('behavior-changed', (event) => {
         try {
           if (event && event.payload) {
-            applyBehavior(event.payload);
+            handleBehaviorEvent(event.payload);
           }
         } catch (err) {
           console.warn('Error handling behavior-changed event:', err);
@@ -6863,6 +7969,59 @@
         applyPositionSetting(lastAppliedPosSettings.position, lastAppliedPosSettings.customX, lastAppliedPosSettings.customY);
       }
     });
+
+    // ----------------------------------------------------------------------
+    // Debug-Only Smoke Test Listener (Triggered by Ctrl+Alt+T or settings test)
+    // ----------------------------------------------------------------------
+    try {
+      if (window.__TAURI__?.core?.invoke) {
+        window.__TAURI__.core.invoke('is_debug').then((res) => {
+          if (res) {
+            const runMascotSmokeCheck = async () => {
+              try {
+                // 1. With pointer over the pill, ignore-cursor-events is false
+                await setIgnoreCursor(false);
+                const isIgnoreFalse = (isIgnoringCursor === false);
+
+                // 2. Single click toggles expand and collapse
+                const initiallyExpanded = widget.classList.contains('expanded');
+                widget.click();
+                const toggledOnce = widget.classList.contains('expanded') !== initiallyExpanded;
+
+                // Toggle back to restore original state
+                widget.click();
+                const toggledBack = widget.classList.contains('expanded') === initiallyExpanded;
+
+                const pass = isIgnoreFalse && toggledOnce && toggledBack;
+                const msg = `[SMOKE TEST] Mascot Window Pill (ignore-cursor-events: ${!isIgnoringCursor}, click-toggle: ${toggledOnce}): ${pass ? 'PASS' : 'FAIL'}`;
+                console.log(msg);
+                try {
+                  window.__TAURI__.core.invoke('log_perf_metric', { message: msg }).catch(() => {});
+                } catch (_) {}
+              } catch (err) {
+                const failMsg = `[SMOKE TEST] Mascot Window Pill: FAIL (${err})`;
+                console.log(failMsg);
+                try {
+                  window.__TAURI__.core.invoke('log_perf_metric', { message: failMsg }).catch(() => {});
+                } catch (_) {}
+              }
+            };
+
+            window.addEventListener('keydown', (e) => {
+              if (e.ctrlKey && e.altKey && (e.key === 't' || e.key === 'T')) {
+                runMascotSmokeCheck();
+              }
+            });
+
+            if (window.__TAURI__?.event?.listen) {
+              window.__TAURI__.event.listen('run-mascot-smoke-test', () => {
+                runMascotSmokeCheck();
+              });
+            }
+          }
+        }).catch(() => {});
+      }
+    } catch (_) {}
   </script>
 </body>
 </html>

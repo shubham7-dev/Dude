@@ -24,6 +24,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@600;700&family=Fira+Sans:wght@400;500;600;700&display=swap"
     rel="stylesheet">
+  <link rel="preload" as="image" href="assets/appearance-tree.webp" type="image/webp">
   <style>
     :root {
       /* Card Background */
@@ -113,7 +114,27 @@
       --color-theme-toggle: #FFFFFF;
     }
 
-    /* Smooth 200ms theme transition on interactive toggle (no transition on first load) */
+    /* Smooth theme transition on interactive toggle (runs only while temporary class is present) */
+    html.theme-transition,
+    html.theme-transition .card-window,
+    html.theme-transition .sidebar-panel,
+    html.theme-transition .content-panel,
+    html.theme-transition .appearance-panel,
+    html.theme-transition .settings-subpanel,
+    html.theme-transition .panel-title,
+    html.theme-transition .subpanel-title,
+    html.theme-transition .personality-heading,
+    html.theme-transition .row-label,
+    html.theme-transition .appearance-label,
+    html.theme-transition .nav-item,
+    html.theme-transition .panel-divider,
+    html.theme-transition .subpanel-underline,
+    html.theme-transition .sidebar-divider,
+    html.theme-transition .win-btn,
+    html.theme-transition .theme-toggle-btn,
+    html.theme-transition .about-footer,
+    html.theme-transition .welcome-tagline,
+    html.theme-transition .welcome-skip-link,
     html.theme-transitioning,
     html.theme-transitioning .card-window,
     html.theme-transitioning .sidebar-panel,
@@ -296,18 +317,197 @@
       overflow: hidden;
     }
 
-    /* Mascot Image centered at top */
-    .mascot-image {
+    /* Alive Sidebar Mascot (centered above divider) */
+    .sidebar-mascot-wrap {
       position: absolute;
       top: 36px;
       left: 50%;
       transform: translateX(-50%);
       width: 130px;
+      aspect-ratio: 1536 / 1024;
       height: auto;
       display: block;
       pointer-events: none;
       user-select: none;
       -webkit-user-drag: none;
+    }
+
+    .sidebar-mascot-body {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .sidebar-mascot-base {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+      transform: translateX(var(--sidebar-base-x, 0%));
+      transition: transform 90ms ease-out;
+      will-change: transform;
+    }
+
+    .sidebar-mascot-crossfade {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 150ms ease, transform 90ms ease-out;
+      transform: translateX(var(--sidebar-base-x, 0%));
+      will-change: opacity, transform;
+    }
+
+    /* Face group (eyes, smile, blush) */
+    .sidebar-face-group {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      transform-origin: center center;
+      transform: translate(var(--sidebar-face-x, 0px), var(--sidebar-face-y, 0px)) scaleX(var(--sidebar-face-scale-x, 1));
+      transition: transform 90ms ease-out;
+      will-change: transform;
+    }
+
+    /* Cheek blush */
+    .sidebar-blush {
+      position: absolute;
+      width: 10.42%;
+      height: 11.72%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(239, 126, 114, 0.85) 0%, rgba(239, 126, 114, 0.5) 42%, rgba(239, 126, 114, 0) 72%);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      opacity: 0.7;
+      will-change: opacity, transform;
+    }
+
+    .sidebar-blush-left {
+      left: 31.77%;
+      top: 62.41%;
+    }
+
+    .sidebar-blush-right {
+      left: 68.41%;
+      top: 62.07%;
+    }
+
+    /* Eyes */
+    .sidebar-eye {
+      position: absolute;
+      width: 6.45%;
+      aspect-ratio: 1 / 1;
+      pointer-events: none;
+      transform: translate(calc(-50% + var(--sidebar-eye-x, 0px)), calc(-50% + var(--sidebar-eye-y, 0px)));
+      transition: transform 90ms ease-out;
+      will-change: transform;
+    }
+
+    .sidebar-eye-left {
+      left: 35.81%;
+      top: 55.42%;
+    }
+
+    .sidebar-eye-right {
+      left: 64.32%;
+      top: 55.37%;
+    }
+
+    .sidebar-eye-pupil {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #111111;
+      transform-origin: center center;
+    }
+
+    .sidebar-eye-highlight {
+      position: absolute;
+      width: 22%;
+      height: 22%;
+      border-radius: 50%;
+      background: #ffffff;
+      left: 74%;
+      top: 26%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 1px rgba(255, 255, 255, 0.8);
+    }
+
+    /* Blink animation: scaleY 1 to 0.1 and back over 150ms */
+    @keyframes sidebarEyeBlink {
+      0%, 100% {
+        transform: scaleY(1);
+      }
+      50% {
+        transform: scaleY(0.1);
+      }
+    }
+
+    .sidebar-eye-pupil.blinking {
+      animation: sidebarEyeBlink 150ms ease-in-out;
+    }
+
+    /* Smile */
+    .sidebar-smile {
+      position: absolute;
+      left: 49.97%;
+      top: 64.36%;
+      width: 9.90%;
+      height: 4.39%;
+      transform: translate(-50%, -50%) scaleX(var(--sidebar-smile-scale-x, 1));
+      pointer-events: none;
+      overflow: visible;
+      transition: transform 90ms ease-out;
+      will-change: transform;
+    }
+
+    .sidebar-smile path {
+      stroke: #161618;
+      stroke-width: 15.5;
+      stroke-linecap: round;
+      fill: none;
+    }
+
+    /* Spring transition for Look-Away and Return (380ms) */
+    .sidebar-mascot-wrap.springing .sidebar-mascot-base,
+    .sidebar-mascot-wrap.springing .sidebar-mascot-crossfade,
+    .sidebar-mascot-wrap.springing .sidebar-face-group,
+    .sidebar-mascot-wrap.springing .sidebar-eye,
+    .sidebar-mascot-wrap.springing .sidebar-smile {
+      transition: transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      .sidebar-mascot-wrap .sidebar-mascot-base,
+      .sidebar-mascot-wrap .sidebar-mascot-crossfade,
+      .sidebar-mascot-wrap .sidebar-face-group,
+      .sidebar-mascot-wrap .sidebar-eye,
+      .sidebar-mascot-wrap .sidebar-smile,
+      .sidebar-mascot-wrap.springing .sidebar-mascot-base,
+      .sidebar-mascot-wrap.springing .sidebar-mascot-crossfade,
+      .sidebar-mascot-wrap.springing .sidebar-face-group,
+      .sidebar-mascot-wrap.springing .sidebar-eye,
+      .sidebar-mascot-wrap.springing .sidebar-smile {
+        transition: none !important;
+        animation: none !important;
+      }
     }
 
     /* Divider below mascot */
@@ -682,7 +882,7 @@
       outline: none;
       box-sizing: border-box;
       letter-spacing: 1px;
-      transition: border-color 150ms ease, box-shadow 150ms ease;
+      transition: border-color 150ms ease;
     }
 
     .welcome-key-input:focus {
@@ -858,12 +1058,14 @@
       z-index: 10;
     }
 
-    /* Decorative cherry blossom tree layer behind boxes and labels */
+    /* Decorative cherry blossom tree layer behind boxes and labels (promoted to own compositor layer) */
     .appearance-tree-bg {
       position: absolute;
       bottom: 0;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateZ(0);
+      will-change: transform;
+      contain: strict;
       width: 100%;
       height: auto;
       max-height: 100%;
@@ -873,6 +1075,20 @@
       z-index: 1;
       user-select: none;
       -webkit-user-drag: none;
+    }
+
+    /* Tab panels styling */
+    .content-panel > section,
+    .content-panel > div.settings-panel,
+    .appearance-panel,
+    .settings-subpanel,
+    #ai-panel,
+    #appearance-panel,
+    #welcome-panel,
+    #behavior-panel,
+    #startup-panel,
+    #agents-panel,
+    #about-panel {
     }
 
     /* Title "Appearance" (Fira Sans 44px, black) at left 35px, vertically centered about 52px from panel top */
@@ -1040,7 +1256,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 120ms ease, box-shadow 120ms ease;
+      transition: transform 120ms ease;
       outline: none;
       -webkit-app-region: no-drag;
     }
@@ -2138,7 +2354,29 @@
           <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
         </svg>
       </button>
-      <img src="assets/mascot.png" alt="Dude Mascot" class="mascot-image">
+      <div class="sidebar-mascot-wrap mascot-image" id="sidebar-mascot-wrap">
+        <div class="sidebar-mascot-body" id="sidebar-mascot-body">
+          <img src="assets/mascot-base.png" alt="Dude Mascot" class="sidebar-mascot-base" id="sidebar-mascot-base-img">
+          <img src="assets/mascot-base.png" alt="" class="sidebar-mascot-crossfade" id="sidebar-mascot-crossfade-img">
+          <div class="sidebar-face-group" id="sidebar-face-group">
+            <div class="sidebar-blush sidebar-blush-left"></div>
+            <div class="sidebar-blush sidebar-blush-right"></div>
+            <div class="sidebar-eye sidebar-eye-left" id="sidebar-eye-left">
+              <div class="sidebar-eye-pupil" id="sidebar-pupil-left">
+                <div class="sidebar-eye-highlight"></div>
+              </div>
+            </div>
+            <div class="sidebar-eye sidebar-eye-right" id="sidebar-eye-right">
+              <div class="sidebar-eye-pupil" id="sidebar-pupil-right">
+                <div class="sidebar-eye-highlight"></div>
+              </div>
+            </div>
+            <svg class="sidebar-smile" id="sidebar-smile" viewBox="0 0 152 45" aria-hidden="true">
+              <path id="sidebar-smile-path" d="M 5 9 Q 76 62 147 9 Q 76 62 5 9" />
+            </svg>
+          </div>
+        </div>
+      </div>
       <div class="sidebar-divider"></div>
       <nav class="nav-list">
         <div class="nav-item active" data-tab="ai">AI</div>
@@ -2184,8 +2422,8 @@
 
         <div class="form-row">
           <label class="row-label" for="api-key-input">API key</label>
-          <div class="api-key-field-wrap">
-            <input type="password" class="row-input" id="api-key-input" placeholder="Enter API key...">
+          <div class="api-key-field-wrap" data-secret>
+            <input type="password" class="row-input" id="api-key-input" placeholder="Enter API key..." data-secret>
             <button type="button" class="remove-key-btn" id="remove-key-btn" style="display: none;">Remove key</button>
           </div>
         </div>
@@ -2265,9 +2503,9 @@
             <span class="welcome-step-title">3. Paste it here</span>
           </div>
           <div class="welcome-paste-row">
-            <div class="welcome-key-wrap">
+            <div class="welcome-key-wrap" data-secret>
               <input type="password" class="welcome-key-input" id="welcome-key-input"
-                placeholder="Paste your API key here..." autocomplete="off" spellcheck="false">
+                placeholder="Paste your API key here..." autocomplete="off" spellcheck="false" data-secret>
               <button type="button" class="welcome-eye-toggle" id="welcome-eye-btn" title="Toggle visibility"
                 aria-label="Toggle password visibility">
                 <svg id="eye-icon-show" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -2310,7 +2548,10 @@
     <!-- Right Content Panel (Appearance section) -->
     <section class="appearance-panel" id="appearance-panel" style="display: none;" data-tauri-drag-region>
       <!-- Background decorative tree -->
-      <img src="assets/appearance-tree.png" alt="" class="appearance-tree-bg">
+      <picture>
+        <source srcset="assets/appearance-tree.webp" type="image/webp">
+        <img src="assets/appearance-tree.png" alt="" class="appearance-tree-bg" decoding="async">
+      </picture>
 
       <!-- Header with Title, Saved text, and Window Controls -->
       <h1 class="subpanel-title" data-tauri-drag-region>Appearance</h1>
@@ -2763,6 +3004,504 @@
       } catch (_) { }
     };
 
+    // ----------------------------------------------------------------------
+    // Performance Monitor & Event / Store Instrumentation (DEV / Debug only)
+    // ----------------------------------------------------------------------
+    let perfStoreWritesCount = 0;
+    let perfEmittedEventsCount = 0;
+    let perfLongTasksCount = 0;
+    let perfWorstLongTaskMs = 0;
+    let perfWorstFrameTimeMs = 0;
+    let perfLastFrameTimestamp = 0;
+    let perfActivityCounter = 0;
+
+    function initPerformanceMonitor() {
+      // 1. LongTask PerformanceObserver
+      if (typeof PerformanceObserver !== 'undefined') {
+        try {
+          const longtaskObserver = new PerformanceObserver((list) => {
+            for (const entry of list.getEntries()) {
+              if (entry.duration > 50) {
+                perfLongTasksCount++;
+                perfActivityCounter++;
+                if (entry.duration > perfWorstLongTaskMs) {
+                  perfWorstLongTaskMs = entry.duration;
+                }
+              }
+            }
+          });
+          longtaskObserver.observe({ type: 'longtask', buffered: true });
+        } catch (_) {}
+      }
+
+      // 2. requestAnimationFrame Delta Tracker
+      function trackFrame(now) {
+        if (perfLastFrameTimestamp > 0) {
+          const delta = now - perfLastFrameTimestamp;
+          if (delta > 32) {
+            perfActivityCounter++;
+          }
+          if (delta > perfWorstFrameTimeMs) {
+            perfWorstFrameTimeMs = delta;
+          }
+        }
+        perfLastFrameTimestamp = now;
+        requestAnimationFrame(trackFrame);
+      }
+      requestAnimationFrame(trackFrame);
+
+      // 3. 1-second terminal logger while there is activity
+      let lastPrintedWrites = 0;
+      let lastPrintedEvents = 0;
+      let lastPrintedLongTasks = 0;
+      setInterval(() => {
+        const hasActivity = perfActivityCounter > 0 ||
+          perfStoreWritesCount !== lastPrintedWrites ||
+          perfEmittedEventsCount !== lastPrintedEvents ||
+          perfLongTasksCount !== lastPrintedLongTasks;
+
+        if (hasActivity) {
+          const msg = `[PERF 1s Update] Long tasks (>50ms): ${perfLongTasksCount} (Worst: ${perfWorstLongTaskMs.toFixed(1)}ms) | Worst frame time: ${perfWorstFrameTimeMs.toFixed(1)}ms | Store writes: ${perfStoreWritesCount} | Emitted events: ${perfEmittedEventsCount}`;
+          console.log(msg);
+          try {
+            if (window.__TAURI__?.core?.invoke) {
+              window.__TAURI__.core.invoke('log_perf_metric', { message: msg }).catch(() => {});
+            }
+          } catch (_) {}
+
+          lastPrintedWrites = perfStoreWritesCount;
+          lastPrintedEvents = perfEmittedEventsCount;
+          lastPrintedLongTasks = perfLongTasksCount;
+          perfActivityCounter = 0;
+        }
+      }, 1000);
+
+      // 4. Ctrl+Alt+P Scripted Rapid Click Test
+      let isTestRunning = false;
+      window.addEventListener('keydown', async (e) => {
+        if (e.ctrlKey && e.altKey && (e.key === 'p' || e.key === 'P')) {
+          e.preventDefault();
+          if (isTestRunning) return;
+          isTestRunning = true;
+
+          const testStartMsg = `[PERF TEST] Starting Scripted Rapid Click Test (20 sidebar switches, 10 toggle flips, 10 dark-mode flips)...`;
+          console.log(testStartMsg);
+          try {
+            window.__TAURI__?.core?.invoke('log_perf_metric', { message: testStartMsg }).catch(() => {});
+          } catch (_) {}
+
+          const testStartTime = performance.now();
+          const startLongTasks = perfLongTasksCount;
+          const startStoreWrites = perfStoreWritesCount;
+          const startEmittedEvents = perfEmittedEventsCount;
+          let testWorstFrame = 0;
+          let lastTestFrameTime = performance.now();
+
+          const frameTracker = () => {
+            const now = performance.now();
+            const d = now - lastTestFrameTime;
+            lastTestFrameTime = now;
+            if (d > testWorstFrame) testWorstFrame = d;
+            if (isTestRunning) requestAnimationFrame(frameTracker);
+          };
+          requestAnimationFrame(frameTracker);
+
+          const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+          // Stage 1: 20 sidebar switches within ~1.5s (~75ms interval)
+          const tabs = ['ai', 'appearance', 'behavior', 'startup', 'agents', 'about'];
+          for (let i = 0; i < 20; i++) {
+            const tabName = tabs[i % tabs.length];
+            const navBtn = document.querySelector(`.nav-item[data-tab="${tabName}"]`);
+            if (navBtn) navBtn.click();
+            await sleep(75);
+          }
+
+          // Stage 2: 10 toggle flips within ~1.2s (~120ms interval)
+          showTab('behavior');
+          await sleep(60);
+          const behaviorToggles = Array.from(document.querySelectorAll('#behavior-panel .toggle-switch'));
+          for (let i = 0; i < 10; i++) {
+            const toggle = behaviorToggles[i % (behaviorToggles.length || 1)];
+            if (toggle) toggle.click();
+            await sleep(120);
+          }
+
+          // Stage 3: 10 dark-mode flips within ~1.2s (~120ms interval)
+          const themeBtn = document.getElementById('theme-toggle-btn');
+          for (let i = 0; i < 10; i++) {
+            if (themeBtn) themeBtn.click();
+            await sleep(120);
+          }
+
+          // Wait 500ms for batch quiet timer to settle
+          await sleep(500);
+
+          const totalDuration = (performance.now() - testStartTime).toFixed(1);
+          const testLongTasks = perfLongTasksCount - startLongTasks;
+          const testWrites = perfStoreWritesCount - startStoreWrites;
+          const testEvents = perfEmittedEventsCount - startEmittedEvents;
+
+          const summaryLines = [
+            `\n================ RAPID CLICK TEST SUMMARY ================`,
+            `Total Duration:     ${totalDuration} ms`,
+            `Long Tasks (>50ms): ${testLongTasks} (Worst in test: ${perfWorstLongTaskMs.toFixed(1)} ms)`,
+            `Worst Frame Time:   ${testWorstFrame.toFixed(1)} ms`,
+            `Store Writes:       ${testWrites}`,
+            `Emitted Events:     ${testEvents}`,
+            `==========================================================\n`
+          ];
+          const summaryStr = summaryLines.join('\n');
+          console.log(summaryStr);
+          try {
+            window.__TAURI__?.core?.invoke('log_perf_metric', { message: summaryStr }).catch(() => {});
+          } catch (_) {}
+
+          isTestRunning = false;
+        }
+      });
+    }
+
+    // ----------------------------------------------------------------------
+    // Debug-Only Smoke Test (Triggered by Ctrl+Alt+T in Settings Window)
+    // ----------------------------------------------------------------------
+    function initSmokeTest() {
+      let isSmokeRunning = false;
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+      const logSmoke = (name, passed, detail = '') => {
+        const line = `[SMOKE TEST] ${name}: ${passed ? 'PASS' : 'FAIL'}${detail ? ' (' + detail + ')' : ''}`;
+        console.log(line);
+        try {
+          window.__TAURI__?.core?.invoke?.('log_perf_metric', { message: line }).catch(() => {});
+        } catch (_) {}
+      };
+
+      window.addEventListener('keydown', async (e) => {
+        if (e.ctrlKey && e.altKey && (e.key === 't' || e.key === 'T')) {
+          if (isSmokeRunning) return;
+          isSmokeRunning = true;
+
+          logSmoke('Smoke Test Suite', true, 'Ctrl+Alt+T triggered');
+
+          try {
+            // Check 1: Switch to every sidebar section and assert visibility
+            const tabs = ['ai', 'appearance', 'behavior', 'startup', 'agents', 'about'];
+            let allTabsOk = true;
+            for (const tabName of tabs) {
+              const navBtn = document.querySelector(`.nav-item[data-tab="${tabName}"]`);
+              if (navBtn) navBtn.click();
+              await sleep(60);
+              const panel = document.getElementById(`${tabName}-panel`);
+              const isVisible = panel && panel.style.display !== 'none' && getComputedStyle(panel).display !== 'none';
+              if (!isVisible) {
+                allTabsOk = false;
+                logSmoke(`Sidebar Section [${tabName}] Visible`, false, 'panel hidden');
+              }
+            }
+            logSmoke('Sidebar Section Navigation', allTabsOk, `${tabs.length} sections verified`);
+
+            // Check 2: Flip one Behavior toggle, assert state changes and is saved, then flip back
+            showTab('behavior');
+            await sleep(60);
+            const eyesTrack = document.querySelector('#behavior-panel .toggle-track[data-toggle="eyesFollow"]');
+            if (eyesTrack) {
+              const initialActive = eyesTrack.classList.contains('active');
+              eyesTrack.click();
+              await sleep(60);
+              const newActive = eyesTrack.classList.contains('active');
+              const toggled = (newActive !== initialActive);
+              const enqueued = SettingsBatchQueue.queue.has('behavior') || SettingsBatchQueue.dirtyEvents.has('settings-behavior-changed');
+
+              // Flip back to restore original state
+              eyesTrack.click();
+              await sleep(60);
+
+              logSmoke('Behavior Toggle Flip & Save', toggled && enqueued, `stateChanged: ${toggled}, enqueued: ${enqueued}`);
+            } else {
+              logSmoke('Behavior Toggle Flip & Save', false, 'toggle track not found');
+            }
+
+            // Check 3: Click dark mode button, assert data-theme changes, then flip back
+            const themeBtn = document.getElementById('theme-toggle-btn');
+            if (themeBtn) {
+              const initialTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+              themeBtn.click();
+              await sleep(60);
+              const toggledTheme = document.documentElement.getAttribute('data-theme');
+              const themeChanged = (toggledTheme !== initialTheme);
+
+              // Flip back
+              themeBtn.click();
+              await sleep(60);
+              const restoredTheme = document.documentElement.getAttribute('data-theme');
+              const themeRestored = (restoredTheme === initialTheme);
+
+              logSmoke('Dark Mode Theme Toggle', themeChanged && themeRestored, `from ${initialTheme} to ${toggledTheme} and restored`);
+            } else {
+              logSmoke('Dark Mode Theme Toggle', false, 'theme-toggle-btn not found');
+            }
+
+            // Check 4: Click minimize-free controls only (do NOT close or minimize window)
+            showTab('appearance');
+            await sleep(60);
+            const creamBtn = document.querySelector('[data-dude-color="cream"]');
+            let controlsOk = false;
+            if (creamBtn) {
+              creamBtn.click();
+              await sleep(50);
+              controlsOk = true;
+            }
+            logSmoke('Minimize-Free Controls Interactive', controlsOk, 'appearance swatch responded without window actions');
+
+            // Check 5: Trigger mascot window debug check via Tauri event
+            if (window.__TAURI__?.event?.emit) {
+              await window.__TAURI__.event.emit('run-mascot-smoke-test');
+              await sleep(100);
+            }
+          } catch (err) {
+            logSmoke('Suite Execution', false, String(err));
+          } finally {
+            isSmokeRunning = false;
+          }
+        }
+      });
+    }
+
+    function initDebugFeatures() {
+      initPerformanceMonitor();
+      initSmokeTest();
+    }
+
+    try {
+      if (window.__TAURI__?.core?.invoke) {
+        window.__TAURI__.core.invoke('is_debug').then((res) => {
+          if (res) initDebugFeatures();
+        }).catch(() => {});
+      }
+    } catch (_) {}
+
+    // Intercept Tauri event emit to count emitted events
+    try {
+      if (window.__TAURI__?.event?.emit) {
+        const origEmit = window.__TAURI__.event.emit;
+        window.__TAURI__.event.emit = function (name, payload) {
+          perfEmittedEventsCount++;
+          perfActivityCounter++;
+          return origEmit.call(this, name, payload);
+        };
+      }
+    } catch (_) {}
+
+    // ----------------------------------------------------------------------
+    // Unified Settings Batch Queue (Single write queue, 400ms quiet timer)
+    // ----------------------------------------------------------------------
+    const SettingsBatchQueue = {
+      queue: new Map(),
+      dirtyEvents: new Map(),
+      timer: null,
+      isFlushing: false,
+
+      enqueue(key, value, eventName = null, eventPayloadGetter = null) {
+        perfActivityCounter++;
+        this.queue.set(key, value);
+        if (eventName) {
+          this.dirtyEvents.set(eventName, typeof eventPayloadGetter === 'function' ? eventPayloadGetter : () => eventPayloadGetter);
+        }
+
+        // Synchronous offline mirroring in localStorage
+        try {
+          if (key === 'theme') {
+            localStorage.setItem('dude-theme', value);
+          } else if (key === 'appearance') {
+            localStorage.setItem('dude_appearance_settings', JSON.stringify(value));
+          } else {
+            localStorage.setItem('dude_store_' + key, JSON.stringify(value));
+          }
+        } catch (_) {}
+
+        // Reset 400ms quiet timer ("latest value wins")
+        if (this.timer) clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+          this.flush();
+        }, 400);
+      },
+
+      async flush() {
+        if (this.timer) {
+          clearTimeout(this.timer);
+          this.timer = null;
+        }
+        if (this.queue.size === 0 && this.dirtyEvents.size === 0) return;
+        if (this.isFlushing) {
+          this.timer = setTimeout(() => this.flush(), 40);
+          return;
+        }
+        this.isFlushing = true;
+
+        const entries = Array.from(this.queue.entries());
+        this.queue.clear();
+
+        const events = Array.from(this.dirtyEvents.entries());
+        this.dirtyEvents.clear();
+
+        try {
+          const store = await getStoreHandle();
+          for (const [k, v] of entries) {
+            await store.set(k, v);
+          }
+          if (entries.length > 0) {
+            await store.save(); // Exactly ONE store.save() per batch!
+          }
+
+          // Emit full merged objects once per batch
+          for (const [evtName, getPayload] of events) {
+            try {
+              if (window.__TAURI__?.event?.emit) {
+                const payload = getPayload();
+                await window.__TAURI__.event.emit(evtName, payload);
+              }
+            } catch (emitErr) {
+              console.warn(`Failed to emit ${evtName}:`, emitErr);
+            }
+          }
+        } catch (err) {
+          console.warn('Error flushing SettingsBatchQueue:', err);
+        } finally {
+          this.isFlushing = false;
+        }
+      }
+    };
+
+    // Rapid clicking safety: only drop duplicate events of the EXACT same physical click
+    let lastClickEvent = null;
+    let lastClickTime = 0;
+    let frameClickRaf = null;
+
+    function isRapidDuplicateClick(el, evt) {
+      const e = evt || window.event;
+      if (!e) return false;
+      if (e === lastClickEvent) return true;
+      const now = e.timeStamp || performance.now();
+      if (lastClickEvent && Math.abs(now - lastClickTime) < 1 && e.target === lastClickEvent.target) {
+        return true;
+      }
+      lastClickEvent = e;
+      lastClickTime = now;
+      if (!frameClickRaf) {
+        const reset = () => {
+          lastClickEvent = null;
+          lastClickTime = 0;
+          frameClickRaf = null;
+        };
+        frameClickRaf = requestAnimationFrame(reset);
+        setTimeout(reset, 32);
+      }
+      return false;
+    }
+
+    // OS-touching actions: serialized per action type and coalesced (only LAST state applied)
+    let desiredAutostart = null;
+    let isAutostartPending = false;
+
+    async function requestAutostartChange(target) {
+      desiredAutostart = target;
+      if (isAutostartPending) return;
+      isAutostartPending = true;
+
+      while (desiredAutostart !== null) {
+        const next = desiredAutostart;
+        desiredAutostart = null;
+        try {
+          await setAutostartState(next);
+        } catch (err) {
+          console.warn('Failed to update autostart setting:', err);
+        }
+      }
+      isAutostartPending = false;
+    }
+
+    let desiredToggleShortcut = null;
+    let isToggleShortcutPending = false;
+
+    async function requestToggleShortcutChange(target) {
+      desiredToggleShortcut = target;
+      if (isToggleShortcutPending) return;
+      isToggleShortcutPending = true;
+
+      while (desiredToggleShortcut !== null) {
+        const next = desiredToggleShortcut;
+        desiredToggleShortcut = null;
+        try {
+          if (next) {
+            await registerShortcutSafe('Ctrl+Shift+M', handleToggleShortcut, 'shortcutToggleEnabled');
+          } else {
+            await unregisterGlobalShortcut('Ctrl+Shift+M');
+          }
+        } catch (err) {
+          console.warn('Failed to update toggle shortcut:', err);
+        }
+      }
+      isToggleShortcutPending = false;
+    }
+
+    let desiredChatShortcut = null;
+    let isChatShortcutPending = false;
+
+    async function requestChatShortcutChange(target) {
+      desiredChatShortcut = target;
+      if (isChatShortcutPending) return;
+      isChatShortcutPending = true;
+
+      while (desiredChatShortcut !== null) {
+        const next = desiredChatShortcut;
+        desiredChatShortcut = null;
+        try {
+          if (next) {
+            await registerShortcutSafe('Ctrl+Shift+Space', handleChatShortcut, 'shortcutChatEnabled');
+          } else {
+            await unregisterGlobalShortcut('Ctrl+Shift+Space');
+          }
+        } catch (err) {
+          console.warn('Failed to update chat shortcut:', err);
+        }
+      }
+      isChatShortcutPending = false;
+    }
+
+    let isAgentActionPending = false;
+
+    // WebP image generator / preloader (runs async, never blocks UI)
+    function ensureAppearanceTreeWebP() {
+      try {
+        const pImg = new Image();
+        pImg.decoding = 'async';
+        pImg.onerror = () => {
+          const srcImg = new Image();
+          srcImg.crossOrigin = 'anonymous';
+          srcImg.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              canvas.width = srcImg.naturalWidth;
+              canvas.height = srcImg.naturalHeight;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(srcImg, 0, 0);
+              const dataUrl = canvas.toDataURL('image/webp', 0.95);
+              const base64Data = dataUrl.split(',')[1];
+              if (base64Data && window.__TAURI__?.core?.invoke) {
+                window.__TAURI__.core.invoke('save_asset_webp', { base64Data }).catch(() => {});
+              }
+            } catch (err) {
+              console.warn('Failed to generate WebP via canvas:', err);
+            }
+          };
+          srcImg.src = 'assets/appearance-tree.png';
+        };
+        pImg.src = 'assets/appearance-tree.webp';
+      } catch (_) {}
+    }
+    ensureAppearanceTreeWebP();
+
     // Minimize Window helper
     async function minimizeSettingsWindow() {
       try {
@@ -2783,8 +3522,16 @@
       }
     }
 
-    // Close Window helper
+    // Close Window helper (flushes write queue immediately)
     async function closeSettingsWindow() {
+      try {
+        SettingsBatchQueue.flush();
+      } catch (_) {}
+      try {
+        if (typeof onSettingsWindowHidden === 'function') {
+          onSettingsWindowHidden();
+        }
+      } catch (_) { }
       try {
         if (window.__TAURI__?.window?.getCurrentWindow) {
           const win = window.__TAURI__.window.getCurrentWindow();
@@ -2810,6 +3557,7 @@
         btn.addEventListener('mousedown', (e) => e.stopPropagation());
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
+          if (isRapidDuplicateClick(btn)) return;
           minimizeSettingsWindow();
         });
       }
@@ -2822,6 +3570,7 @@
         btn.addEventListener('mousedown', (e) => e.stopPropagation());
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
+          if (isRapidDuplicateClick(btn)) return;
           closeSettingsWindow();
         });
       }
@@ -2839,56 +3588,66 @@
     const aboutPanel = document.getElementById('about-panel');
     const navItems = document.querySelectorAll('.nav-item');
 
-    function showTab(tab) {
-      navItems.forEach(n => n.classList.remove('active'));
-      if (aiPanel) aiPanel.style.display = 'none';
-      if (appearancePanel) appearancePanel.style.display = 'none';
-      if (welcomePanel) welcomePanel.style.display = 'none';
-      if (behaviorPanel) behaviorPanel.style.display = 'none';
-      if (startupPanel) startupPanel.style.display = 'none';
-      if (agentsPanel) agentsPanel.style.display = 'none';
-      if (aboutPanel) aboutPanel.style.display = 'none';
+    const initializedTabs = new Set();
+    let currentActiveTab = 'ai';
 
-      if (tab !== 'agents') {
-        try { stopAgentsEventPolling(); } catch (err) { console.error('Failed to stop agents polling:', err); }
-      }
-
-      if (tab === 'ai') {
-        const item = document.querySelector('.nav-item[data-tab="ai"]');
-        if (item) item.classList.add('active');
-        if (aiPanel) aiPanel.style.display = 'flex';
-      } else if (tab === 'appearance') {
-        const item = document.querySelector('.nav-item[data-tab="appearance"]');
-        if (item) item.classList.add('active');
-        if (appearancePanel) appearancePanel.style.display = 'block';
-        try { loadAppearanceSettings(); } catch (err) { console.error('Failed to load appearance settings:', err); }
-      } else if (tab === 'behavior') {
-        const item = document.querySelector('.nav-item[data-tab="behavior"]');
-        if (item) item.classList.add('active');
-        if (behaviorPanel) behaviorPanel.style.display = 'block';
-        try { loadBehaviorSettings(); } catch (err) { console.error('Failed to load behavior settings:', err); }
-      } else if (tab === 'startup') {
-        const item = document.querySelector('.nav-item[data-tab="startup"]');
-        if (item) item.classList.add('active');
-        if (startupPanel) startupPanel.style.display = 'block';
-        try { loadStartupSettings(); } catch (err) { console.error('Failed to load startup settings:', err); }
-      } else if (tab === 'agents') {
-        const item = document.querySelector('.nav-item[data-tab="agents"]');
-        if (item) item.classList.add('active');
-        if (agentsPanel) agentsPanel.style.display = 'block';
-        try {
+    function ensureTabInitialized(tab) {
+      if (initializedTabs.has(tab)) return;
+      initializedTabs.add(tab);
+      try {
+        if (tab === 'appearance') {
+          loadAppearanceSettings();
+        } else if (tab === 'behavior') {
+          loadBehaviorSettings();
+        } else if (tab === 'startup') {
+          loadStartupSettings();
+        } else if (tab === 'agents') {
           loadAgentsSettings();
-          startAgentsEventPolling();
-        } catch (err) { console.error('Failed to load agents settings:', err); }
-      } else if (tab === 'about') {
-        const item = document.querySelector('.nav-item[data-tab="about"]');
-        if (item) item.classList.add('active');
-        if (aboutPanel) aboutPanel.style.display = 'block';
-        try { loadAboutSection(); } catch (err) { console.error('Failed to load about section:', err); }
-      } else if (tab === 'welcome') {
-        if (welcomePanel) welcomePanel.style.display = 'flex';
-        try { initWelcomeView(); } catch (err) { console.error('Failed to init welcome view:', err); }
+        } else if (tab === 'about') {
+          loadAboutSection();
+        } else if (tab === 'welcome') {
+          initWelcomeView();
+        }
+      } catch (err) {
+        console.warn(`Failed to initialize tab ${tab}:`, err);
       }
+    }
+
+    function showTab(tab) {
+      perfActivityCounter++;
+      if (currentActiveTab === tab && initializedTabs.has(tab)) {
+        return;
+      }
+      currentActiveTab = tab;
+
+      navItems.forEach(n => {
+        if (n.getAttribute('data-tab') === tab) {
+          n.classList.add('active');
+        } else {
+          n.classList.remove('active');
+        }
+      });
+
+      if (aiPanel) aiPanel.style.display = (tab === 'ai') ? 'flex' : 'none';
+      if (appearancePanel) appearancePanel.style.display = (tab === 'appearance') ? 'block' : 'none';
+      if (welcomePanel) welcomePanel.style.display = (tab === 'welcome') ? 'flex' : 'none';
+      if (behaviorPanel) behaviorPanel.style.display = (tab === 'behavior') ? 'block' : 'none';
+      if (startupPanel) startupPanel.style.display = (tab === 'startup') ? 'block' : 'none';
+      if (agentsPanel) agentsPanel.style.display = (tab === 'agents') ? 'block' : 'none';
+      if (aboutPanel) aboutPanel.style.display = (tab === 'about') ? 'block' : 'none';
+
+      // Lazy-init section exactly ONCE
+      ensureTabInitialized(tab);
+
+      // Timers: agents polling only runs when agents tab is active
+      if (tab === 'agents') {
+        startAgentsEventPolling();
+      } else {
+        stopAgentsEventPolling();
+      }
+
+      // Refresh cached mascot center without layout thrashing
+      refreshMascotCenterCache();
     }
 
     // ONE click handler attached once through event delegation
@@ -2898,6 +3657,7 @@
         const item = e.target.closest('.nav-item');
         if (!item) return;
         e.preventDefault();
+        if (isRapidDuplicateClick(item)) return;
         const tab = item.getAttribute('data-tab');
         if (tab) {
           showTab(tab);
@@ -3330,6 +4090,7 @@
               }
             },
             async save() {
+              perfStoreWritesCount++;
               try {
                 await window.__TAURI__.core.invoke('plugin:store|save', { rid: this.rid });
               } catch (e) {
@@ -3354,7 +4115,9 @@
             localStorage.setItem('dude_store_' + key, JSON.stringify(value));
           } catch (_) { }
         },
-        async save() { }
+        async save() {
+          perfStoreWritesCount++;
+        }
       };
     }
 
@@ -3397,11 +4160,10 @@
     }
 
     function debounceAppearanceAutoSave() {
-      clearTimeout(appearanceAutoSaveTimer);
-      appearanceAutoSaveTimer = setTimeout(async () => {
-        await saveAppearanceSettings();
-        showAppearanceSavedIndicator();
-      }, 300);
+      const payload = sanitizeAppearance(currentAppearance);
+      currentAppearance = payload;
+      showAppearanceSavedIndicator();
+      SettingsBatchQueue.enqueue('appearance', payload, 'appearance-changed', () => currentAppearance);
     }
 
     function sanitizeAppearance(raw) {
@@ -3457,6 +4219,9 @@
         const c = btn.getAttribute('data-dude-color');
         btn.classList.toggle('active', c === data.dudeColor);
       });
+      if (typeof onAppearanceColorUpdated === 'function' && data && data.dudeColor) {
+        onAppearanceColorUpdated(data.dudeColor);
+      }
 
       // Pill Color
       pillSwatches.forEach(swatch => {
@@ -3489,6 +4254,7 @@
     // Dude Color clicks
     dudeColorBtns.forEach(btn => {
       btn.addEventListener('click', () => {
+        if (isRapidDuplicateClick(btn)) return;
         const c = btn.getAttribute('data-dude-color');
         if (ALLOWED_DUDE_COLORS.includes(c)) {
           currentAppearance.dudeColor = c;
@@ -3501,6 +4267,7 @@
     // Pill Color clicks
     pillSwatches.forEach(swatch => {
       swatch.addEventListener('click', () => {
+        if (isRapidDuplicateClick(swatch)) return;
         const c = swatch.getAttribute('data-pill-color');
         if (ALLOWED_PILL_COLORS.includes(c)) {
           currentAppearance.pillColor = c;
@@ -3563,29 +4330,9 @@
 
     // Save appearance settings to store (dude_store.json)
     async function saveAppearanceSettings() {
-      try {
-        const payload = sanitizeAppearance(currentAppearance);
-        currentAppearance = payload;
-        try {
-          const store = await getStoreHandle();
-          await store.set('appearance', payload);
-          await store.save();
-        } catch (err) {
-          console.warn('Failed to save appearance to store:', err);
-        }
-        try {
-          localStorage.setItem('dude_appearance_settings', JSON.stringify(payload));
-        } catch (_) { }
-        try {
-          if (window.__TAURI__?.event?.emit) {
-            await window.__TAURI__.event.emit('appearance-changed', payload);
-          }
-        } catch (emitErr) {
-          console.warn('Failed to emit appearance-changed event:', emitErr);
-        }
-      } catch (err) {
-        console.warn('Failed to save appearance settings:', err);
-      }
+      const payload = sanitizeAppearance(currentAppearance);
+      currentAppearance = payload;
+      SettingsBatchQueue.enqueue('appearance', payload, 'appearance-changed', () => currentAppearance);
     }
 
     // Initial load for appearance settings
@@ -3811,21 +4558,8 @@
     }
 
     function debounceStartupSave() {
-      clearTimeout(startupSaveTimer);
-      startupSaveTimer = setTimeout(async () => {
-        try {
-          const store = await getStoreHandle();
-          await store.set('startup', currentStartup);
-          await store.save();
-          try {
-            localStorage.setItem('dude_store_startup', JSON.stringify(currentStartup));
-          } catch (_) { }
-          showStartupSaved();
-        } catch (err) {
-          console.error('Error saving startup settings:', err);
-          showStartupSaveError();
-        }
-      }, 300);
+      showStartupSaved();
+      SettingsBatchQueue.enqueue('startup', currentStartup);
     }
 
     async function loadBehaviorSettings() {
@@ -3835,6 +4569,9 @@
         currentBehavior = mergeWithDefaults(raw, BEHAVIOR_DEFAULTS);
         for (const [k, v] of Object.entries(currentBehavior)) {
           syncToggleUI('behavior', k, v);
+        }
+        if (typeof onBehaviorSettingsLoaded === 'function') {
+          onBehaviorSettingsLoaded(currentBehavior);
         }
       } catch (err) {
         console.warn('Failed to load behavior settings:', err);
@@ -3868,84 +4605,45 @@
       }
     }
 
-    // Handle toggle click in Behavior or Startup
+    // Handle toggle click in Behavior or Startup: update UI immediately, synchronously!
     function handleToggleClick(section, key) {
       if (section === 'behavior') {
         const target = !currentBehavior[key];
         currentBehavior[key] = target;
         syncToggleUI('behavior', key, target);
-        clearTimeout(behaviorSaveTimer);
-        behaviorSaveTimer = setTimeout(async () => {
-          try {
-            const store = await getStoreHandle();
-            await store.set('behavior', currentBehavior);
-            await store.save();
-            try { localStorage.setItem('dude_store_behavior', JSON.stringify(currentBehavior)); } catch (_) { }
-            try {
-              if (window.__TAURI__?.event?.emit) {
-                await window.__TAURI__.event.emit('behavior-changed', { ...currentBehavior });
-              }
-            } catch (emitErr) {
-              console.warn('Failed to emit behavior-changed event:', emitErr);
-            }
-            showBehaviorSaved();
-          } catch (err) {
-            console.error('Error saving behavior settings:', err);
-            showBehaviorSaveError();
-          }
-        }, 300);
+        if (typeof onBehaviorSettingToggled === 'function') {
+          onBehaviorSettingToggled(key, target);
+        }
+        showBehaviorSaved();
+        SettingsBatchQueue.enqueue('behavior', currentBehavior, 'behavior-changed', () => ({ ...currentBehavior }));
       } else if (section === 'startup') {
         if (key === 'startWithWindows') {
           const target = !currentStartup.startWithWindows;
           currentStartup.startWithWindows = target;
           syncToggleUI('startup', 'startWithWindows', target);
-          try {
-            setAutostartState(target);
-          } catch (err) {
-            console.warn('Failed to update autostart setting in OS:', err);
-          }
-          debounceStartupSave();
+          showStartupSaved();
+          SettingsBatchQueue.enqueue('startup', currentStartup);
+          requestAutostartChange(target);
         } else if (key === 'showMascotOnStartup') {
           const target = !currentStartup.showMascotOnStartup;
           currentStartup.showMascotOnStartup = target;
           syncToggleUI('startup', 'showMascotOnStartup', target);
-          debounceStartupSave();
+          showStartupSaved();
+          SettingsBatchQueue.enqueue('startup', currentStartup);
         } else if (key === 'shortcutToggleEnabled') {
           const target = !currentStartup.shortcutToggleEnabled;
           currentStartup.shortcutToggleEnabled = target;
           syncToggleUI('startup', 'shortcutToggleEnabled', target);
-          if (target) {
-            registerShortcutSafe('Ctrl+Shift+M', handleToggleShortcut, 'shortcutToggleEnabled').then((ok) => {
-              if (ok) {
-                debounceStartupSave();
-              }
-            });
-          } else {
-            try {
-              unregisterGlobalShortcut('Ctrl+Shift+M');
-            } catch (err) {
-              console.warn('Failed to unregister Ctrl+Shift+M:', err);
-            }
-            debounceStartupSave();
-          }
+          showStartupSaved();
+          SettingsBatchQueue.enqueue('startup', currentStartup);
+          requestToggleShortcutChange(target);
         } else if (key === 'shortcutChatEnabled') {
           const target = !currentStartup.shortcutChatEnabled;
           currentStartup.shortcutChatEnabled = target;
           syncToggleUI('startup', 'shortcutChatEnabled', target);
-          if (target) {
-            registerShortcutSafe('Ctrl+Shift+Space', handleChatShortcut, 'shortcutChatEnabled').then((ok) => {
-              if (ok) {
-                debounceStartupSave();
-              }
-            });
-          } else {
-            try {
-              unregisterGlobalShortcut('Ctrl+Shift+Space');
-            } catch (err) {
-              console.warn('Failed to unregister Ctrl+Shift+Space:', err);
-            }
-            debounceStartupSave();
-          }
+          showStartupSaved();
+          SettingsBatchQueue.enqueue('startup', currentStartup);
+          requestChatShortcutChange(target);
         }
       }
     }
@@ -3958,6 +4656,8 @@
       const tile = e.target.closest('.tile');
       const track = e.target.closest('.toggle-track');
       if (!tile && !track) return;
+
+      if (isRapidDuplicateClick(track || tile)) return;
 
       const targetTile = tile || track.closest('.tile');
       const key = (targetTile ? targetTile.getAttribute('data-setting') : null) || (track ? track.getAttribute('data-toggle') : null);
@@ -4193,22 +4893,26 @@
 
       if (withAnimation) {
         themeToggleBtn.classList.remove('swapping');
-        void themeToggleBtn.offsetWidth; // force reflow
-        themeToggleBtn.classList.add('swapping');
-        setTimeout(() => {
-          themeToggleBtn.classList.remove('swapping');
-        }, 160);
+        requestAnimationFrame(() => {
+          themeToggleBtn.classList.add('swapping');
+          setTimeout(() => {
+            themeToggleBtn.classList.remove('swapping');
+          }, 160);
+        });
       }
     }
 
+    let themeTransitionTimer = null;
     function applyTheme(theme, animate = false) {
       if (animate) {
-        document.documentElement.classList.add('theme-transitioning');
+        document.documentElement.classList.add('theme-transition', 'theme-transitioning');
         document.documentElement.setAttribute('data-theme', theme);
         updateThemeButtonUI(theme, true);
-        setTimeout(() => {
-          document.documentElement.classList.remove('theme-transitioning');
-        }, 220);
+        if (themeTransitionTimer) clearTimeout(themeTransitionTimer);
+        themeTransitionTimer = setTimeout(() => {
+          document.documentElement.classList.remove('theme-transition', 'theme-transitioning');
+          themeTransitionTimer = null;
+        }, 250);
       } else {
         document.documentElement.setAttribute('data-theme', theme);
         updateThemeButtonUI(theme, false);
@@ -4219,22 +4923,11 @@
       const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
       const next = current === 'dark' ? 'light' : 'dark';
 
-      // 1. Apply immediately with 200ms transition and icon swap animation
+      // 1. Apply immediately with 250ms transition and icon swap animation
       applyTheme(next, true);
 
-      // 2. Synchronously mirror in localStorage ("dude-theme")
-      try {
-        localStorage.setItem('dude-theme', next);
-      } catch (_) { }
-
-      // 3. Persist in Tauri store plugin (dude_store.json, key 'theme')
-      try {
-        const store = await getStoreHandle();
-        await store.set('theme', next);
-        await store.save();
-      } catch (err) {
-        console.warn('Failed to save theme to store plugin:', err);
-      }
+      // 2. Queue write via SettingsBatchQueue (merges and writes once after 400ms quiet)
+      SettingsBatchQueue.enqueue('theme', next);
       // Note: Do NOT emit any event to the mascot window
     }
 
@@ -4264,8 +4957,7 @@
           }
         } else {
           // Store doesn't have theme yet; save current theme
-          await store.set('theme', activeTheme);
-          await store.save();
+          SettingsBatchQueue.enqueue('theme', activeTheme);
         }
       } catch (err) {
         console.warn('Failed to reconcile theme with store:', err);
@@ -4275,6 +4967,7 @@
     if (themeToggleBtn) {
       themeToggleBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        if (isRapidDuplicateClick(themeToggleBtn)) return;
         toggleTheme();
       });
     }
@@ -4453,6 +5146,7 @@
 
     async function handleApproveCommandsToggleClick(e) {
       if (e) e.stopPropagation();
+      if (isRapidDuplicateClick(agentsApproveToggle || agentsApproveTile)) return;
 
       const hooksNotInstalled = !currentAgentsStatus || !currentAgentsStatus.installed;
       const hooksNeedRepair = currentAgentsStatus && currentAgentsStatus.status === 'needs repair';
@@ -4484,30 +5178,15 @@
       }
       updateApprovalsUI();
 
-      // Persist to store
-      try {
-        if (window.__TAURI__?.core?.invoke) {
-          const rid = await window.__TAURI__.core.invoke('plugin:store|load', {
-            path: 'dude_store.json'
-          });
-          const [agentsVal, exists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents' });
-          const current = (exists && agentsVal && typeof agentsVal === 'object') ? agentsVal : {};
-          current.approveCommands = agentsApproveCommandsSetting;
-          current.allowedCommands = agentsAllowedCommandsList;
-          await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents', value: current });
-          await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents.approveCommands', value: agentsApproveCommandsSetting });
-          await window.__TAURI__.core.invoke('plugin:store|save', { rid });
-        }
-        if (window.__TAURI__?.event?.emit) {
-          await window.__TAURI__.event.emit('agents-settings-changed', {
-            status: currentAgentsStatus,
-            approveCommands: agentsApproveCommandsSetting,
-            allowedCommands: agentsAllowedCommandsList
-          });
-        }
-      } catch (err) {
-        console.warn('Failed to save approveCommands setting:', err);
-      }
+      // Persist to store via SettingsBatchQueue
+      SettingsBatchQueue.enqueue('agents', {
+        approveCommands: agentsApproveCommandsSetting,
+        allowedCommands: agentsAllowedCommandsList
+      }, 'agents-settings-changed', () => ({
+        status: currentAgentsStatus,
+        approveCommands: agentsApproveCommandsSetting,
+        allowedCommands: agentsAllowedCommandsList
+      }));
     }
 
     if (agentsApproveToggle) {
@@ -4523,6 +5202,7 @@
     if (agentsClearAllowedBtn) {
       agentsClearAllowedBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
+        if (isRapidDuplicateClick(agentsClearAllowedBtn)) return;
         if (agentsClearAllowedBtn.textContent !== 'Sure?') {
           agentsClearAllowedBtn.textContent = 'Sure?';
           agentsClearAllowedBtn.classList.add('sure');
@@ -4539,30 +5219,15 @@
           if (agentsAllowedCount) {
             agentsAllowedCount.textContent = '0 saved';
           }
-          // Persist to store
-          try {
-            if (window.__TAURI__?.core?.invoke) {
-              const rid = await window.__TAURI__.core.invoke('plugin:store|load', {
-                path: 'dude_store.json'
-              });
-              const [agentsVal, exists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents' });
-              const current = (exists && agentsVal && typeof agentsVal === 'object') ? agentsVal : {};
-              current.allowedCommands = [];
-              current.approveCommands = agentsApproveCommandsSetting;
-              await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents', value: current });
-              await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents.allowedCommands', value: [] });
-              await window.__TAURI__.core.invoke('plugin:store|save', { rid });
-            }
-            if (window.__TAURI__?.event?.emit) {
-              await window.__TAURI__.event.emit('agents-settings-changed', {
-                status: currentAgentsStatus,
-                approveCommands: agentsApproveCommandsSetting,
-                allowedCommands: []
-              });
-            }
-          } catch (err) {
-            console.warn('Failed to clear allowed commands:', err);
-          }
+          // Persist to store via SettingsBatchQueue
+          SettingsBatchQueue.enqueue('agents', {
+            approveCommands: agentsApproveCommandsSetting,
+            allowedCommands: []
+          }, 'agents-settings-changed', () => ({
+            status: currentAgentsStatus,
+            approveCommands: agentsApproveCommandsSetting,
+            allowedCommands: []
+          }));
         }
       });
     }
@@ -4593,7 +5258,7 @@
     }
 
     async function pollAgentsLastEvent() {
-      if (!currentAgentsStatus?.installed || currentAgentsStatus?.status === 'needs repair') {
+      if (!currentAgentsStatus?.installed || currentAgentsStatus?.status === 'needs repair' || isWindowHidden || currentActiveTab !== 'agents') {
         return;
       }
       try {
@@ -4616,6 +5281,7 @@
 
     function startAgentsEventPolling() {
       stopAgentsEventPolling();
+      if (isWindowHidden || currentActiveTab !== 'agents') return;
       pollAgentsLastEvent();
       agentsPollInterval = setInterval(pollAgentsLastEvent, 2000);
     }
@@ -4652,6 +5318,8 @@
     if (modalConfirmInstallBtn) {
       modalConfirmInstallBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
+        if (isAgentActionPending) return;
+        isAgentActionPending = true;
         modalConfirmInstallBtn.textContent = 'Installing...';
         modalConfirmInstallBtn.disabled = true;
         try {
@@ -4675,6 +5343,8 @@
             agentsStatusLine.classList.remove('warning');
             agentsStatusLine.classList.add('error');
           }
+        } finally {
+          isAgentActionPending = false;
         }
       });
     }
@@ -4683,6 +5353,7 @@
     async function handleAgentsToggleClick(e) {
       e.stopPropagation();
       if (!currentAgentsStatus) return;
+      if (isRapidDuplicateClick(antigravityToggle || antigravityTile)) return;
 
       if (!currentAgentsStatus.installed) {
         // Clicking toggle while not installed runs install flow
@@ -4727,6 +5398,8 @@
     if (antigravityReinstallBtn) {
       antigravityReinstallBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
+        if (isAgentActionPending) return;
+        isAgentActionPending = true;
         const origText = antigravityReinstallBtn.textContent;
         antigravityReinstallBtn.textContent = '...';
         antigravityReinstallBtn.disabled = true;
@@ -4752,6 +5425,7 @@
         } finally {
           antigravityReinstallBtn.textContent = origText;
           antigravityReinstallBtn.disabled = false;
+          isAgentActionPending = false;
         }
       });
     }
@@ -4760,6 +5434,7 @@
     if (antigravityUninstallBtn) {
       antigravityUninstallBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
+        if (isAgentActionPending) return;
         if (antigravityUninstallBtn.textContent !== 'Sure?') {
           antigravityUninstallBtn.textContent = 'Sure?';
           clearTimeout(uninstallConfirmTimer);
@@ -4768,6 +5443,7 @@
           }, 3000);
         } else {
           clearTimeout(uninstallConfirmTimer);
+          isAgentActionPending = true;
           antigravityUninstallBtn.textContent = '...';
           antigravityUninstallBtn.disabled = true;
           try {
@@ -4784,6 +5460,7 @@
             }
           } finally {
             antigravityUninstallBtn.disabled = false;
+            isAgentActionPending = false;
           }
         }
       });
@@ -4821,6 +5498,499 @@
       loadAboutSection();
     } catch (e) {
       console.error('Error initializing about section:', e);
+    }
+
+    // ======================================================================
+    // Alive Sidebar Mascot Logic
+    // ======================================================================
+    let isWindowHidden = false;
+    let isTurnedAway = false;
+    let lookAwayReturnTimer = null;
+    let sidebarBlinkTimer = null;
+    let sidebarDoubleBlinkTimer = null;
+    let currentSidebarDudeColor = 'cream';
+    let sidebarMascotCrossfadeTimer = null;
+    let lastPointerPos = null;
+    let isPointerInWindow = false;
+
+    const hoveredSecretFields = new Set();
+    const focusedSecretFields = new Set();
+
+    function getMascotWrap() {
+      return document.getElementById('sidebar-mascot-wrap');
+    }
+
+    function getMascotBaseSrc(colorKey) {
+      const key = (colorKey || 'cream').toLowerCase();
+      const btn = document.querySelector(`.dude-color-btn[data-dude-color="${key}"] img`);
+      if (btn && btn.src) {
+        return btn.src;
+      }
+      const fallback = {
+        cream: 'assets/mascot-base.png',
+        pink: 'assets/mascot-base-pink.png',
+        blue: 'assets/mascot-base-blue.png',
+        black: 'assets/mascot-base-black.png'
+      };
+      return fallback[key] || fallback.cream;
+    }
+
+    function setSidebarMascotColor(colorKey, smooth = true) {
+      const key = (colorKey || 'cream').toLowerCase();
+      if (!ALLOWED_DUDE_COLORS.includes(key)) return;
+      const baseImg = document.getElementById('sidebar-mascot-base-img');
+      const crossfadeImg = document.getElementById('sidebar-mascot-crossfade-img');
+      if (!baseImg) return;
+
+      const newSrc = getMascotBaseSrc(key);
+
+      if (!smooth || !crossfadeImg || currentSidebarDudeColor === key) {
+        currentSidebarDudeColor = key;
+        baseImg.src = newSrc;
+        if (crossfadeImg) crossfadeImg.style.opacity = '0';
+        return;
+      }
+
+      currentSidebarDudeColor = key;
+      crossfadeImg.src = newSrc;
+      crossfadeImg.style.opacity = '1';
+      clearTimeout(sidebarMascotCrossfadeTimer);
+      sidebarMascotCrossfadeTimer = setTimeout(() => {
+        baseImg.src = newSrc;
+        crossfadeImg.style.opacity = '0';
+      }, 150);
+    }
+
+    function onAppearanceColorUpdated(colorKey) {
+      setSidebarMascotColor(colorKey, true);
+    }
+
+    // Pointer Gaze with cached rect and rAF throttling (no layout reads on pointermove)
+    let cachedMascotCenter = null;
+    function refreshMascotCenterCache() {
+      const wrap = getMascotWrap();
+      if (!wrap) {
+        cachedMascotCenter = { x: 180, y: 79, width: 130 };
+        return;
+      }
+      const rect = wrap.getBoundingClientRect();
+      cachedMascotCenter = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+        width: rect.width || 130
+      };
+    }
+
+    function getSidebarMascotCenter() {
+      if (!cachedMascotCenter) {
+        refreshMascotCenterCache();
+      }
+      return cachedMascotCenter;
+    }
+
+    let gazeRaf = null;
+    let lastAppliedGaze = { eyeX: null, eyeY: null, faceX: null, faceY: null };
+
+    function scheduleSidebarGaze() {
+      if (gazeRaf || isTurnedAway || isWindowHidden) return;
+      gazeRaf = requestAnimationFrame(() => {
+        gazeRaf = null;
+        updateSidebarGaze();
+      });
+    }
+
+    function updateSidebarGaze() {
+      if (isTurnedAway || isWindowHidden) {
+        return; // While turned away or hidden, ignore pointer gaze
+      }
+      const wrap = getMascotWrap();
+      if (!wrap) return;
+
+      if (!currentBehavior.eyesFollow || !isPointerInWindow || !lastPointerPos) {
+        centerSidebarGaze();
+        return;
+      }
+
+      const center = getSidebarMascotCenter();
+      const dx = lastPointerPos.x - center.x;
+      const dy = lastPointerPos.y - center.y;
+      const dist = Math.hypot(dx, dy);
+
+      if (dist === 0) {
+        centerSidebarGaze();
+        return;
+      }
+
+      const ux = dx / dist;
+      const uy = dy / dist;
+      const scale = Math.min(dist / 180, 1);
+
+      // Move each eye up to 3% of mascot width (~4px at 130px)
+      // Move face group up to 1.5% of mascot width in same direction
+      const maxEye = center.width * 0.03;
+      const maxFace = center.width * 0.015;
+
+      const eyeX = ux * scale * maxEye;
+      const eyeY = uy * scale * maxEye;
+      const faceX = ux * scale * maxFace;
+      const faceY = uy * scale * maxFace;
+
+      if (
+        lastAppliedGaze.eyeX === null ||
+        Math.abs(lastAppliedGaze.eyeX - eyeX) > 0.05 ||
+        Math.abs(lastAppliedGaze.eyeY - eyeY) > 0.05 ||
+        Math.abs(lastAppliedGaze.faceX - faceX) > 0.05 ||
+        Math.abs(lastAppliedGaze.faceY - faceY) > 0.05
+      ) {
+        lastAppliedGaze = { eyeX, eyeY, faceX, faceY };
+        wrap.style.setProperty('--sidebar-eye-x', `${eyeX.toFixed(2)}px`);
+        wrap.style.setProperty('--sidebar-eye-y', `${eyeY.toFixed(2)}px`);
+        wrap.style.setProperty('--sidebar-face-x', `${faceX.toFixed(2)}px`);
+        wrap.style.setProperty('--sidebar-face-y', `${faceY.toFixed(2)}px`);
+      }
+    }
+
+    function centerSidebarGaze() {
+      if (isTurnedAway) return;
+      const wrap = getMascotWrap();
+      if (!wrap) return;
+      if (lastAppliedGaze.eyeX === 0 && lastAppliedGaze.eyeY === 0 && lastAppliedGaze.faceX === 0 && lastAppliedGaze.faceY === 0) return;
+      lastAppliedGaze = { eyeX: 0, eyeY: 0, faceX: 0, faceY: 0 };
+      wrap.style.setProperty('--sidebar-eye-x', '0px');
+      wrap.style.setProperty('--sidebar-eye-y', '0px');
+      wrap.style.setProperty('--sidebar-face-x', '0px');
+      wrap.style.setProperty('--sidebar-face-y', '0px');
+    }
+
+    // Blink Logic
+    function clearSidebarBlinkTimers() {
+      if (sidebarBlinkTimer) {
+        clearTimeout(sidebarBlinkTimer);
+        sidebarBlinkTimer = null;
+      }
+      if (sidebarDoubleBlinkTimer) {
+        clearTimeout(sidebarDoubleBlinkTimer);
+        sidebarDoubleBlinkTimer = null;
+      }
+    }
+
+    function scheduleSidebarBlink() {
+      clearSidebarBlinkTimers();
+      if (!currentBehavior.blink || isTurnedAway || isWindowHidden) {
+        return;
+      }
+
+      const delay = 2500 + Math.random() * 2500; // 2.5s to 5.0s
+      sidebarBlinkTimer = setTimeout(() => {
+        if (!currentBehavior.blink || isTurnedAway || isWindowHidden) {
+          return;
+        }
+
+        triggerSidebarEyeBlink();
+
+        // 1 in 5 times double blink
+        const isDouble = Math.random() < 0.20;
+        if (isDouble) {
+          sidebarDoubleBlinkTimer = setTimeout(() => {
+            if (!currentBehavior.blink || isTurnedAway || isWindowHidden) {
+              scheduleSidebarBlink();
+              return;
+            }
+            triggerSidebarEyeBlink();
+            scheduleSidebarBlink();
+          }, 180);
+        } else {
+          scheduleSidebarBlink();
+        }
+      }, delay);
+    }
+
+    function triggerSidebarEyeBlink() {
+      const wrap = getMascotWrap();
+      if (!wrap) return;
+      const pupils = wrap.querySelectorAll('.sidebar-eye-pupil');
+      pupils.forEach(p => p.classList.remove('blinking'));
+      requestAnimationFrame(() => {
+        pupils.forEach(p => p.classList.add('blinking'));
+        setTimeout(() => {
+          pupils.forEach(p => p.classList.remove('blinking'));
+        }, 150);
+      });
+    }
+
+    // Look-away logic
+    function checkShouldLookAway() {
+      const isOver = hoveredSecretFields.size > 0;
+      const isFocused = focusedSecretFields.size > 0;
+      const isShowKeyToggled = Boolean(welcomeKeyInput && welcomeKeyInput.type === 'text');
+      return isOver || isFocused || isShowKeyToggled;
+    }
+
+    function updateLookAwayState() {
+      const shouldTurn = checkShouldLookAway();
+      if (shouldTurn && !isTurnedAway) {
+        isTurnedAway = true;
+        clearSidebarBlinkTimers();
+        clearTimeout(lookAwayReturnTimer);
+
+        const wrap = getMascotWrap();
+        if (wrap) {
+          wrap.classList.add('springing');
+          wrap.classList.add('looking-away');
+
+          const center = getSidebarMascotCenter();
+          const faceShift = -center.width * 0.14; // -18.2px at 130px
+          const eyeShift = -center.width * 0.03;  // -3.9px at 130px
+
+          wrap.style.setProperty('--sidebar-base-x', '-3%');
+          wrap.style.setProperty('--sidebar-face-x', `${faceShift.toFixed(2)}px`);
+          wrap.style.setProperty('--sidebar-face-y', '0px');
+          wrap.style.setProperty('--sidebar-face-scale-x', '0.84');
+          wrap.style.setProperty('--sidebar-eye-x', `${eyeShift.toFixed(2)}px`);
+          wrap.style.setProperty('--sidebar-eye-y', '0px');
+          wrap.style.setProperty('--sidebar-smile-scale-x', '0.82');
+        }
+      } else if (!shouldTurn && isTurnedAway) {
+        isTurnedAway = false;
+        clearTimeout(lookAwayReturnTimer);
+
+        const wrap = getMascotWrap();
+        if (wrap) {
+          wrap.classList.add('springing');
+          wrap.classList.remove('looking-away');
+
+          wrap.style.setProperty('--sidebar-base-x', '0%');
+          wrap.style.setProperty('--sidebar-face-x', '0px');
+          wrap.style.setProperty('--sidebar-face-y', '0px');
+          wrap.style.setProperty('--sidebar-face-scale-x', '1');
+          wrap.style.setProperty('--sidebar-eye-x', '0px');
+          wrap.style.setProperty('--sidebar-eye-y', '0px');
+          wrap.style.setProperty('--sidebar-smile-scale-x', '1');
+        }
+
+        const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        lookAwayReturnTimer = setTimeout(() => {
+          if (!isTurnedAway) {
+            const w = getMascotWrap();
+            if (w) w.classList.remove('springing');
+            // Followed by one quick blink
+            triggerSidebarEyeBlink();
+            // Resume gaze if pointer is still in window
+            if (isPointerInWindow && lastPointerPos) {
+              updateSidebarGaze();
+            }
+            scheduleSidebarBlink();
+          }
+        }, isReducedMotion ? 0 : 380);
+      }
+    }
+
+    function bindSecretField(field) {
+      if (!field || field.__sidebarMascotBound) return;
+      field.__sidebarMascotBound = true;
+
+      field.addEventListener('pointerenter', () => {
+        hoveredSecretFields.add(field);
+        updateLookAwayState();
+      });
+
+      field.addEventListener('pointerleave', () => {
+        hoveredSecretFields.delete(field);
+        updateLookAwayState();
+      });
+
+      field.addEventListener('focusin', () => {
+        focusedSecretFields.add(field);
+        updateLookAwayState();
+      });
+
+      field.addEventListener('focusout', () => {
+        focusedSecretFields.delete(field);
+        updateLookAwayState();
+      });
+    }
+
+    function initSecretFieldsTracking() {
+      const fields = document.querySelectorAll('input[type="password"], [data-secret], #api-key-input, #welcome-key-input, .api-key-field-wrap, .welcome-key-wrap');
+      fields.forEach(bindSecretField);
+
+      // Event delegation for focusin and focusout
+      document.addEventListener('focusin', (e) => {
+        if (e.target && (e.target.matches('input[type="password"], [data-secret], #api-key-input, #welcome-key-input') || e.target.closest('[data-secret], .api-key-field-wrap, .welcome-key-wrap'))) {
+          focusedSecretFields.add(e.target);
+          updateLookAwayState();
+        }
+      });
+
+      document.addEventListener('focusout', (e) => {
+        if (e.target) {
+          focusedSecretFields.delete(e.target);
+          updateLookAwayState();
+        }
+      });
+
+      // Show-key toggle listener
+      const welcomeEye = document.getElementById('welcome-eye-btn');
+      if (welcomeEye) {
+        welcomeEye.addEventListener('click', () => {
+          setTimeout(updateLookAwayState, 0);
+        });
+      }
+    }
+
+    function onBehaviorSettingToggled(key, val) {
+      if (key === 'eyesFollow') {
+        if (!val) centerSidebarGaze();
+        else updateSidebarGaze();
+      } else if (key === 'blink') {
+        if (val) scheduleSidebarBlink();
+        else clearSidebarBlinkTimers();
+      }
+    }
+
+    function onBehaviorSettingsLoaded(settings) {
+      if (settings && typeof settings.eyesFollow === 'boolean') {
+        if (!settings.eyesFollow) {
+          centerSidebarGaze();
+        } else if (isPointerInWindow && lastPointerPos) {
+          updateSidebarGaze();
+        }
+      }
+      if (settings && typeof settings.blink === 'boolean') {
+        if (settings.blink) {
+          scheduleSidebarBlink();
+        } else {
+          clearSidebarBlinkTimers();
+        }
+      }
+    }
+
+    function onSettingsWindowHidden() {
+      isWindowHidden = true;
+      clearSidebarBlinkTimers();
+      clearTimeout(lookAwayReturnTimer);
+      stopAgentsEventPolling();
+      SettingsBatchQueue.flush();
+    }
+
+    function onSettingsWindowShown() {
+      isWindowHidden = false;
+      refreshMascotCenterCache();
+      scheduleSidebarBlink();
+      if (currentActiveTab === 'agents') {
+        startAgentsEventPolling();
+      }
+    }
+
+    function initSidebarMascot() {
+      // 1. Initial color from store
+      getStoreHandle().then(async (store) => {
+        try {
+          const raw = await store.get('appearance');
+          if (raw && typeof raw.dudeColor === 'string' && ALLOWED_DUDE_COLORS.includes(raw.dudeColor.toLowerCase())) {
+            setSidebarMascotColor(raw.dudeColor.toLowerCase(), false);
+            return;
+          }
+        } catch (_) {}
+        // Fallback to localStorage
+        try {
+          const local = localStorage.getItem('dude_appearance_settings');
+          if (local) {
+            const parsed = JSON.parse(local);
+            if (parsed?.dudeColor && ALLOWED_DUDE_COLORS.includes(parsed.dudeColor.toLowerCase())) {
+              setSidebarMascotColor(parsed.dudeColor.toLowerCase(), false);
+              return;
+            }
+          }
+        } catch (_) {}
+        setSidebarMascotColor('cream', false);
+      }).catch(() => {
+        setSidebarMascotColor('cream', false);
+      });
+
+      // 2. Tauri event listeners
+      if (window.__TAURI__?.event?.listen) {
+        window.__TAURI__.event.listen('appearance-changed', (event) => {
+          if (event && event.payload && typeof event.payload.dudeColor === 'string') {
+            const c = event.payload.dudeColor.toLowerCase();
+            if (ALLOWED_DUDE_COLORS.includes(c)) {
+              setSidebarMascotColor(c, true);
+            }
+          }
+        });
+
+        window.__TAURI__.event.listen('behavior-changed', (event) => {
+          if (event && event.payload) {
+            onBehaviorSettingsLoaded(event.payload);
+          }
+        });
+
+        window.__TAURI__.event.listen('navigate-view', () => {
+          onSettingsWindowShown();
+        });
+      }
+
+      // 3. Pointer event tracking for gaze (throttled to rAF)
+      window.addEventListener('pointermove', (e) => {
+        isPointerInWindow = true;
+        lastPointerPos = { x: e.clientX, y: e.clientY };
+        scheduleSidebarGaze();
+      });
+
+      window.addEventListener('pointerdown', (e) => {
+        isPointerInWindow = true;
+        lastPointerPos = { x: e.clientX, y: e.clientY };
+        scheduleSidebarGaze();
+      });
+
+      window.addEventListener('resize', () => {
+        refreshMascotCenterCache();
+      });
+
+      document.addEventListener('pointerleave', (e) => {
+        if (!e.relatedTarget || e.clientY <= 0 || e.clientX <= 0 || e.clientX >= window.innerWidth || e.clientY >= window.innerHeight) {
+          isPointerInWindow = false;
+          lastPointerPos = null;
+          centerSidebarGaze();
+        }
+      });
+
+      window.addEventListener('blur', () => {
+        isPointerInWindow = false;
+        lastPointerPos = null;
+        centerSidebarGaze();
+        onSettingsWindowHidden();
+      });
+
+      window.addEventListener('focus', () => {
+        if (!document.hidden) {
+          onSettingsWindowShown();
+        }
+      });
+
+      // 4. Window visibility and hide events (flush writes immediately)
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          onSettingsWindowHidden();
+        } else {
+          onSettingsWindowShown();
+        }
+      });
+      window.addEventListener('pagehide', onSettingsWindowHidden);
+      window.addEventListener('beforeunload', onSettingsWindowHidden);
+
+      // 5. Secret fields tracking
+      initSecretFieldsTracking();
+
+      // 6. Start blink schedule
+      scheduleSidebarBlink();
+      refreshMascotCenterCache();
+    }
+
+    try {
+      initSidebarMascot();
+    } catch (e) {
+      console.error('Error initializing sidebar mascot:', e);
     }
   </script>
 </body>
