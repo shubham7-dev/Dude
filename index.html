@@ -3402,6 +3402,9 @@
     if (topBarAgentsBtn) {
       topBarAgentsBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        if (typeof switchCompactApprovalToAgentsTab === 'function' && switchCompactApprovalToAgentsTab()) {
+          return;
+        }
         if (currentTab === 'agents' && isPanelOpen()) {
           closePanel(true);
         } else {
@@ -3414,6 +3417,9 @@
     if (topBarControlsBtn) {
       topBarControlsBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        if (typeof switchCompactApprovalToAgentsTab === 'function' && switchCompactApprovalToAgentsTab()) {
+          return;
+        }
         if (currentTab === 'controls' && isPanelOpen()) {
           closePanel(true);
         } else {
@@ -3426,6 +3432,9 @@
     if (topBarChatBtn) {
       topBarChatBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        if (typeof switchCompactApprovalToAgentsTab === 'function' && switchCompactApprovalToAgentsTab()) {
+          return;
+        }
         if (currentTab === 'chat' && isPanelOpen()) {
           closePanel(true);
         } else {
@@ -4154,6 +4163,7 @@
     // ============================================================
     const approvalQueue = [];
     let activeApproval = null;
+    let activeApprovalMode = null; // 'compact' | 'agents' | null
     let approvalCountdownInterval = null;
     let currentRequestShownAt = 0;
     let previousPillState = null;
@@ -4357,6 +4367,7 @@
         id: req.id,
         conversationId: req.conversationId,
         command: rawCmd,
+        shell: req.shell || '',
         dangerous,
         timeoutMs: 40000
       });
@@ -4474,15 +4485,18 @@
       monitorTransitionClickThrough();
     }
 
-    function exitApprovalState() {
-      widget.classList.remove('approval-state');
+    function isPillCollapsed() {
+      return !widget.classList.contains('expanded') &&
+             !isPanelOpen() &&
+             !widget.classList.contains('tab-agents') &&
+             !widget.classList.contains('tab-chat') &&
+             !widget.classList.contains('tab-controls') &&
+             !widget.classList.contains('chat-open') &&
+             !widget.classList.contains('control-center-open') &&
+             !widget.classList.contains('approval-state');
+    }
 
-      if (approvalCountdownInterval) {
-        clearInterval(approvalCountdownInterval);
-        approvalCountdownInterval = null;
-      }
-
-      // Restore mascot badge
+    function restorePillStateAfterApprovals() {
       updateMascotBadgeUI();
 
       // Clear hamburger dot if we had set it
@@ -4497,10 +4511,11 @@
       if (saved) {
         if (saved.wasCollapsed) {
           closePanel(true);
-          widget.classList.remove('expanded');
+          widget.classList.remove('expanded', 'approval-compact', 'approval-state');
           triggerFurWiggle();
         } else if (saved.wasPlainExpanded) {
           closePanel(true);
+          widget.classList.add('expanded');
         } else if (saved.wasPanelOpen && saved.prevTab && saved.prevTab !== 'agents') {
           switchTab(saved.prevTab);
         }
@@ -4509,6 +4524,17 @@
       recordActivity();
       updateEyeTracking();
       monitorTransitionClickThrough();
+    }
+
+    function exitApprovalState() {
+      widget.classList.remove('approval-state', 'approval-compact');
+
+      if (approvalCountdownInterval) {
+        clearInterval(approvalCountdownInterval);
+        approvalCountdownInterval = null;
+      }
+
+      restorePillStateAfterApprovals();
     }
 
     function scrollOptionIntoView(optionsContainer, rowEl, smooth = true) {
@@ -4546,7 +4572,7 @@
     }
 
     function submitSelectedApproval() {
-      if (!activeApproval) return;
+      if (!activeApproval || activeApprovalMode !== 'agents') return;
       // Ignore Submit and Enter for the first 400ms after request appears (anti-misclick)
       if (Date.now() - currentRequestShownAt < 400) return;
       const chosen = currentApprovalOptions[selectedOptionIndex];
@@ -4557,6 +4583,64 @@
 
     function finishActiveApproval(choice) {
       if (!activeApproval) return;
+
+      if (activeApprovalMode === 'compact') {
+        if (compactApprovalTimeout) {
+          clearTimeout(compactApprovalTimeout);
+          compactApprovalTimeout = null;
+        }
+        if (compactApprovalAllowTimer) {
+          clearTimeout(compactApprovalAllowTimer);
+          compactApprovalAllowTimer = null;
+        }
+
+        const currentReq = activeApproval;
+        activeApproval = null;
+        activeApprovalMode = null;
+
+        const idx = approvalQueue.indexOf(currentReq);
+        if (idx !== -1) {
+          approvalQueue.splice(idx, 1);
+        }
+
+        const finishAndCollapse = () => {
+          widget.classList.remove('approval-compact');
+          triggerFurWiggle();
+          recordActivity();
+          monitorTransitionClickThrough();
+
+          const mult = getSpeedMultiplier();
+          const morphDuration = Math.round(500 / mult);
+          setTimeout(() => {
+            if (approvalQueue.length > 0) {
+              processNextApprovalRequest();
+            } else {
+              restorePillStateAfterApprovals();
+            }
+          }, morphDuration);
+
+          currentReq.resolve({ choice });
+        };
+
+        if (choice === 'once') {
+          triggerHappyReply();
+          setTimeout(finishAndCollapse, 1500);
+        } else if (choice === 'deny') {
+          isMouthO = true;
+          morphToPath(MOUTH_O, 150);
+          setTimeout(() => {
+            isMouthO = false;
+            morphToPath(behavior.blushSmile ? SMILE_WIDE : SMILE_NORMAL, 250);
+            finishAndCollapse();
+          }, 1500);
+        } else {
+          // 'dismiss'
+          finishAndCollapse();
+        }
+        return;
+      }
+
+      // Agents tab approval finish
       if (approvalCountdownInterval) {
         clearInterval(approvalCountdownInterval);
         approvalCountdownInterval = null;
@@ -4564,6 +4648,7 @@
 
       const current = activeApproval;
       activeApproval = null;
+      activeApprovalMode = null;
 
       // Remove from head of queue and resolve Promise
       const idx = approvalQueue.indexOf(current);
@@ -4580,15 +4665,7 @@
       }
     }
 
-    function processNextApprovalRequest() {
-      if (approvalQueue.length === 0) {
-        exitApprovalState();
-        return;
-      }
-
-      activeApproval = approvalQueue[0];
-      currentRequestShownAt = Date.now();
-
+    function renderAgentsApproval(req) {
       enterApprovalState();
 
       // Title & Title Row Meta
@@ -4611,7 +4688,7 @@
       // Command text with redacted secrets
       const cmdEl = document.getElementById('agent-approval-command');
       if (cmdEl) {
-        cmdEl.textContent = redactSecrets(activeApproval.command);
+        cmdEl.textContent = redactSecrets(req.command);
         cmdEl.scrollTop = 0;
         if (cmdEl.scrollHeight > cmdEl.clientHeight) {
           cmdEl.classList.add('overflowing');
@@ -4623,8 +4700,8 @@
       }
 
       // Options list
-      const shortCmd = shortenCommand(activeApproval.command, 60);
-      if (activeApproval.dangerous) {
+      const shortCmd = shortenCommand(req.command, 60);
+      if (req.dangerous) {
         currentApprovalOptions = [
           { text: '1. Yes, allow this time', choice: 'once' },
           { text: '2. No, deny', choice: 'deny' }
@@ -4662,8 +4739,8 @@
         clearInterval(approvalCountdownInterval);
         approvalCountdownInterval = null;
       }
-      const timeoutMs = typeof activeApproval.timeoutMs === 'number' && activeApproval.timeoutMs > 0
-        ? activeApproval.timeoutMs
+      const timeoutMs = (typeof req.timeoutMs === 'number' && req.timeoutMs > 0)
+        ? req.timeoutMs
         : 40000;
       const endTime = currentRequestShownAt + timeoutMs;
       const secEl = document.getElementById('agent-approval-seconds');
@@ -4687,21 +4764,60 @@
       approvalCountdownInterval = setInterval(updateCountdown, 250);
     }
 
-    function showApproval({ id, conversationId, command, dangerous, timeoutMs }) {
+    function processNextApprovalRequest() {
+      if (approvalQueue.length === 0) {
+        exitApprovalState();
+        return;
+      }
+
+      activeApproval = approvalQueue[0];
+      currentRequestShownAt = Date.now();
+
+      // Requirement 1: Look at pill's state at that moment. If COLLAPSED, use showCompactApproval.
+      // If anything else (expanded or any tab), use existing approval state of Agents tab.
+      // Choice is made when the request is shown and does not change if the user collapses the pill later.
+      const useCompact = (typeof __FEATURE_APPROVALS__ !== 'undefined' ? __FEATURE_APPROVALS__ : true) &&
+                         (activeApproval.forceCompact || isPillCollapsed());
+
+      if (useCompact) {
+        activeApprovalMode = 'compact';
+        renderCompactApproval(activeApproval);
+      } else {
+        activeApprovalMode = 'agents';
+        renderAgentsApproval(activeApproval);
+      }
+    }
+
+    function showApproval({ id, conversationId, command, shell, dangerous, timeoutMs, forceCompact }) {
       return new Promise((resolve) => {
+        // Record initial pill state before the first request alters anything
+        if (approvalQueue.length === 0 && !activeApproval && !previousPillState) {
+          const isExpanded = widget.classList.contains('expanded');
+          const isPanel = isPanelOpen();
+          const prevTab = currentTab;
+          previousPillState = {
+            wasCollapsed: !isExpanded && !isPanel,
+            wasPlainExpanded: isExpanded && !isPanel,
+            wasPanelOpen: isPanel,
+            prevTab: prevTab
+          };
+        }
+
         approvalQueue.push({
           id: id || ('req-' + Date.now()),
           conversationId: conversationId || '',
           command: String(command || ''),
+          shell: shell ? String(shell) : '',
           dangerous: Boolean(dangerous),
           timeoutMs: typeof timeoutMs === 'number' ? timeoutMs : 40000,
+          forceCompact: Boolean(forceCompact),
           resolve
         });
 
         if (!activeApproval) {
           processNextApprovalRequest();
         } else {
-          // Update queue count on existing active approval
+          // Update queue count on existing active approval if showing in Agents tab
           const queueEl = document.getElementById('agent-approval-queue');
           if (queueEl && approvalQueue.length > 1) {
             queueEl.textContent = `1 of ${approvalQueue.length}`;
@@ -4724,10 +4840,10 @@
       approvalSubmitBtn.addEventListener('mousedown', (e) => e.stopPropagation());
     }
 
-    // Approval Keyboard Interaction:
+    // Approval Keyboard Interaction (Agents tab):
     // Works ONLY when pill window already has focus because user clicked it.
     window.addEventListener('keydown', (e) => {
-      if (!activeApproval) return;
+      if (!activeApproval || activeApprovalMode !== 'agents') return;
       if (e.isComposing || e.keyCode === 229) return;
       if (!document.hasFocus()) return;
 
@@ -4801,280 +4917,219 @@
     // ============================================================
     // COMPACT APPROVAL STATE (Collapsed Pill Permission Flow)
     // ============================================================
-    const compactApprovalQueue = [];
-    let activeCompactApproval = null;
     let compactApprovalTimeout = null;
     let compactApprovalAllowTimer = null;
     let compactApprovalShownAt = 0;
 
-    function processNextCompactApproval() {
-      if (compactApprovalQueue.length === 0) {
-        activeCompactApproval = null;
-        updateMascotBadgeUI();
-        return;
-      }
+    let switchCompactApprovalToAgentsTab = () => false;
 
-      activeCompactApproval = compactApprovalQueue.shift();
+    if (__FEATURE_APPROVALS__) {
+      function renderCompactApproval(req) {
+        // Rule 1: New state "approval-compact", entered only from the collapsed state.
+        // Morph pill from collapsed size to 393k x 129k with existing spring.
+        widget.classList.add('approval-compact');
+        widget.classList.remove('expanded', 'panel-open', 'tab-agents', 'tab-chat', 'tab-controls', 'chat-open', 'control-center-open', 'chat-closing', 'approval-state');
 
-      // Rule 1: New state "approval-compact", entered only from the collapsed state.
-      // Morph pill from collapsed size to 393k x 129k with existing spring.
-      widget.classList.add('approval-compact');
-      widget.classList.remove('expanded', 'panel-open', 'tab-agents', 'tab-chat', 'tab-controls', 'chat-open', 'control-center-open', 'chat-closing');
-
-      // Update mascot badge to needs_you (orange with '!')
-      const badgeEl = document.getElementById('mascot-agent-badge');
-      if (badgeEl) {
-        badgeEl.classList.remove('thinking', 'working');
-        badgeEl.classList.add('needs_you');
-      }
-
-      // Populate header row
-      const riskyTag = document.getElementById('compact-card-risky');
-      if (riskyTag) {
-        riskyTag.style.display = activeCompactApproval.dangerous ? 'inline-block' : 'none';
-      }
-
-      // Populate command box: format "<shell> - <command>" if shell is present, else just command
-      const cmdTextEl = document.getElementById('compact-cmd-text');
-      const cmdBoxEl = document.getElementById('compact-cmd-box');
-      const rawCmd = activeCompactApproval.command || '';
-      const shell = activeCompactApproval.shell ? String(activeCompactApproval.shell).trim() : '';
-      const cleanCmd = redactSecrets(rawCmd);
-      const displayText = shell ? `${shell} - ${cleanCmd}` : cleanCmd;
-      if (cmdTextEl) {
-        cmdTextEl.textContent = displayText;
-      }
-      if (cmdBoxEl) {
-        cmdBoxEl.setAttribute('title', cleanCmd.slice(0, 300));
-      }
-
-      // Allow button handling: if dangerous, disabled (60% opacity) for first 1000ms
-      const allowBtn = document.getElementById('compact-btn-allow');
-      if (allowBtn) {
-        if (activeCompactApproval.dangerous) {
-          allowBtn.disabled = true;
-          allowBtn.style.opacity = '0.6';
-          allowBtn.style.pointerEvents = 'none';
-          if (compactApprovalAllowTimer) clearTimeout(compactApprovalAllowTimer);
-          compactApprovalAllowTimer = setTimeout(() => {
-            if (activeCompactApproval && activeCompactApproval.dangerous) {
-              allowBtn.disabled = false;
-              allowBtn.style.opacity = '1';
-              allowBtn.style.pointerEvents = 'auto';
-            }
-            compactApprovalAllowTimer = null;
-          }, 1000);
-        } else {
-          allowBtn.disabled = false;
-          allowBtn.style.opacity = '1';
-          allowBtn.style.pointerEvents = 'auto';
-        }
-      }
-
-      // Anti-misclick timestamp: ignore Allow, Deny, Y, N for first 400ms
-      compactApprovalShownAt = Date.now();
-
-      // Timeout handling (no countdown displayed, resolves "dismiss")
-      if (compactApprovalTimeout) {
-        clearTimeout(compactApprovalTimeout);
-        compactApprovalTimeout = null;
-      }
-      const timeoutMs = typeof activeCompactApproval.timeoutMs === 'number' && activeCompactApproval.timeoutMs > 0
-        ? activeCompactApproval.timeoutMs
-        : 40000;
-      compactApprovalTimeout = setTimeout(() => {
-        resolveCompactApproval('dismiss');
-      }, timeoutMs);
-
-      recordActivity();
-      updateEyeTracking();
-      monitorTransitionClickThrough();
-    }
-
-    function resolveCompactApproval(choice) {
-      if (!activeCompactApproval) return;
-
-      if (compactApprovalTimeout) {
-        clearTimeout(compactApprovalTimeout);
-        compactApprovalTimeout = null;
-      }
-      if (compactApprovalAllowTimer) {
-        clearTimeout(compactApprovalAllowTimer);
-        compactApprovalAllowTimer = null;
-      }
-
-      const currentReq = activeCompactApproval;
-      activeCompactApproval = null;
-
-      const finishAndCollapse = () => {
-        widget.classList.remove('approval-compact');
-        triggerFurWiggle();
-        recordActivity();
-        monitorTransitionClickThrough();
-
-        const mult = getSpeedMultiplier();
-        const morphDuration = Math.round(500 / mult);
-        setTimeout(() => {
-          if (compactApprovalQueue.length > 0) {
-            processNextCompactApproval();
-          } else {
-            updateMascotBadgeUI();
-          }
-        }, morphDuration);
-
-        currentReq.resolve({ choice });
-      };
-
-      // Rule 11: After the answer: Allow = a small happy reaction (the existing one),
-      // Deny = the "o" mouth for about 1.5s; then the pill morphs back to the collapsed state with the same spring.
-      if (choice === 'once') {
-        triggerHappyReply();
-        setTimeout(finishAndCollapse, 1500);
-      } else if (choice === 'deny') {
-        isMouthO = true;
-        morphToPath(MOUTH_O, 150);
-        setTimeout(() => {
-          isMouthO = false;
-          morphToPath(behavior.blushSmile ? SMILE_WIDE : SMILE_NORMAL, 250);
-          finishAndCollapse();
-        }, 1500);
-      } else {
-        // 'dismiss'
-        finishAndCollapse();
-      }
-    }
-
-    function showCompactApproval({ id, conversationId, command, shell, dangerous, timeoutMs }) {
-      return new Promise((resolve) => {
-        const req = {
-          id: id || ('req-compact-' + Date.now()),
-          conversationId: conversationId || '',
-          command: String(command || ''),
-          shell: shell ? String(shell) : '',
-          dangerous: Boolean(dangerous),
-          timeoutMs: typeof timeoutMs === 'number' ? timeoutMs : 40000,
-          resolve
-        };
-
-        compactApprovalQueue.push(req);
-
-        // Rule 10: While a request waits, the mascot hops once and a small orange (#FF9F0A)
-        // circle badge with a white "!" appears at the mascot's corner.
-        triggerMascotHopReaction();
+        // Update mascot badge to needs_you (orange with '!')
         const badgeEl = document.getElementById('mascot-agent-badge');
         if (badgeEl) {
           badgeEl.classList.remove('thinking', 'working');
           badgeEl.classList.add('needs_you');
         }
 
-        if (!activeCompactApproval) {
-          processNextCompactApproval();
+        // Mascot hop
+        triggerMascotHopReaction();
+
+        // Populate header row
+        const riskyTag = document.getElementById('compact-card-risky');
+        if (riskyTag) {
+          riskyTag.style.display = req.dangerous ? 'inline-block' : 'none';
         }
-      });
-    }
 
-    window.showCompactApproval = showCompactApproval;
+        // Populate command box: format "<shell> - <command>" if shell is present, else just command
+        const cmdTextEl = document.getElementById('compact-cmd-text');
+        const cmdBoxEl = document.getElementById('compact-cmd-box');
+        const rawCmd = req.command || '';
+        const shell = req.shell ? String(req.shell).trim() : '';
+        const cleanCmd = redactSecrets(rawCmd);
+        const displayText = shell ? `${shell} - ${cleanCmd}` : cleanCmd;
+        if (cmdTextEl) {
+          cmdTextEl.textContent = displayText;
+        }
+        if (cmdBoxEl) {
+          cmdBoxEl.setAttribute('title', cleanCmd.slice(0, 300));
+        }
 
-    // Compact Approval Button Listeners
-    const compactBtnAllow = document.getElementById('compact-btn-allow');
-    if (compactBtnAllow) {
-      compactBtnAllow.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (!activeCompactApproval) return;
-        if (Date.now() - compactApprovalShownAt < 400) return;
-        if (compactBtnAllow.disabled) return;
-        resolveCompactApproval('once');
-      });
-      compactBtnAllow.addEventListener('mousedown', (e) => e.stopPropagation());
-    }
+        // Allow button handling: if dangerous, disabled (60% opacity) for first 1000ms
+        const allowBtn = document.getElementById('compact-btn-allow');
+        if (allowBtn) {
+          if (req.dangerous) {
+            allowBtn.disabled = true;
+            allowBtn.style.opacity = '0.6';
+            allowBtn.style.pointerEvents = 'none';
+            if (compactApprovalAllowTimer) clearTimeout(compactApprovalAllowTimer);
+            compactApprovalAllowTimer = setTimeout(() => {
+              if (activeApproval && activeApprovalMode === 'compact' && activeApproval.dangerous) {
+                allowBtn.disabled = false;
+                allowBtn.style.opacity = '1';
+                allowBtn.style.pointerEvents = 'auto';
+              }
+              compactApprovalAllowTimer = null;
+            }, 1000);
+          } else {
+            allowBtn.disabled = false;
+            allowBtn.style.opacity = '1';
+            allowBtn.style.pointerEvents = 'auto';
+          }
+        }
 
-    const compactBtnDeny = document.getElementById('compact-btn-deny');
-    if (compactBtnDeny) {
-      compactBtnDeny.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (!activeCompactApproval) return;
-        if (Date.now() - compactApprovalShownAt < 400) return;
-        resolveCompactApproval('deny');
-      });
-      compactBtnDeny.addEventListener('mousedown', (e) => e.stopPropagation());
-    }
+        // Anti-misclick timestamp: ignore Allow, Deny, Y, N for first 400ms
+        compactApprovalShownAt = Date.now();
 
-    const compactApprovalCardEl = document.getElementById('compact-approval-card');
-    if (compactApprovalCardEl) {
-      compactApprovalCardEl.addEventListener('click', (e) => e.stopPropagation());
-      compactApprovalCardEl.addEventListener('mousedown', (e) => e.stopPropagation());
-    }
+        // Timeout handling (40 seconds default, resolves "dismiss" -> "ask")
+        if (compactApprovalTimeout) {
+          clearTimeout(compactApprovalTimeout);
+          compactApprovalTimeout = null;
+        }
+        const timeoutMs = (typeof req.timeoutMs === 'number' && req.timeoutMs > 0)
+          ? req.timeoutMs
+          : 40000;
+        compactApprovalTimeout = setTimeout(() => {
+          finishActiveApproval('dismiss');
+        }, timeoutMs);
 
-    // Compact Approval Keyboard Interaction
-    // The Y and N keys work ONLY when the pill window already has keyboard focus because the user clicked it.
-    window.addEventListener('keydown', (e) => {
-      if (!activeCompactApproval) return;
-      if (e.isComposing || e.keyCode === 229) return;
-      if (!document.hasFocus()) return;
-
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        resolveCompactApproval('dismiss');
-        return;
+        recordActivity();
+        updateEyeTracking();
+        monitorTransitionClickThrough();
       }
 
-      if (e.key === 'y' || e.key === 'Y') {
-        e.preventDefault();
-        // Ignore for first 400ms after card appears (anti-misclick)
-        if (Date.now() - compactApprovalShownAt < 400) return;
-        // Keep Allow button disabled for first 1000ms if dangerous
-        if (activeCompactApproval.dangerous && Date.now() - compactApprovalShownAt < 1000) return;
-        resolveCompactApproval('once');
-        return;
+      switchCompactApprovalToAgentsTab = function() {
+        if (!activeApproval || activeApprovalMode !== 'compact') return false;
+
+        if (compactApprovalTimeout) {
+          clearTimeout(compactApprovalTimeout);
+          compactApprovalTimeout = null;
+        }
+        if (compactApprovalAllowTimer) {
+          clearTimeout(compactApprovalAllowTimer);
+          compactApprovalAllowTimer = null;
+        }
+
+        widget.classList.remove('approval-compact');
+        activeApprovalMode = 'agents';
+        renderAgentsApproval(activeApproval);
+        return true;
+      };
+
+      function showCompactApproval({ id, conversationId, command, shell, dangerous, timeoutMs }) {
+        return showApproval({
+          id,
+          conversationId,
+          command,
+          shell,
+          dangerous,
+          timeoutMs,
+          forceCompact: true
+        });
       }
 
-      if (e.key === 'n' || e.key === 'N') {
-        e.preventDefault();
-        // Ignore for first 400ms after card appears (anti-misclick)
-        if (Date.now() - compactApprovalShownAt < 400) return;
-        resolveCompactApproval('deny');
-        return;
-      }
-    });
+      window.showCompactApproval = showCompactApproval;
 
-    // Rule 12: DEBUG builds only (wrapped in import.meta.env.DEV so it is removed from release builds)
-    if (import.meta.env.DEV) {
+      // Compact Approval Button Listeners
+      const compactBtnAllow = document.getElementById('compact-btn-allow');
+      if (compactBtnAllow) {
+        compactBtnAllow.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (!activeApproval || activeApprovalMode !== 'compact') return;
+          if (Date.now() - compactApprovalShownAt < 400) return;
+          if (compactBtnAllow.disabled) return;
+          finishActiveApproval('once');
+        });
+        compactBtnAllow.addEventListener('mousedown', (e) => e.stopPropagation());
+      }
+
+      const compactBtnDeny = document.getElementById('compact-btn-deny');
+      if (compactBtnDeny) {
+        compactBtnDeny.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (!activeApproval || activeApprovalMode !== 'compact') return;
+          if (Date.now() - compactApprovalShownAt < 400) return;
+          finishActiveApproval('deny');
+        });
+        compactBtnDeny.addEventListener('mousedown', (e) => e.stopPropagation());
+      }
+
+      const compactApprovalCardEl = document.getElementById('compact-approval-card');
+      if (compactApprovalCardEl) {
+        compactApprovalCardEl.addEventListener('click', (e) => e.stopPropagation());
+        compactApprovalCardEl.addEventListener('mousedown', (e) => e.stopPropagation());
+      }
+
+      // Compact Approval Keyboard Interaction
+      // Rule 4: No auto-focus; Y and N only work if the pill already has focus.
       window.addEventListener('keydown', (e) => {
-        if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
-        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+        if (!activeApproval || activeApprovalMode !== 'compact') return;
+        if (e.isComposing || e.keyCode === 229) return;
+        if (!document.hasFocus()) return;
 
-        // while the pill is collapsed:
-        const isCollapsed = !widget.classList.contains('expanded') &&
-                            !widget.classList.contains('approval-compact') &&
-                            !isPanelOpen();
-        if (!isCollapsed) return;
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          finishActiveApproval('dismiss');
+          return;
+        }
 
-        if (e.key === 'c' || e.key === 'C') {
+        if (e.key === 'y' || e.key === 'Y') {
           e.preventDefault();
-          showCompactApproval({
-            id: 'sample-' + Date.now(),
-            conversationId: 'sample-conv',
-            shell: 'PowerShell',
-            command: 'node app.js',
-            dangerous: false,
-            timeoutMs: 40000
-          }).then((res) => {
-            console.log('[DEBUG Compact Approval Result]:', res);
-          });
-        } else if (e.key === 'x' || e.key === 'X') {
+          if (Date.now() - compactApprovalShownAt < 400) return;
+          if (activeApproval.dangerous && Date.now() - compactApprovalShownAt < 1000) return;
+          finishActiveApproval('once');
+          return;
+        }
+
+        if (e.key === 'n' || e.key === 'N') {
           e.preventDefault();
-          showCompactApproval({
-            id: 'sample-risky-' + Date.now(),
-            conversationId: 'sample-conv',
-            shell: 'PowerShell',
-            command: 'Remove-Item -Recurse -Force .\\build',
-            dangerous: true,
-            timeoutMs: 40000
-          }).then((res) => {
-            console.log('[DEBUG Compact Risky Approval Result]:', res);
-          });
+          if (Date.now() - compactApprovalShownAt < 400) return;
+          finishActiveApproval('deny');
+          return;
         }
       });
+
+      // Rule 12: DEBUG keyboard triggers (C, X while collapsed)
+      if (import.meta.env.DEV) {
+        window.addEventListener('keydown', (e) => {
+          if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+          if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+
+          // while the pill is collapsed:
+          if (!isPillCollapsed()) return;
+
+          if (e.key === 'c' || e.key === 'C') {
+            e.preventDefault();
+            showCompactApproval({
+              id: 'sample-' + Date.now(),
+              conversationId: 'sample-conv',
+              shell: 'PowerShell',
+              command: 'node app.js',
+              dangerous: false,
+              timeoutMs: 40000
+            }).then((res) => {
+              console.log('[DEBUG Compact Approval Result]:', res);
+            });
+          } else if (e.key === 'x' || e.key === 'X') {
+            e.preventDefault();
+            showCompactApproval({
+              id: 'sample-risky-' + Date.now(),
+              conversationId: 'sample-conv',
+              shell: 'PowerShell',
+              command: 'Remove-Item -Recurse -Force .\\build',
+              dangerous: true,
+              timeoutMs: 40000
+            }).then((res) => {
+              console.log('[DEBUG Compact Risky Approval Result]:', res);
+            });
+          }
+        });
+      }
     }
 
     // --- Control Center Real Windows Integration ---
