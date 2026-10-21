@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Mutex;
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
-use tauri::{AppHandle, Emitter};
+use tauri::{AppHandle, Emitter, Manager};
 use tokio::io::AsyncReadExt;
 use tokio::net::windows::named_pipe::ServerOptions;
 use tokio::sync::oneshot;
@@ -11,6 +11,27 @@ pub const PIPE_NAME: &str = r"\\.\pipe\dude-agent-events";
 const MAX_PAYLOAD_SIZE: usize = 65536; // 64 KB
 
 static LAST_AGENT_EVENT: Mutex<Option<(String, Instant)>> = Mutex::new(None);
+
+use std::io::Write;
+
+#[cfg(debug_assertions)]
+fn log_receiver(msg: &str) {
+    if let Ok(mut f) = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(r"C:\ProgramData\Dude\hooks\dude-receiver.log")
+    {
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis();
+        let _ = writeln!(f, "[{}][PID:{}] {}", now, std::process::id(), msg);
+    }
+}
+
+#[cfg(not(debug_assertions))]
+#[inline(always)]
+fn log_receiver(_msg: &str) {}
 
 pub type ApprovalSender = oneshot::Sender<String>;
 static PENDING_APPROVALS: Mutex<Option<HashMap<String, (String, ApprovalSender)>>> = Mutex::new(None);
@@ -26,6 +47,7 @@ pub fn register_pending_approval(id: String, conv_id: String, tx: ApprovalSender
 }
 
 pub fn resolve_pending_approval(id: &str, choice: String) -> bool {
+    log_receiver(&format!("RESOLVE_CALLED id={} choice={}", id, choice));
     let mut lock = PENDING_APPROVALS.lock().unwrap();
     if let Some(ref mut map) = *lock {
         if let Some((_, tx)) = map.remove(id) {
@@ -47,7 +69,7 @@ pub fn dismiss_pending_approvals_for_conversation(conv_id: &str) {
 
         for id in matching_ids {
             if let Some((_, tx)) = map.remove(&id) {
-                let _ = tx.send("ask".to_string());
+                let _ = tx.send("deny".to_string());
             }
         }
     }
@@ -413,19 +435,35 @@ pub async fn start_agent_pipe_server(app: AppHandle) {
 
                     if req_id.is_empty() || cmd.is_empty() {
                         use tokio::io::AsyncWriteExt;
-                        let _ = connected_server.write_all(b"ask\n").await;
+                        let _ = connected_server.write_all(b"deny\n").await;
                         let _ = connected_server.flush().await;
                         return;
                     }
 
+                    log_receiver(&format!("APPROVAL_REQ_RECEIVED id={}", req_id));
                     let (tx, rx) = oneshot::channel::<String>();
                     register_pending_approval(req_id.clone(), conv_id, tx);
 
-                    let _ = app_clone.emit("agent-approval-request", val);
+                    if let Some(win) = app_clone.get_webview_window("main") {
+                        let _ = win.unminimize();
+                        let _ = win.show();
+                        let _ = win.set_focus();
+                        let _ = win.emit("agent-approval-request", &val);
+                        log_receiver(&format!("EMITTED_TO_WINDOW id={}", req_id));
+                    } else {
+                        let _ = app_clone.emit("agent-approval-request", val);
+                        log_receiver(&format!("EMITTED_TO_APP id={}", req_id));
+                    }
 
                     let reply = match tokio::time::timeout(tokio::time::Duration::from_secs(45), rx).await {
-                        Ok(Ok(choice)) => choice,
-                        _ => "ask".to_string(),
+                        Ok(Ok(choice)) => {
+                            log_receiver(&format!("APPROVAL_RESOLVED id={} choice={}", req_id, choice));
+                            choice
+                        }
+                        _ => {
+                            log_receiver(&format!("APPROVAL_TIMED_OUT id={}", req_id));
+                            "deny".to_string()
+                        }
                     };
 
                     {

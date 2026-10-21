@@ -5040,10 +5040,9 @@
           }
         }
 
-        if (statusInfo.status === 'needs repair') {
+        if (statusInfo.status === 'needs repair' || statusInfo.status?.includes('needs repair')) {
           if (agentsStatusLine) {
-            const reason = statusInfo.error ? ` (${statusInfo.error})` : '';
-            agentsStatusLine.textContent = `Status: needs repair${reason}`;
+            agentsStatusLine.textContent = `Status: ${statusInfo.status}`;
             agentsStatusLine.classList.add('error');
           }
         } else {
@@ -5078,7 +5077,7 @@
 
       // 2. Check hook status
       const hooksNotInstalled = !currentAgentsStatus || !currentAgentsStatus.installed;
-      const hooksNeedRepair = currentAgentsStatus && currentAgentsStatus.status === 'needs repair';
+      const hooksNeedRepair = currentAgentsStatus && (currentAgentsStatus.status === 'needs repair' || currentAgentsStatus.status?.includes('needs repair'));
       const hasOldTimeout = currentAgentsStatus && currentAgentsStatus.error === 'approval timeout';
 
       if (agentsApproveCommandsSetting) {
@@ -5120,8 +5119,11 @@
           const rid = await window.__TAURI__.core.invoke('plugin:store|load', {
             path: 'dude_store.json'
           });
-          const [agentsVal, exists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents' });
-          if (exists && agentsVal && typeof agentsVal === 'object') {
+          const rawAgents = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents' });
+          const agentsVal = (Array.isArray(rawAgents) && rawAgents.length === 2 && typeof rawAgents[1] === 'boolean')
+            ? (rawAgents[1] ? rawAgents[0] : null)
+            : rawAgents;
+          if (agentsVal && typeof agentsVal === 'object') {
             if (typeof agentsVal.approveCommands === 'boolean') {
               agentsApproveCommandsSetting = agentsVal.approveCommands;
             }
@@ -5129,12 +5131,18 @@
               agentsAllowedCommandsList = agentsVal.allowedCommands;
             }
           }
-          const [apprVal, apprExists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents.approveCommands' });
-          if (apprExists && typeof apprVal === 'boolean') {
+          const rawAppr = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents.approveCommands' });
+          const apprVal = (Array.isArray(rawAppr) && rawAppr.length === 2 && typeof rawAppr[1] === 'boolean')
+            ? (rawAppr[1] ? rawAppr[0] : null)
+            : rawAppr;
+          if (typeof apprVal === 'boolean') {
             agentsApproveCommandsSetting = apprVal;
           }
-          const [allowedVal, allowedExists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents.allowedCommands' });
-          if (allowedExists && Array.isArray(allowedVal)) {
+          const rawAllowed = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents.allowedCommands' });
+          const allowedVal = (Array.isArray(rawAllowed) && rawAllowed.length === 2 && typeof rawAllowed[1] === 'boolean')
+            ? (rawAllowed[1] ? rawAllowed[0] : null)
+            : rawAllowed;
+          if (Array.isArray(allowedVal)) {
             agentsAllowedCommandsList = allowedVal;
           }
         }
@@ -5149,7 +5157,7 @@
       if (isRapidDuplicateClick(agentsApproveToggle || agentsApproveTile)) return;
 
       const hooksNotInstalled = !currentAgentsStatus || !currentAgentsStatus.installed;
-      const hooksNeedRepair = currentAgentsStatus && currentAgentsStatus.status === 'needs repair';
+      const hooksNeedRepair = currentAgentsStatus && (currentAgentsStatus.status === 'needs repair' || currentAgentsStatus.status?.includes('needs repair'));
 
       if (hooksNotInstalled || hooksNeedRepair) {
         // Rule 8: "turning it ON when the hooks are not installed or need repair shows the amber text "Install or reinstall the hooks first" and keeps it OFF;"
@@ -5177,6 +5185,10 @@
         agentsApprovalWarning.style.display = 'none';
       }
       updateApprovalsUI();
+
+      if (window.__TAURI__?.core?.invoke) {
+        window.__TAURI__.core.invoke('set_approvals_failsafe', { enabled: agentsApproveCommandsSetting }).catch(() => {});
+      }
 
       // Persist to store via SettingsBatchQueue
       SettingsBatchQueue.enqueue('agents', {
@@ -5258,7 +5270,7 @@
     }
 
     async function pollAgentsLastEvent() {
-      if (!currentAgentsStatus?.installed || currentAgentsStatus?.status === 'needs repair' || isWindowHidden || currentActiveTab !== 'agents') {
+      if (!currentAgentsStatus?.installed || currentAgentsStatus?.status === 'needs repair' || currentAgentsStatus?.status?.includes('needs repair') || isWindowHidden || currentActiveTab !== 'agents') {
         return;
       }
       try {

@@ -2267,6 +2267,12 @@ fn resolve_agent_approval(id: String, choice: String) -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
+fn set_approvals_failsafe(enabled: bool) -> Result<(), String> {
+    agent_hooks::sync_approvals_flag(enabled);
+    Ok(())
+}
+
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct AgentFileReadResult {
@@ -2491,6 +2497,7 @@ pub fn run() {
             log_agent_debug,
             is_debug,
             resolve_agent_approval,
+            set_approvals_failsafe,
             log_perf_metric,
             save_asset_webp
         ])
@@ -2501,6 +2508,18 @@ pub fn run() {
             tauri::async_runtime::spawn(async move {
                 agent_receiver::start_agent_pipe_server(handle).await;
             });
+
+            // Sync approvals fail-safe flag on startup
+            let approve_commands = app
+                .store(STORE_FILENAME)
+                .ok()
+                .and_then(|s| {
+                    s.get("agents.approveCommands")
+                        .or_else(|| s.get("agents").and_then(|a| a.get("approveCommands").cloned()))
+                })
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            agent_hooks::sync_approvals_flag(approve_commands);
 
             tray::setup_tray(app)?;
 
