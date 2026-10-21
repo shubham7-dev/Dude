@@ -4171,7 +4171,7 @@
     let selectedOptionIndex = 0;
 
     // Allow-lists & Settings State
-    let approveCommandsSetting = false;
+    let approveCommandsSetting = true;
     let persistentAllowedCommands = []; // max 200 items: { command: string, date: string }
     const conversationAllowLists = new Map(); // conversationId -> Set<string>
 
@@ -4249,8 +4249,11 @@
           const rid = await window.__TAURI__.core.invoke('plugin:store|load', {
             path: 'dude_store.json'
           });
-          const [agentsVal, exists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents' });
-          if (exists && agentsVal && typeof agentsVal === 'object') {
+          const rawAgents = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents' });
+          const agentsVal = (Array.isArray(rawAgents) && rawAgents.length === 2 && typeof rawAgents[1] === 'boolean')
+            ? (rawAgents[1] ? rawAgents[0] : null)
+            : rawAgents;
+          if (agentsVal && typeof agentsVal === 'object') {
             if (typeof agentsVal.approveCommands === 'boolean') {
               approveCommandsSetting = agentsVal.approveCommands;
             }
@@ -4258,13 +4261,22 @@
               persistentAllowedCommands = agentsVal.allowedCommands;
             }
           }
-          const [apprVal, apprExists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents.approveCommands' });
-          if (apprExists && typeof apprVal === 'boolean') {
+          const rawAppr = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents.approveCommands' });
+          const apprVal = (Array.isArray(rawAppr) && rawAppr.length === 2 && typeof rawAppr[1] === 'boolean')
+            ? (rawAppr[1] ? rawAppr[0] : null)
+            : rawAppr;
+          if (typeof apprVal === 'boolean') {
             approveCommandsSetting = apprVal;
           }
-          const [allowedVal, allowedExists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents.allowedCommands' });
-          if (allowedExists && Array.isArray(allowedVal)) {
+          const rawAllowed = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents.allowedCommands' });
+          const allowedVal = (Array.isArray(rawAllowed) && rawAllowed.length === 2 && typeof rawAllowed[1] === 'boolean')
+            ? (rawAllowed[1] ? rawAllowed[0] : null)
+            : rawAllowed;
+          if (Array.isArray(allowedVal)) {
             persistentAllowedCommands = allowedVal;
+          }
+          if (window.__TAURI__?.core?.invoke) {
+            window.__TAURI__.core.invoke('set_approvals_failsafe', { enabled: approveCommandsSetting }).catch(() => {});
           }
         }
       } catch (e) {
@@ -4278,13 +4290,17 @@
           const rid = await window.__TAURI__.core.invoke('plugin:store|load', {
             path: 'dude_store.json'
           });
-          const [agentsVal, exists] = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents' });
-          const current = (exists && agentsVal && typeof agentsVal === 'object') ? agentsVal : {};
+          const rawAgents = await window.__TAURI__.core.invoke('plugin:store|get', { rid, key: 'agents' });
+          const agentsVal = (Array.isArray(rawAgents) && rawAgents.length === 2 && typeof rawAgents[1] === 'boolean')
+            ? (rawAgents[1] ? rawAgents[0] : null)
+            : rawAgents;
+          const current = (agentsVal && typeof agentsVal === 'object') ? agentsVal : {};
           current.allowedCommands = persistentAllowedCommands;
           current.approveCommands = approveCommandsSetting;
           await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents', value: current });
           await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents.allowedCommands', value: persistentAllowedCommands });
           await window.__TAURI__.core.invoke('plugin:store|save', { rid });
+          window.__TAURI__.core.invoke('set_approvals_failsafe', { enabled: approveCommandsSetting }).catch(() => {});
           if (window.__TAURI__?.event?.emit) {
             window.__TAURI__.event.emit('agents-settings-changed', {
               approveCommands: approveCommandsSetting,
@@ -4299,7 +4315,7 @@
 
     function dismissApprovalsForConversation(convId) {
       if (!convId) return;
-      if (activeApproval && activeApproval.conversationId === convId) {
+      if (typeof finishActiveApproval === 'function' && activeApproval && activeApproval.conversationId === convId) {
         finishActiveApproval('dismiss');
       }
       for (let i = approvalQueue.length - 1; i >= 0; i--) {
@@ -4322,29 +4338,41 @@
       }
     }
 
+    const recentHandledApprovalIds = new Set();
+
     async function handleApprovalRequest(req) {
-      if (!req || !req.id) return;
+        if (!req || !req.id) return;
 
-      if (!lastKnownAgentsStatus) {
-        try {
-          if (window.__TAURI__?.core?.invoke) {
-            lastKnownAgentsStatus = await window.__TAURI__.core.invoke('agents_status');
-          }
-        } catch (_) {}
-      }
-
-      const hooksNeedRepair = !lastKnownAgentsStatus?.installed ||
-                              lastKnownAgentsStatus?.status === 'needs repair' ||
-                              lastKnownAgentsStatus?.error === 'approval timeout';
-
-      // Rule 4: When OFF, Dude replies "allow" immediately to every approval message.
-      // When ON but the installed hooks still use the old 5-second timeout, treat it as OFF.
-      if (!approveCommandsSetting || hooksNeedRepair) {
-        if (window.__TAURI__?.core?.invoke) {
-          window.__TAURI__.core.invoke('resolve_agent_approval', { id: req.id, choice: 'allow' }).catch(() => {});
+        // Deduplication: prevent duplicate approval requests from showing twice on mascot
+        if (recentHandledApprovalIds.has(req.id)) {
+          return;
         }
-        return;
-      }
+        recentHandledApprovalIds.add(req.id);
+        setTimeout(() => {
+          recentHandledApprovalIds.delete(req.id);
+        }, 15000);
+
+        if (!lastKnownAgentsStatus) {
+          try {
+            if (window.__TAURI__?.core?.invoke) {
+              lastKnownAgentsStatus = await window.__TAURI__.core.invoke('agents_status');
+            }
+          } catch (_) {}
+        }
+
+        const hooksNeedRepair = !lastKnownAgentsStatus?.installed ||
+                                lastKnownAgentsStatus?.status === 'needs repair' ||
+                                lastKnownAgentsStatus?.status?.includes('needs repair') ||
+                                lastKnownAgentsStatus?.error === 'approval timeout' ||
+                                lastKnownAgentsStatus?.error === 'hook outdated';
+
+        // Rule 4: When explicitly turned OFF, Dude replies "allow" immediately.
+        if (approveCommandsSetting === false) {
+          if (window.__TAURI__?.core?.invoke) {
+            window.__TAURI__.core.invoke('resolve_agent_approval', { id: req.id, choice: 'allow' }).catch(() => {});
+          }
+          return;
+        }
 
       const rawCmd = String(req.command || '');
       const normCmd = normalizeCommand(rawCmd);
@@ -4395,12 +4423,13 @@
         await saveAgentsPersistentListToStore();
       }
 
-      // Map reply: once, conversation, always, deny, dismiss -> ask
-      const replyChoice = (choice === 'dismiss') ? 'ask' : choice;
+      // Map reply: once, conversation, always, deny, dismiss -> deny (Option 2: stay inside Dude)
+      const replyChoice = (choice === 'dismiss') ? 'deny' : choice;
       if (window.__TAURI__?.core?.invoke) {
         window.__TAURI__.core.invoke('resolve_agent_approval', { id: req.id, choice: replyChoice }).catch(() => {});
       }
     }
+    window.handleApprovalRequest = handleApprovalRequest;
 
     function redactSecrets(text) {
       if (!text || typeof text !== 'string') return '';
@@ -4803,8 +4832,13 @@
           };
         }
 
+        const reqId = id || ('req-' + Date.now());
+        if ((activeApproval && activeApproval.id === reqId) || approvalQueue.some(it => it.id === reqId)) {
+          return;
+        }
+
         approvalQueue.push({
-          id: id || ('req-' + Date.now()),
+          id: reqId,
           conversationId: conversationId || '',
           command: String(command || ''),
           shell: shell ? String(shell) : '',
@@ -4923,8 +4957,7 @@
 
     let switchCompactApprovalToAgentsTab = () => false;
 
-    if (__FEATURE_APPROVALS__) {
-      function renderCompactApproval(req) {
+    function renderCompactApproval(req) {
         // Rule 1: New state "approval-compact", entered only from the collapsed state.
         // Morph pill from collapsed size to 393k x 129k with existing spring.
         widget.classList.add('approval-compact');
@@ -5130,7 +5163,8 @@
           }
         });
       }
-    }
+
+      window.handleApprovalRequest = handleApprovalRequest;
 
     // --- Control Center Real Windows Integration ---
     let controlCenterInterval = null;
@@ -7668,9 +7702,16 @@
     if (window.__TAURI__?.event?.listen) {
       window.__TAURI__.event.listen('agent-approval-request', (event) => {
         if (event && event.payload) {
-          handleApprovalRequest(event.payload);
+          if (typeof handleApprovalRequest === 'function') {
+            handleApprovalRequest(event.payload);
+          } else if (typeof window.handleApprovalRequest === 'function') {
+            window.handleApprovalRequest(event.payload);
+          }
         }
       });
+    }
+
+    if (window.__TAURI__?.event?.listen) {
 
       let lastAgentsHash = '';
       let agentsRafId = null;
