@@ -1,149 +1,267 @@
+# Dude
+
 <p align="center">
-  <img src="mascot.png" alt="Dude Mascot" width="180">
+  <img src="mascot.png" alt="Dude mascot" width="160">
 </p>
 
 <h1 align="center">Dude</h1>
 
 <p align="center">
-  Your tiny AI companion for Windows.
+  <strong>Your tiny AI companion for Windows.</strong>
+  <br>
+  An animated desktop mascot, Gemini AI assistant, laptop controls, and coding-agent activity in one compact interface.
 </p>
-# Dude
 
-A mascot AI assistant and laptop controls at the top of your Windows screen.
+<p align="center">
+  <a href="https://github.com/shubham7-dev/Dude/releases/latest"><img src="https://img.shields.io/github/v/release/shubham7-dev/Dude?label=latest%20release" alt="Latest release"></a>
+  <a href="https://github.com/shubham7-dev/Dude/blob/main/LICENSE"><img src="https://img.shields.io/badge/source-MIT-blue.svg" alt="MIT License"></a>
+  <a href="https://github.com/shubham7-dev/Dude/actions/workflows/build.yml"><img src="https://github.com/shubham7-dev/Dude/actions/workflows/build.yml/badge.svg" alt="Build Check"></a>
+  <img src="https://img.shields.io/badge/platform-Windows%2011-0078D4" alt="Windows 11">
+</p>
 
-<!-- Demo GIF Placeholder -->
-![Dude Demo](docs/images/demo.gif)
+<p align="center">
+  <a href="https://github.com/shubham7-dev/Dude/releases">Download</a> ·
+  <a href="#features">Features</a> ·
+  <a href="#installation">Installation</a> ·
+  <a href="#build-from-source">Build from source</a> ·
+  <a href="https://github.com/shubham7-dev/Dude/issues">Report a bug</a>
+</p>
 
 ---
+
+## Overview
+
+Dude is a Windows desktop companion that combines an animated mascot, an AI chat assistant, quick laptop controls, and live coding-agent activity in a compact interface at the top of your screen.
+
+Built with **Tauri 2, Rust, TypeScript, and Vite**, Dude is designed to make everyday laptop controls and AI assistance accessible without opening a full-sized application.
 
 ## Features
 
-- **Mascot & Animations**: An expressive desktop companion that reacts in real time with interactive expressions (idle, smiling, thinking, speaking, sleeping, blinking, and eye tracking).
-- **Three Quick-Access Drawers**: Click the top pill to switch between **Chat**, **Controls**, and **Agents** views without cluttering your desktop.
-- **Gemini AI Chat**: Converse with Google's Gemini models (like `gemini-flash-latest`) using your personal API key. Features conversation memory, context trimming, and custom personality instructions.
-- **Laptop Control Center**:
-  - **Media Controls**: Live Now Playing track info, artist name, album art, play/pause, next/previous buttons, and an interactive seek bar.
-  - **Volume & Brightness**: Precision sliders with an instant mute toggle and smooth WMI display brightness control.
-  - **Power & Battery**: Live battery percentage, AC charging indicator, and Windows Battery Saver toggle.
-  - **Quick Radios**: Instant switches for Wi-Fi (showing active network SSID), Bluetooth, Airplane Mode, and Mobile Hotspot.
-- **Live Antigravity Agent View**: Real-time visualization of coding tasks in progress, tracking tool steps (Read, Edit, Bash, Done) and active code snippets across a local named pipe.
-- **Comprehensive Settings**:
-  - **AI**: Manage provider, model selection, API key, and persona.
-  - **Appearance**: Choose from 4 Dude mascot colors (**Cream**, **Pink**, **Blue**, **Black**), adjust pill size, roundness, background opacity, and color swatches.
-  - **Behavior**: Fine-tune eye tracking, blinking frequency, hover blush, and auto-collapse behavior.
-  - **Startup**: Configure Windows boot startup and launch visibility.
-  - **Agents**: Automated hook management for Antigravity.
-  - **About**: Diagnostic info, release version, and documentation links.
-- **System Integration**: Dark mode and light mode support in Settings, Windows system tray icon, custom right-click context menu, and global hotkeys (`Ctrl+Shift+M` to toggle the mascot, `Ctrl+Shift+Space` to open chat).
+### Animated desktop companion
 
----
+- Interactive mascot with idle, smiling, thinking, speaking, sleeping, blinking, and eye-tracking states.
+- Customizable mascot appearance and pill settings.
+- Compact interface designed to stay accessible while you work.
 
-## Download
+### Three quick-access views
 
-Get the latest release for Windows:
+Switch between three views from the top pill:
 
-- **[Dude-Windows-setup.exe](https://github.com/shubham7-dev/Dude/releases/latest/download/Dude-Windows-setup.exe)** (NSIS Installer)
-- **[Dude-Windows.msi](https://github.com/shubham7-dev/Dude/releases/latest/download/Dude-Windows.msi)** (MSI Package)
+- **Chat** — talk to your AI assistant.
+- **Controls** — access common laptop controls.
+- **Agents** — view coding-agent activity.
 
-You can also browse all version assets on the [Releases](https://github.com/shubham7-dev/Dude/releases) page.
+### Gemini AI assistant
 
-### Windows SmartScreen Note
-When running the installer for the first time, Windows SmartScreen may show a prompt saying **"Windows protected your PC"**:
-1. Click **More info**.
-2. Click **Run anyway**.
+- Connect to Google's Gemini models using your own API key.
+- Conversation memory and context trimming.
+- Custom personality instructions.
+- Configure the provider, model, API key, and persona in Settings.
 
-**Why does this appear?**  
-This warning appears on new releases because the executable is not signed with an expensive commercial code-signing certificate yet. Dude is completely open source—all code is inspectable in this repository.
+### Laptop control center
 
----
+- **Media:** track information, artist, album artwork, playback controls, and seek bar.
+- **Volume and brightness:** adjust volume, mute audio, and control display brightness.
+- **Power and battery:** battery percentage, AC charging status, and Battery Saver toggle.
+- **Quick radios:** Wi-Fi, Bluetooth, Airplane Mode, and Mobile Hotspot controls.
 
-## Requirements
+Hardware and Windows support can vary by device.
 
-- **Operating System**: Windows 11 (tested and supported).
-- **WebView2**: Requires the Microsoft Edge WebView2 runtime (pre-installed by default on Windows 11; automatically downloaded by the installer if missing).
+### Coding-agent integration
 
----
+- Live visualization of Antigravity agent activity.
+- Track tool steps such as Read, Edit, Bash, and Done.
+- View active code snippets and events received through a local named pipe.
+- Manage Antigravity hook integration from Settings.
 
-## Setup
+### Customization and system integration
 
-Dude uses the Google Gemini API to power the AI assistant.
+- Cream, Pink, Blue, and Black mascot color options.
+- Adjust pill size, roundness, background opacity, and color swatches.
+- Configure eye tracking, blinking, hover blush, and auto-collapse behavior.
+- Configure Windows startup and launch visibility.
+- Windows system tray icon and context menu.
+- Global shortcuts:
+  - `Ctrl + Shift + M` — toggle the mascot.
+  - `Ctrl + Shift + Space` — open chat.
+- Dark and light themes in Settings.
 
-1. **Create an API key**:
-   - Go to [Google AI Studio](https://aistudio.google.com/apikey).
-   - Sign in with your Google account and generate a free API key.
-2. **Add key to Dude**:
-   - Paste the key in the initial Welcome walkthrough or navigate to **Settings > AI**.
-   - Click **Test & Save**. Your key is securely stored in Windows Credential Manager.
+## Screenshots and demo
 
----
+Screenshots and a demo video will be added here in a future update.
 
-## Agents Integration
+## Installation
+
+**Requirements:** Windows 11. The installer requires the Microsoft Edge WebView2 runtime, which is normally available on Windows 11.
+
+1. Open the [Dude Releases page](https://github.com/shubham7-dev/Dude/releases).
+2. Select the release you want.
+3. Download the Windows installer:
+   - **NSIS installer:** `Dude_0.3.0_x64-setup.exe`
+   - **MSI package:** `Dude_0.3.0_x64_en-US.msi`
+4. Run the installer and follow the on-screen instructions.
+
+For the latest available version, use [Latest Release](https://github.com/shubham7-dev/Dude/releases/latest).
+
+### Windows SmartScreen
+
+Windows SmartScreen may display a warning when you first run an installer that is not signed with a recognized code-signing certificate.
+
+Only proceed if you obtained the installer from the official [Dude Releases page](https://github.com/shubham7-dev/Dude/releases) and trust the source. You can review the source code in this repository.
+
+### Verify installer checksums
+
+The repository includes a [`SHA256SUMS`](SHA256SUMS) file containing SHA-256 hashes for the v0.3.0 installers.
+
+In PowerShell, you can calculate an installer's hash with:
+
+```powershell
+Get-FileHash .\Dude_0.3.0_x64-setup.exe -Algorithm SHA256
+```
+
+Compare the resulting hash with the matching entry in `SHA256SUMS`. The file and checksum should come from a trusted release source.
+
+## Initial setup
+
+Dude uses the Google Gemini API for its AI assistant.
+
+1. Open [Google AI Studio](https://aistudio.google.com/apikey).
+2. Sign in and create an API key.
+3. Open Dude's welcome walkthrough or go to **Settings → AI**.
+4. Enter your API key and click **Test & Save**.
+
+According to the project configuration, the API key is stored in Windows Credential Manager.
+
+## Antigravity agent integration
 
 To connect Dude to your local development agent:
 
-1. Open **Settings > Agents**.
+1. Open **Settings → Agents**.
 2. Click **Install** under Antigravity.
-3. Dude creates a timestamped backup of `~/.gemini/config/hooks.json` and inserts only a `"dude"` hook entry without touching any other configuration.
-4. Restart your Antigravity IDE so it loads the updated hooks.
-5. *Before uninstalling or deleting Dude from your PC, open Settings > Agents and click **Uninstall** to cleanly remove the hook configuration.*
+3. Dude creates a timestamped backup of `~/.gemini/config/hooks.json` and adds its hook entry.
+4. Restart Antigravity so it loads the updated hooks.
+5. Before uninstalling Dude, open **Settings → Agents** and click **Uninstall** to remove the hook configuration.
 
----
+Keep a backup of important configuration files before changing integrations.
 
 ## Privacy
 
-Dude respects your privacy:
-- Zero telemetry, analytics, or background tracking scripts.
-- No user accounts or registrations required.
-- API keys are stored in native Windows Credential Manager.
-- All laptop controls and agent event data remain entirely local on your machine.
+Dude's project documentation describes the following privacy goals:
 
-Read the full [Privacy Policy](docs/PRIVACY.md) for details.
+- No telemetry or analytics.
+- No user account or registration required.
+- API keys stored in Windows Credential Manager.
+- Laptop controls and agent event data kept locally on your machine.
 
----
+Read the [Privacy Policy](docs/PRIVACY.md) for more information.
 
-## Build from Source
+## Build from source
 
 ### Prerequisites
-- **Node.js** (v20 or higher) & **npm**
-- **Rust** (stable toolchain with `x86_64-pc-windows-msvc` target)
-- **C++ Build Tools**: Visual Studio Build Tools with the *Desktop development with C++* workload.
 
-### Build Steps
+- Node.js 20 or newer and npm.
+- Rust stable toolchain.
+- `x86_64-pc-windows-msvc` Rust target.
+- Visual Studio Build Tools with the **Desktop development with C++** workload.
+- Microsoft Edge WebView2 runtime.
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/shubham7-dev/Dude.git
-   cd Dude
-   ```
+### Clone the repository
 
-2. Install frontend dependencies:
-   ```bash
-   npm install
-   ```
+```powershell
+git clone https://github.com/shubham7-dev/Dude.git
+cd Dude
+```
 
-3. Run in development mode:
-   ```bash
-   npm run tauri dev
-   ```
+### Install dependencies
 
-4. Compile the release installer:
-   ```bash
-   npm run tauri build
-   ```
-   The generated installers will be located in `src-tauri/target/release/bundle/`.
+```powershell
+npm install
+```
 
-> [!TIP]
-> If you encounter PowerShell script execution errors (such as `about_Execution_Policies`), invoke commands directly via `npm.cmd run tauri dev` or `npx.cmd tauri ...`.
+If PowerShell blocks `npm.ps1`, use the Windows command wrapper:
 
----
+```powershell
+npm.cmd install
+```
+
+### Run in development mode
+
+```powershell
+npm run tauri dev
+```
+
+Or, if required by your PowerShell setup:
+
+```powershell
+npm.cmd run tauri dev
+```
+
+### Build the application
+
+```powershell
+npm run tauri build
+```
+
+Or:
+
+```powershell
+npm.cmd run tauri build
+```
+
+Generated installer bundles are placed under:
+
+```text
+src-tauri/target/release/bundle/
+```
+
+### Frontend build check
+
+To run the frontend TypeScript and Vite production build:
+
+```powershell
+npm run build
+```
+
+Dude also has a GitHub Actions workflow that runs the frontend build check on pushes and pull requests targeting `main`.
+
+## Contributing
+
+Contributions, bug reports, and feature ideas are welcome.
+
+- [Report a bug](https://github.com/shubham7-dev/Dude/issues/new?template=bug_report.md)
+- [Request a feature](https://github.com/shubham7-dev/Dude/issues/new?template=feature_request.md)
+- Open a [pull request](https://github.com/shubham7-dev/Dude/compare)
+
+Please describe the problem, the proposed change, and any relevant testing. For UI changes, include screenshots when possible.
+
+## Project structure
+
+```text
+Dude/
+├── .github/          # Issue templates and GitHub Actions
+├── assets/           # Project assets
+├── docs/             # Documentation
+├── src/              # TypeScript frontend
+├── src-tauri/        # Rust backend and Tauri configuration
+├── index.html        # Main application entry
+├── menu.html         # Menu entry
+├── settings.html     # Settings entry
+├── package.json      # Scripts and dependencies
+├── vite.config.ts    # Vite configuration
+└── README.md
+```
 
 ## Credits
 
-- **Made by**: Shubham Kale.
-
----
+Made by **Shubham Kale**.
 
 ## License
 
-- **Source Code**: Released under the [MIT License](LICENSE).
-- **Brand & Mascot Artwork**: The app name "Dude", character illustrations, mascot renders, icons, and media files are **Copyright (c) 2026 Shubham Kale. All Rights Reserved.** and are **not** covered by the MIT license. See [LICENSE-ASSETS.md](LICENSE-ASSETS.md) for restrictions.
+- **Source code:** [MIT License](LICENSE).
+- **Brand and mascot artwork:** The app name "Dude", character illustrations, mascot renders, icons, and media files are Copyright (c) 2026 Shubham Kale. All Rights Reserved. These assets are not covered by the MIT license. See [LICENSE-ASSETS.md](LICENSE-ASSETS.md) for restrictions.
+
+---
+
+<p align="center">
+  Made with care for a more helpful Windows desktop.
+</p>
