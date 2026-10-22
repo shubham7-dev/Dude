@@ -1,4 +1,4 @@
-# Dude
+
 
 <p align="center">
   <img src="mascot.png" alt="Dude mascot" width="160">
