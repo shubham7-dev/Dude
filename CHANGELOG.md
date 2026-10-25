@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.1] - 2026-10-25
+
+### Added
+- Standardized `.gitattributes` and `.editorconfig` for cross-platform repository cleanliness.
+- Technical documentation suite: [CONTRIBUTING.md](CONTRIBUTING.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), and [docs/RELEASE_GUIDE.md](docs/RELEASE_GUIDE.md).
+- Automated Windows release workflow `.github/workflows/release.yml`.
+- Inline visual API test badge in Settings for instant connection status.
+
+### Changed
+- **Gemini AI Engine**:
+  - Upgraded default model from deprecated/high-load `gemini-flash-latest` to high-speed `gemini-3.5-flash`.
+  - Re-ordered model preference list prioritizing modern Gemini 3.5 and Gemini 3 models (`gemini-3.5-flash`, `gemini-3.5-flash-lite`, `gemini-3-flash-preview`).
+  - Added automatic fallback to `gemini-3.5-flash` on HTTP 404/503 errors.
+  - Optimized connection test payload (`maxOutputTokens: 5`) with 8-second timeout for ~1.4s response times.
+- **Application Icons & Visual Assets**:
+  - Completely updated high-resolution squircle mascot icon with clean anti-aliased transparency.
+  - Rebuilt Windows ICO, macOS ICNS, tray icons, Windows Store tiles, iOS, and Android mipmap icon bundles.
+- **Settings UI**:
+  - Added 350ms debounced auto-save on API key input, plus Enter and blur save triggers.
+  - Non-blocking background model list refresh upon API key save.
+
+### Fixed
+- **Agent Hook Protocol**: Updated `dude-hook.rs` to format `hookSpecificOutput` with `hookEventName`, `permissionDecision`, and `permissionOverrides` for compatibility with modern CLI agents (such as Claude Code v0.2.x+).
+- **Gemini Test Latency**: Eliminated 10s+ timeouts and 503 errors when saving and verifying Gemini API keys.
+
+---
+
+## [0.3.0] - 2026-10-21
+
+### Added
+- Support for Claude Code and Gemini Code Assist hook integrations in `agent_hooks.rs` and `dude-hook.rs`.
+- Interactive sidebar mascot animations and appearance asset preloading in Settings.
+- Compact approval card layout and action states in the floating widget.
+
+### Changed
+- Refined agent receiver Named Pipe IPC handler for robust payload parsing.
+- Updated project branding and mascot imagery in documentation.
+
+---
+
+## [0.2.0] - 2026-10-18
+
+### Added
+- Standalone CLI agent hook binary (`dude-hook.exe`) for capturing agent lifecycle events.
+- Windows Named Pipe IPC communication (`\\.\pipe\dude-agent-events`).
+- Interactive tool approval UI in the floating desktop widget.
+- Backend Tauri command execution hooks for allow/reject tool decisions.
+- Initial multi-agent hook configuration manager.
+
+---
+
 ## [0.1.0] - 2026-10-17
 
 Initial public release of **Dude** for Windows.

@@ -97,8 +97,8 @@ Screenshots and a demo video will be added here in a future update.
 1. Open the [Dude Releases page](https://github.com/shubham7-dev/Dude/releases).
 2. Select the release you want.
 3. Download the Windows installer:
-   - **NSIS installer:** `Dude_0.3.0_x64-setup.exe`
-   - **MSI package:** `Dude_0.3.0_x64_en-US.msi`
+   - **NSIS installer:** `Dude_0.3.1_x64-setup.exe`
+   - **MSI package:** `Dude_0.3.1_x64_en-US.msi`
 4. Run the installer and follow the on-screen instructions.
 
 For the latest available version, use [Latest Release](https://github.com/shubham7-dev/Dude/releases/latest).
@@ -111,15 +111,18 @@ Only proceed if you obtained the installer from the official [Dude Releases page
 
 ### Verify installer checksums
 
-The repository includes a [`SHA256SUMS`](SHA256SUMS) file containing SHA-256 hashes for the v0.3.0 installers.
+Each release provides cryptographic SHA-256 checksums to verify installer integrity:
 
-In PowerShell, you can calculate an installer's hash with:
+- **v0.3.1 Release Checksums**: [`release-0.3.1/SHA256SUMS`](release-0.3.1/SHA256SUMS)
+- **v0.3.0 Milestone Checksums**: [`SHA256SUMS`](SHA256SUMS)
+
+In PowerShell, calculate the downloaded installer's hash with:
 
 ```powershell
-Get-FileHash .\Dude_0.3.0_x64-setup.exe -Algorithm SHA256
+Get-FileHash .\Dude_0.3.1_x64-setup.exe -Algorithm SHA256
 ```
 
-Compare the resulting hash with the matching entry in `SHA256SUMS`. The file and checksum should come from a trusted release source.
+Compare the resulting hash with the matching entry in `SHA256SUMS`.
 
 ## Initial setup
 
@@ -224,30 +227,30 @@ npm run build
 
 Dude also has a GitHub Actions workflow that runs the frontend build check on pushes and pull requests targeting `main`.
 
-## Contributing
+## Documentation & Contributing
 
-Contributions, bug reports, and feature ideas are welcome.
-
-- [Report a bug](https://github.com/shubham7-dev/Dude/issues/new?template=bug_report.md)
-- [Request a feature](https://github.com/shubham7-dev/Dude/issues/new?template=feature_request.md)
-- Open a [pull request](https://github.com/shubham7-dev/Dude/compare)
-
-Please describe the problem, the proposed change, and any relevant testing. For UI changes, include screenshots when possible.
+- [Contributing Guidelines](CONTRIBUTING.md) — development workflow, environment setup, and PR checklist.
+- [System Architecture](docs/ARCHITECTURE.md) — deep dive into multi-window layout, Windows API subsystems, and Agent Hook IPC.
+- [Release Guide](docs/RELEASE_GUIDE.md) — build, packaging, and checksum verification procedures.
+- [Privacy Policy](docs/PRIVACY.md) — data privacy principles and local-first architecture.
+- [Report a Bug](https://github.com/shubham7-dev/Dude/issues/new?template=bug_report.md)
+- [Request a Feature](https://github.com/shubham7-dev/Dude/issues/new?template=feature_request.md)
 
 ## Project structure
 
 ```text
 Dude/
-├── .github/          # Issue templates and GitHub Actions
-├── assets/           # Project assets
-├── docs/             # Documentation
-├── src/              # TypeScript frontend
+├── .github/          # Issue templates and GitHub Actions workflows
+├── assets/           # Project brand and UI assets
+├── docs/             # Technical architecture, privacy, and release guides
+├── scripts/          # Development and testing utilities
+├── src/              # TypeScript frontend source
 ├── src-tauri/        # Rust backend and Tauri configuration
-├── index.html        # Main application entry
-├── menu.html         # Menu entry
-├── settings.html     # Settings entry
-├── package.json      # Scripts and dependencies
-├── vite.config.ts    # Vite configuration
+├── index.html        # Floating pill widget & desktop companion
+├── menu.html         # Desktop context menu popover
+├── settings.html     # Comprehensive settings panel
+├── package.json      # Dependencies and scripts
+├── vite.config.ts    # Vite build configuration
 └── README.md
 ```
 

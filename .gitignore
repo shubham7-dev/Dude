@@ -15,6 +15,9 @@ src-tauri/target/
 src-tauri/gen/
 target/
 
+# Release packaging & local artifacts
+release-*/
+
 # Environment variables & secrets
 .env
 .env.*

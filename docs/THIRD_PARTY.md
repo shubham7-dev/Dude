@@ -33,9 +33,37 @@ The following typefaces are utilized by the application interface:
 - **Author**: The Mozilla Foundation, Carrois Apostrophe
 - **License**: [SIL Open Font License 1.1 (OFL)](https://openfontlicense.org/)
 
+### Rubik
+- **Source**: [Google Fonts - Rubik](https://fonts.google.com/specimen/Rubik) | [GitHub Repository](https://github.com/googlefonts/rubik)
+- **Author**: Hubert & Fischer, Meir Sadan, Cyreal
+- **License**: [SIL Open Font License 1.1 (OFL)](https://openfontlicense.org/)
+
+### IBM Plex Mono
+- **Source**: [Google Fonts - IBM Plex Mono](https://fonts.google.com/specimen/IBM+Plex+Mono) | [GitHub Repository](https://github.com/IBM/plex)
+- **Author**: Mike Abbink, Bold Monday
+- **License**: [SIL Open Font License 1.1 (OFL)](https://openfontlicense.org/)
+
 ---
 
 ## 2. Icon Sets & Artwork
+
+### Agents Section Backgrounds (`assets/agents-banner-light.webp`, `assets/agents-banner-dark.webp`, `assets/agents-hooks-light.webp`, `assets/agents-hooks-dark.webp`)
+- **source and license: to be filled by the owner**
+
+### Startup Section Backgrounds (`assets/startup-banner-light.webp`, `assets/startup-banner-dark.webp`, `assets/startup-card-light.webp`, `assets/startup-card-dark.webp`)
+- **source and license: to be filled by the owner**
+
+### Behavior Section Backgrounds (`assets/behavior-banner-light.png`, `assets/behavior-banner-dark.png`)
+- **source and license: to be filled by the owner**
+
+### Appearance Section Backgrounds (`assets/appearance-banner-both.png`, `assets/appearance-tree.webp`, `assets/appearance-tree.png`)
+- **source and license: to be filled by the owner**
+
+### AI Section Backgrounds (`assets/ai-banner-both.png`)
+- **source and license: to be filled by the owner**
+
+### About Section Background (`assets/about-banner.webp`)
+- **source and license: to be filled by the owner**
 
 ### Character Artwork & Brand Assets ("Dude")
 - **Source**: `assets/` and `src-tauri/icons/`

@@ -350,10 +350,16 @@ fn main() {
                     | "variant:2" | "once:2" | "variant:3" | "once:3" | "variant:4" | "once:4" => {
                         let mut val = json!({
                             "decision": "allow",
-                            "reason": "Approved from Dude"
+                            "reason": "Approved from Dude",
+                            "hookSpecificOutput": {
+                                "hookEventName": "PreToolUse",
+                                "permissionDecision": "allow",
+                                "permissionDecisionReason": "Approved from Dude"
+                            }
                         });
                         if !trimmed.is_empty() {
                             val["permissionOverrides"] = json!([format!("command({})", trimmed)]);
+                            val["hookSpecificOutput"]["permissionOverrides"] = json!([format!("command({})", trimmed)]);
                         }
                         log_hook(&format!("OUTPUT_DECISION id={} decision=allow", req_id));
                         val
@@ -362,13 +368,24 @@ fn main() {
                         log_hook(&format!("OUTPUT_DECISION id={} decision=deny", req_id));
                         json!({
                             "decision": "deny",
-                            "reason": "Denied from Dude by the user"
+                            "reason": "Denied from Dude by the user",
+                            "hookSpecificOutput": {
+                                "hookEventName": "PreToolUse",
+                                "permissionDecision": "deny",
+                                "permissionDecisionReason": "Denied from Dude by the user"
+                            }
                         })
                     }
                     // Every other case while approvals.on exists -> force_ask
                     _ => {
                         log_hook(&format!("OUTPUT_DECISION id={} decision=force_ask", req_id));
-                        json!({ "decision": "force_ask" })
+                        json!({
+                            "decision": "force_ask",
+                            "hookSpecificOutput": {
+                                "hookEventName": "PreToolUse",
+                                "permissionDecision": "ask"
+                            }
+                        })
                     }
                 };
 
@@ -376,11 +393,23 @@ fn main() {
             }
             Ok(Err(_e)) => {
                 log_hook(&format!("PIPE_READ_ERROR id={}", req_id));
-                println!("{}", json!({ "decision": "force_ask" }));
+                println!("{}", json!({
+                    "decision": "force_ask",
+                    "hookSpecificOutput": {
+                        "hookEventName": "PreToolUse",
+                        "permissionDecision": "ask"
+                    }
+                }));
             }
             Err(_e) => {
                 log_hook(&format!("TIMEOUT id={}", req_id));
-                println!("{}", json!({ "decision": "force_ask" }));
+                println!("{}", json!({
+                    "decision": "force_ask",
+                    "hookSpecificOutput": {
+                        "hookEventName": "PreToolUse",
+                        "permissionDecision": "ask"
+                    }
+                }));
             }
         }
         std::process::exit(0);
@@ -388,7 +417,7 @@ fn main() {
 
     // 5. Default Non-approval Forwarding (for all other events, tools, or when approvals feature is OFF)
     let response = match event.as_str() {
-        "PreToolUse" => r#"{"decision":"allow"}"#,
+        "PreToolUse" => r#"{"decision":"allow","hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"allow"}}"#,
         "Stop" => r#"{"decision":"allow"}"#,
         _ => "{}",
     };

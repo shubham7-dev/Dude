@@ -1652,6 +1652,9 @@ fn get_settings(app: tauri::AppHandle) -> AppSettings {
         AppSettings::default()
     };
     current.api_key = get_api_key_from_store().ok().flatten().or(current.api_key);
+    if current.model.as_deref().map_or(true, |m| m.trim().is_empty() || m == "gemini-flash-latest") {
+        current.model = Some("gemini-3.5-flash".to_string());
+    }
     current
 }
 
@@ -1664,6 +1667,10 @@ fn save_settings(app: tauri::AppHandle, settings: AppSettings) -> Result<(), Str
         let trimmed = k.trim();
         if !trimmed.is_empty() {
             let _ = save_api_key_to_store(trimmed);
+            let app_clone = app.clone();
+            tauri::async_runtime::spawn(async move {
+                let _ = get_or_refresh_models(&app_clone).await;
+            });
         } else {
             let _ = delete_api_key_from_store();
         }
@@ -1765,16 +1772,34 @@ async fn fetch_models_from_google(api_key: &str) -> Result<Vec<String>, String> 
         }
     }
 
-    let mut flash_models: Vec<String> = Vec::new();
+    let priority_models = [
+        "gemini-3.5-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-3-flash-preview",
+        "gemini-2.5-flash",
+        "gemini-2.5-flash-lite",
+    ];
+
+    let mut top_models: Vec<String> = Vec::new();
+    let mut other_flash_models: Vec<String> = Vec::new();
     let mut other_models: Vec<String> = Vec::new();
 
+    for p in priority_models {
+        if raw_models.iter().any(|m| m.eq_ignore_ascii_case(p)) {
+            top_models.push(p.to_string());
+        }
+    }
+
     for m in raw_models {
+        if top_models.iter().any(|t| t.eq_ignore_ascii_case(&m)) {
+            continue;
+        }
         if m == "gemini-flash-latest" {
             continue;
         }
         if m.to_lowercase().contains("flash") {
-            if !flash_models.contains(&m) {
-                flash_models.push(m);
+            if !other_flash_models.contains(&m) {
+                other_flash_models.push(m);
             }
         } else {
             if !other_models.contains(&m) {
@@ -1784,8 +1809,12 @@ async fn fetch_models_from_google(api_key: &str) -> Result<Vec<String>, String> 
     }
 
     let mut result = Vec::new();
-    result.push("gemini-flash-latest".to_string());
-    result.extend(flash_models);
+    if top_models.is_empty() {
+        result.push("gemini-3.5-flash".to_string());
+    } else {
+        result.extend(top_models);
+    }
+    result.extend(other_flash_models);
     result.extend(other_models);
 
     Ok(result)
@@ -1799,7 +1828,11 @@ async fn get_or_refresh_models(app: &tauri::AppHandle) -> Vec<String> {
         .or_else(|| get_settings(app.clone()).api_key.filter(|k| !k.trim().is_empty()))
         .or_else(|| std::env::var("GEMINI_API_KEY").ok().filter(|k| !k.trim().is_empty()));
 
-    let default_models = vec!["gemini-flash-latest".to_string()];
+    let default_models = vec![
+        "gemini-3.5-flash".to_string(),
+        "gemini-3.5-flash-lite".to_string(),
+        "gemini-3-flash-preview".to_string(),
+    ];
 
     let api_key = match api_key {
         Some(k) if !k.trim().is_empty() => k,
@@ -1817,13 +1850,13 @@ async fn get_or_refresh_models(app: &tauri::AppHandle) -> Vec<String> {
     *CACHED_MODELS.lock().unwrap() = Some(models.clone());
     let _ = app.emit("models-refreshed", models.clone());
 
-    // Requirement 3: If the saved model is not in the returned list, switch it to "gemini-flash-latest" and save it.
     let mut current_settings = get_settings(app.clone());
-    let current_model = current_settings.model.as_deref().unwrap_or("gemini-flash-latest").trim().to_string();
-    if !models.contains(&current_model) {
-        current_settings.model = Some("gemini-flash-latest".to_string());
+    let current_model = current_settings.model.as_deref().unwrap_or("gemini-3.5-flash").trim().to_string();
+    if !models.contains(&current_model) || current_model == "gemini-flash-latest" {
+        let best_model = models.first().cloned().unwrap_or_else(|| "gemini-3.5-flash".to_string());
+        current_settings.model = Some(best_model.clone());
         let _ = save_settings(app.clone(), current_settings);
-        let _ = app.emit("model-switched", "gemini-flash-latest");
+        let _ = app.emit("model-switched", best_model);
     }
 
     models
@@ -1924,14 +1957,14 @@ async fn send_gemini_request_internal(
     let raw_model = settings
         .model
         .filter(|m| !m.trim().is_empty())
-        .unwrap_or_else(|| "gemini-flash-latest".into());
+        .unwrap_or_else(|| "gemini-3.5-flash".into());
 
     let mut model_clean = raw_model.trim();
     if let Some(stripped) = model_clean.strip_prefix("models/") {
         model_clean = stripped.trim();
     }
-    if model_clean.is_empty() {
-        model_clean = "gemini-flash-latest";
+    if model_clean.is_empty() || model_clean == "gemini-flash-latest" {
+        model_clean = "gemini-3.5-flash";
     }
 
     let url = format!(
@@ -1958,6 +1991,14 @@ async fn send_gemini_request_internal(
                 }),
             );
         }
+    } else {
+        body_map.insert(
+            "generationConfig".to_string(),
+            serde_json::json!({
+                "maxOutputTokens": 5,
+                "temperature": 0.0
+            }),
+        );
     }
 
     let contents_val = serde_json::Value::Array(
@@ -1979,8 +2020,14 @@ async fn send_gemini_request_internal(
 
     let request_body = serde_json::Value::Object(body_map);
 
+    let req_timeout = if include_system_instruction {
+        std::time::Duration::from_secs(25)
+    } else {
+        std::time::Duration::from_secs(8)
+    };
+
     let client = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(30))
+        .timeout(req_timeout)
         .build()
         .map_err(|e| format!("Client error: {}", e))?;
 
@@ -2077,20 +2124,27 @@ async fn send_gemini_request_internal(
                 error_message
             );
 
-            // Requirement 4: Safety net in ask_gemini and test_connection:
-            // if Google returns 400 or 404 for the selected model (and the error is about the model),
-            // retry ONCE with "gemini-flash-latest".
+            // Safety net in ask_gemini and test_connection:
+            // if Google returns 400, 404, or 503 for the selected model,
+            // retry ONCE with modern fallback model "gemini-3.5-flash" (or "gemini-3-flash-preview").
             let is_key_error = err_body.contains("API_KEY_INVALID") || err_body.contains("key not valid");
             let is_model_error = !is_key_error && (
                 status_code == 404
+                    || status_code == 503
                     || err_body.to_lowercase().contains("model")
                     || err_body.to_lowercase().contains(&model_clean.to_lowercase())
             );
 
-            if is_model_error && model_clean != "gemini-flash-latest" {
-                let fb_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
+            let fallback_model = if model_clean != "gemini-3.5-flash" {
+                "gemini-3.5-flash"
+            } else {
+                "gemini-3-flash-preview"
+            };
+
+            if is_model_error && model_clean != fallback_model {
+                let fb_url = format!("https://generativelanguage.googleapis.com/v1beta/models/{}:generateContent", fallback_model);
                 if let Ok(fb_res) = client
-                    .post(fb_url)
+                    .post(&fb_url)
                     .header("Content-Type", "application/json")
                     .header("x-goog-api-key", api_key.trim())
                     .json(&request_body)
@@ -2114,11 +2168,11 @@ async fn send_gemini_request_internal(
                                         let trimmed = full_text.trim();
                                         if !trimmed.is_empty() {
                                             let mut s = get_settings(app.clone());
-                                            s.model = Some("gemini-flash-latest".to_string());
+                                            s.model = Some(fallback_model.to_string());
                                             let _ = save_settings(app.clone(), s);
-                                            let _ = app.emit("model-switched", "gemini-flash-latest");
+                                            let _ = app.emit("model-switched", fallback_model);
 
-                                            let note = "Switched to gemini-flash-latest because the chosen model didn't work.";
+                                            let note = format!("Switched to {} because the chosen model didn't work.", fallback_model);
                                             if include_system_instruction {
                                                 return Ok(format!("{}\n\n{}", trimmed, note));
                                             } else {
