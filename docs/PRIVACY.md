@@ -39,13 +39,17 @@ The Control Center tab interacts solely with local Windows system components:
 
 None of these system metrics or status queries ever leave your machine.
 
+### 4. Clipboard History
+
+Clipboard history is off by default. When you turn it on, text you copy is kept in memory only until you quit Dude; copies from password managers and text that looks like a secret are skipped; nothing is sent anywhere.
+
 ---
 
 ## Network Activity
 
 The only network communication performed by Dude is:
 1. Outbound HTTPS requests to Google's official Gemini API endpoint (`https://generativelanguage.googleapis.com/*`) when testing your API key or submitting a chat prompt.
-2. Web requests initiated when you explicitly click an external link (such as opening Google AI Studio or project documentation), which launches your system's default web browser.
+2. Web requests initiated when you explicitly click an external link (such as opening Google AI Studio or project documentation), which launches your system's default web browser. Links in chat replies open in your default browser only when you click them. Dude does not load link previews or contact those sites itself.
 
 ---
 

@@ -1,11 +1,14 @@
 use std::sync::atomic::{AtomicBool, Ordering};
-use tauri::{Emitter, Manager};
+use tauri::{Emitter, Listener, Manager};
 use keyring::Entry;
 use tauri_plugin_store::StoreExt;
 
 pub mod agent_hooks;
 pub mod agent_receiver;
 pub mod tray;
+pub mod sound;
+pub mod clipboard_history;
+pub mod audio_visualizer;
 
 const KEYRING_SERVICE: &str = "Dude";
 const KEYRING_USER: &str = "GeminiAPIKey";
@@ -683,10 +686,14 @@ fn get_os_diagnostic_info() -> Result<String, String> {
 
 // --- Control Center Support (Media, Network, Wi-Fi, BT, Airplane, Hotspot, Brightness, Audio) ---
 use windows::Devices::Radios::{Radio, RadioAccessStatus, RadioKind, RadioState};
+use windows::Foundation::TypedEventHandler;
 use windows::Media::Control::{
+    CurrentSessionChangedEventArgs,
     GlobalSystemMediaTransportControlsSession,
     GlobalSystemMediaTransportControlsSessionManager,
     GlobalSystemMediaTransportControlsSessionPlaybackStatus,
+    MediaPropertiesChangedEventArgs,
+    PlaybackInfoChangedEventArgs,
 };
 use windows::Networking::Connectivity::NetworkInformation;
 use windows::Networking::NetworkOperators::{
@@ -1047,6 +1054,258 @@ async fn media_seek(
     let success = op.get().map_err(|e| e.to_string())?;
     println!("[Music Seek Debug Legacy] ticks: {}, result: {}", target, success);
     Ok(success)
+}
+
+#[derive(Clone, Debug, serde::Serialize, PartialEq, Eq)]
+pub struct NowPlayingPayload {
+    pub status: String, // "playing" | "paused" | "none"
+    pub title: String,
+    pub artist: String,
+    pub thumbnail: Option<String>,
+}
+
+fn downscale_thumbnail_bytes(buf: &[u8]) -> Option<String> {
+    if let Ok(img) = image::load_from_memory(buf) {
+        let (w, h) = (img.width(), img.height());
+        let resized = if w > 64 || h > 64 {
+            img.resize(64, 64, image::imageops::FilterType::Triangle)
+        } else {
+            img
+        };
+        let mut cursor = std::io::Cursor::new(Vec::new());
+        if resized.write_to(&mut cursor, image::ImageFormat::Png).is_ok() {
+            use base64::Engine;
+            let b64 = base64::engine::general_purpose::STANDARD.encode(cursor.into_inner());
+            return Some(format!("data:image/png;base64,{}", b64));
+        }
+    }
+    None
+}
+
+struct NowPlayingSessionState {
+    status: String,
+    title: String,
+    artist: String,
+    raw_thumbnail_bytes: Option<Vec<u8>>,
+}
+
+fn read_now_playing_session_state(session: &GlobalSystemMediaTransportControlsSession) -> NowPlayingSessionState {
+    let mut status = "none".to_string();
+    if let Ok(playback_info) = session.GetPlaybackInfo() {
+        if let Ok(status_val) = playback_info.PlaybackStatus() {
+            status = match status_val {
+                GlobalSystemMediaTransportControlsSessionPlaybackStatus::Playing => "playing".to_string(),
+                GlobalSystemMediaTransportControlsSessionPlaybackStatus::Paused => "paused".to_string(),
+                _ => "none".to_string(),
+            };
+        }
+    }
+
+    let mut title = String::new();
+    let mut artist = String::new();
+    let mut raw_thumbnail_bytes = None;
+
+    if let Ok(props_op) = session.TryGetMediaPropertiesAsync() {
+        if let Ok(props) = props_op.get() {
+            if let Ok(t) = props.Title() {
+                let s = t.to_string_lossy();
+                if !s.trim().is_empty() {
+                    title = s;
+                }
+            }
+            if let Ok(a) = props.Artist() {
+                artist = a.to_string_lossy();
+            }
+
+            if let Ok(thumb_ref) = props.Thumbnail() {
+                if let Ok(open_op) = thumb_ref.OpenReadAsync() {
+                    if let Ok(stream) = open_op.get() {
+                        if let Ok(size) = stream.Size() {
+                            if size > 0 && size < 5 * 1024 * 1024 {
+                                if let Ok(reader) = DataReader::CreateDataReader(&stream) {
+                                    if let Ok(load_op) = reader.LoadAsync(size as u32) {
+                                        if load_op.get().is_ok() {
+                                            let mut buf = vec![0u8; size as usize];
+                                            if reader.ReadBytes(&mut buf).is_ok() {
+                                                raw_thumbnail_bytes = Some(buf);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    NowPlayingSessionState {
+        status,
+        title,
+        artist,
+        raw_thumbnail_bytes,
+    }
+}
+
+pub fn init_now_playing_worker(app_handle: tauri::AppHandle) {
+    tauri::async_runtime::spawn(async move {
+        run_now_playing_loop(app_handle).await;
+    });
+}
+
+async fn run_now_playing_loop(app_handle: tauri::AppHandle) {
+    let manager = match GlobalSystemMediaTransportControlsSessionManager::RequestAsync() {
+        Ok(op) => match op.get() {
+            Ok(m) => m,
+            Err(_) => return,
+        },
+        Err(_) => return,
+    };
+
+    let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel::<()>();
+
+    let tx_mgr = tx.clone();
+    let _ = manager.CurrentSessionChanged(&TypedEventHandler::<
+        GlobalSystemMediaTransportControlsSessionManager,
+        CurrentSessionChangedEventArgs,
+    >::new(move |_sender, _args| {
+        let _ = tx_mgr.send(());
+        Ok(())
+    }));
+
+    let _ = tx.send(());
+
+    let mut last_emitted_status = String::new();
+    let mut last_emitted_title = String::new();
+    let mut last_emitted_artist = String::new();
+    let mut last_track_key = String::new();
+    let mut thumbnail_sent_for_track = false;
+
+    let mut active_session: Option<GlobalSystemMediaTransportControlsSession> = None;
+
+    loop {
+        let has_session = active_session.is_some();
+
+        if has_session {
+            tokio::select! {
+                biased;
+                _ = rx.recv() => {},
+                _ = tokio::time::sleep(std::time::Duration::from_secs(2)) => {},
+            }
+        } else {
+            if rx.recv().await.is_none() {
+                break;
+            }
+        }
+
+        tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+        while rx.try_recv().is_ok() {}
+
+        let current_session_res = manager.GetCurrentSession();
+        match current_session_res {
+            Ok(session) => {
+                let is_new_session = match &active_session {
+                    None => true,
+                    Some(prev) => prev != &session,
+                };
+
+                if is_new_session {
+                    let tx_props = tx.clone();
+                    let _ = session.MediaPropertiesChanged(&TypedEventHandler::<
+                        GlobalSystemMediaTransportControlsSession,
+                        MediaPropertiesChangedEventArgs,
+                    >::new(move |_sender, _args| {
+                        let _ = tx_props.send(());
+                        Ok(())
+                    }));
+
+                    let tx_playback = tx.clone();
+                    let _ = session.PlaybackInfoChanged(&TypedEventHandler::<
+                        GlobalSystemMediaTransportControlsSession,
+                        PlaybackInfoChangedEventArgs,
+                    >::new(move |_sender, _args| {
+                        let _ = tx_playback.send(());
+                        Ok(())
+                    }));
+
+                    active_session = Some(session.clone());
+                }
+
+                let state = read_now_playing_session_state(&session);
+                let current_track_key = format!("{}:{}", state.title, state.artist);
+                let track_changed = current_track_key != last_track_key;
+
+                if track_changed {
+                    last_track_key = current_track_key;
+                    thumbnail_sent_for_track = false;
+                }
+
+                let mut thumbnail_to_send: Option<String> = None;
+                if !thumbnail_sent_for_track {
+                    if let Some(ref raw_buf) = state.raw_thumbnail_bytes {
+                        if let Some(downscaled_b64) = downscale_thumbnail_bytes(raw_buf) {
+                            thumbnail_to_send = Some(downscaled_b64);
+                            thumbnail_sent_for_track = true;
+                        }
+                    }
+                }
+
+                let status_changed = state.status != last_emitted_status;
+                let title_changed = state.title != last_emitted_title;
+                let artist_changed = state.artist != last_emitted_artist;
+                let thumb_changed = thumbnail_to_send.is_some();
+
+                if status_changed || title_changed || artist_changed || thumb_changed {
+                    #[cfg(debug_assertions)]
+                    {
+                        println!(
+                            "[NowPlaying Event] status: {} (prev: {}), track_changed: {}, has_thumb: {}",
+                            state.status, last_emitted_status, track_changed, thumbnail_to_send.is_some()
+                        );
+                    }
+
+                    last_emitted_status = state.status.clone();
+                    last_emitted_title = state.title.clone();
+                    last_emitted_artist = state.artist.clone();
+
+                    let payload = NowPlayingPayload {
+                        status: state.status,
+                        title: state.title,
+                        artist: state.artist,
+                        thumbnail: thumbnail_to_send,
+                    };
+
+                    use tauri::Emitter;
+                    let _ = app_handle.emit("now-playing", payload);
+                }
+            }
+            Err(_) => {
+                active_session = None;
+                thumbnail_sent_for_track = false;
+                last_track_key.clear();
+
+                if last_emitted_status != "none" {
+                    #[cfg(debug_assertions)]
+                    println!("[NowPlaying Event] status: none (session ended)");
+
+                    last_emitted_status = "none".to_string();
+                    last_emitted_title.clear();
+                    last_emitted_artist.clear();
+
+                    let payload = NowPlayingPayload {
+                        status: "none".to_string(),
+                        title: String::new(),
+                        artist: String::new(),
+                        thumbnail: None,
+                    };
+
+                    use tauri::Emitter;
+                    let _ = app_handle.emit("now-playing", payload);
+                }
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -1559,6 +1818,8 @@ pub struct ChatMessage {
     pub text: Option<String>,
     #[serde(default)]
     pub content: Option<String>,
+    #[serde(default)]
+    pub parts: Option<Vec<serde_json::Value>>,
 }
 
 fn get_settings_path(app: &tauri::AppHandle) -> std::path::PathBuf {
@@ -2274,6 +2535,1445 @@ async fn ask_gemini(
     send_gemini_request_internal(app, message, history, true).await
 }
 
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct AttachmentMeta {
+    pub id: String,
+    pub name: String,
+    pub mime: String,
+    pub size: usize,
+    pub kind: String, // "image", "pdf", "text"
+    pub has_secret: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub preview: Option<String>,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct AttachmentBatchResult {
+    pub attachments: Vec<AttachmentMeta>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
+}
+
+pub struct StoredAttachment {
+    pub meta: AttachmentMeta,
+    pub bytes: Vec<u8>,
+    pub text_content: Option<String>,
+}
+
+static ATTACHMENT_STORE: std::sync::Mutex<Option<std::collections::HashMap<String, StoredAttachment>>> =
+    std::sync::Mutex::new(None);
+
+fn with_attachment_store<F, R>(f: F) -> R
+where
+    F: FnOnce(&mut std::collections::HashMap<String, StoredAttachment>) -> R,
+{
+    let mut lock = ATTACHMENT_STORE.lock().unwrap_or_else(|p| p.into_inner());
+    let store = lock.get_or_insert_with(std::collections::HashMap::new);
+    f(store)
+}
+
+fn rgba_to_png(rgba: &[u8], width: u32, height: u32) -> Result<Vec<u8>, String> {
+    use image::codecs::png::PngEncoder;
+    use image::ColorType;
+    let mut buf = Vec::new();
+    let encoder = PngEncoder::new(&mut buf);
+    image::ImageEncoder::write_image(
+        encoder,
+        rgba,
+        width,
+        height,
+        ColorType::Rgba8.into(),
+    )
+    .map_err(|e| format!("Failed to encode PNG: {}", e))?;
+    Ok(buf)
+}
+
+fn scan_for_secrets(text: &str) -> bool {
+    if text.contains("BEGIN PRIVATE KEY")
+        || text.contains("BEGIN RSA PRIVATE KEY")
+        || text.contains("BEGIN EC PRIVATE KEY")
+        || text.contains("BEGIN OPENSSH PRIVATE KEY")
+    {
+        return true;
+    }
+
+    for word in text.split(|c: char| c.is_whitespace() || c == '"' || c == '\'' || c == '`' || c == ';' || c == ',') {
+        let clean = word.trim_matches(|c: char| c == '"' || c == '\'' || c == '`');
+        if clean.starts_with("AIza") && clean.len() >= 20 {
+            return true;
+        }
+        if clean.starts_with("sk-") && clean.len() >= 15 {
+            return true;
+        }
+        if clean.starts_with("ghp_") && clean.len() >= 20 {
+            return true;
+        }
+        if clean.starts_with("AQ") && clean.len() >= 16 {
+            return true;
+        }
+    }
+
+    let mut iter = text.split_whitespace();
+    while let Some(word) = iter.next() {
+        if word.eq_ignore_ascii_case("bearer") {
+            if let Some(token) = iter.next() {
+                let clean_token = token.trim_matches(|c: char| c == '"' || c == '\'' || c == ';' || c == ',');
+                if clean_token.len() > 20 {
+                    return true;
+                }
+            }
+        }
+    }
+
+    false
+}
+
+fn mask_secrets(text: &str) -> String {
+    let mut out = String::new();
+    let words: Vec<&str> = text.split_inclusive(|c: char| c.is_whitespace() || c == '"' || c == '\'' || c == '`').collect();
+    for piece in words {
+        let trimmed = piece.trim_matches(|c: char| c.is_whitespace() || c == '"' || c == '\'' || c == '`');
+        if (trimmed.starts_with("AIza") && trimmed.len() >= 20)
+            || (trimmed.starts_with("sk-") && trimmed.len() >= 15)
+            || (trimmed.starts_with("ghp_") && trimmed.len() >= 20)
+            || (trimmed.starts_with("AQ") && trimmed.len() >= 16)
+            || trimmed.contains("BEGIN PRIVATE KEY")
+            || trimmed.contains("BEGIN RSA PRIVATE KEY")
+        {
+            out.push_str("[SECRET_MASKED]");
+        } else {
+            out.push_str(piece);
+        }
+    }
+    out
+}
+
+fn get_file_info(ext: &str) -> Option<(&'static str, &'static str)> {
+    match ext.to_lowercase().as_str() {
+        "png" => Some(("image", "image/png")),
+        "jpg" | "jpeg" => Some(("image", "image/jpeg")),
+        "webp" => Some(("image", "image/webp")),
+        "gif" => Some(("image", "image/gif")),
+        "pdf" => Some(("pdf", "application/pdf")),
+        "txt" | "md" | "json" | "csv" | "tsv" | "log" | "js" | "ts" | "jsx" | "tsx"
+        | "py" | "rs" | "go" | "java" | "c" | "cpp" | "h" | "cs" | "html" | "css"
+        | "xml" | "yml" | "yaml" | "toml" | "ini" | "sql" | "sh" | "ps1" => {
+            Some(("text", "text/plain"))
+        }
+        _ => None,
+    }
+}
+
+static ATTACHMENT_ID_COUNTER: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
+
+fn process_file_path(
+    path: &std::path::Path,
+    current_count: usize,
+    current_total_bytes: usize,
+) -> Result<StoredAttachment, String> {
+    if current_count >= 4 {
+        return Err("Maximum 4 attachments allowed.".to_string());
+    }
+
+    let file_name = path
+        .file_name()
+        .and_then(|n| n.to_str())
+        .ok_or_else(|| "Invalid file name.".to_string())?
+        .to_string();
+
+    if is_sensitive_filename(&file_name) {
+        return Err("This file looks sensitive and was not attached.".to_string());
+    }
+
+    let ext = path
+        .extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("")
+        .to_lowercase();
+
+    let (kind, mime) = get_file_info(&ext).ok_or_else(|| {
+        format!("Unsupported file type: .{}", ext)
+    })?;
+
+    let bytes = std::fs::read(path).map_err(|e| format!("Failed to read file: {}", e))?;
+    let size = bytes.len();
+
+    let id = format!(
+        "att_{}_{}",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis(),
+        ATTACHMENT_ID_COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+    );
+
+    if kind == "text" {
+        if size > 200 * 1024 {
+            return Err("Text file exceeds 200 KB limit.".to_string());
+        }
+        let text = String::from_utf8(bytes.clone())
+            .map_err(|_| "Text file is not valid UTF-8.".to_string())?;
+        if current_total_bytes + size > 15 * 1024 * 1024 {
+            return Err("Total attachments exceed 15 MB limit.".to_string());
+        }
+        let has_secret = scan_for_secrets(&text);
+        Ok(StoredAttachment {
+            meta: AttachmentMeta {
+                id,
+                name: file_name,
+                mime: mime.to_string(),
+                size,
+                kind: kind.to_string(),
+                has_secret,
+                preview: None,
+            },
+            bytes,
+            text_content: Some(text),
+        })
+    } else {
+        // Image or PDF
+        if size > 10 * 1024 * 1024 {
+            return Err("File exceeds 10 MB limit.".to_string());
+        }
+        if current_total_bytes + size > 15 * 1024 * 1024 {
+            return Err("Total attachments exceed 15 MB limit.".to_string());
+        }
+        Ok(StoredAttachment {
+            meta: AttachmentMeta {
+                id,
+                name: file_name,
+                mime: mime.to_string(),
+                size,
+                kind: kind.to_string(),
+                has_secret: false,
+                preview: None,
+            },
+            bytes,
+            text_content: None,
+        })
+    }
+}
+
+fn sanitize_parts_for_gemini(parts: &[serde_json::Value]) -> Vec<serde_json::Value> {
+    parts
+        .iter()
+        .map(|p| {
+            if let Some(obj) = p.as_object() {
+                let mut cleaned = serde_json::Map::new();
+                for (k, v) in obj {
+                    if !k.starts_with('_') {
+                        cleaned.insert(k.clone(), v.clone());
+                    }
+                }
+                serde_json::Value::Object(cleaned)
+            } else {
+                p.clone()
+            }
+        })
+        .collect()
+}
+
+fn build_validated_content_turns(
+    history: &[ChatMessage],
+    new_user_parts: Vec<serde_json::Value>,
+) -> Vec<serde_json::Value> {
+    let mut turns: Vec<(String, Vec<serde_json::Value>)> = Vec::new();
+
+    for msg in history {
+        let role = if msg.role.eq_ignore_ascii_case("model")
+            || msg.role.eq_ignore_ascii_case("assistant")
+        {
+            "model"
+        } else {
+            "user"
+        };
+
+        let parts: Vec<serde_json::Value> = if let Some(ref p) = msg.parts {
+            sanitize_parts_for_gemini(p)
+        } else if let Some(ref t) = msg.text.as_ref().or(msg.content.as_ref()) {
+            let trimmed = t.trim();
+            if trimmed.is_empty() {
+                continue;
+            }
+            vec![serde_json::json!({ "text": trimmed })]
+        } else {
+            continue;
+        };
+
+        if parts.is_empty() {
+            continue;
+        }
+
+        if turns.is_empty() {
+            if role == "user" {
+                turns.push((role.to_string(), parts));
+            }
+        } else {
+            let last_role = &turns.last().unwrap().0;
+            if role != last_role {
+                turns.push((role.to_string(), parts));
+            } else if role == "user" {
+                turns.pop();
+                turns.push((role.to_string(), parts));
+            }
+        }
+    }
+
+    if let Some((last_role, _)) = turns.last() {
+        if last_role == "user" {
+            turns.pop();
+        }
+    }
+
+    let sanitized_new_parts = sanitize_parts_for_gemini(&new_user_parts);
+    turns.push(("user".to_string(), sanitized_new_parts));
+
+    while turns.len() > 10 {
+        if turns.len() >= 2 {
+            turns.drain(0..2);
+        } else {
+            break;
+        }
+    }
+
+    turns
+        .into_iter()
+        .map(|(role, parts)| {
+            serde_json::json!({
+                "role": role,
+                "parts": parts
+            })
+        })
+        .collect()
+}
+
+struct ActiveChatRequest {
+    request_id: String,
+    user_message: String,
+    user_parts: Vec<serde_json::Value>,
+    accumulated_text: std::sync::Arc<std::sync::Mutex<String>>,
+    abort_handle: tokio::task::AbortHandle,
+}
+
+struct ChatManager {
+    history: Vec<ChatMessage>,
+    active: Option<ActiveChatRequest>,
+}
+
+static CHAT_MANAGER: std::sync::Mutex<Option<ChatManager>> = std::sync::Mutex::new(None);
+
+fn with_chat_manager<F, R>(f: F) -> R
+where
+    F: FnOnce(&mut ChatManager) -> R,
+{
+    let mut lock = CHAT_MANAGER.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+    let mgr = lock.get_or_insert_with(|| ChatManager {
+        history: Vec::new(),
+        active: None,
+    });
+    f(mgr)
+}
+
+#[tauri::command]
+fn chat_cancel(request_id: String) -> Result<(), String> {
+    with_chat_manager(|mgr| {
+        let should_cancel = if let Some(ref active) = mgr.active {
+            active.request_id == request_id || request_id.is_empty()
+        } else {
+            false
+        };
+
+        if should_cancel {
+            if let Some(active) = mgr.active.take() {
+                active.abort_handle.abort();
+                let partial = {
+                    let lock = active.accumulated_text.lock().unwrap_or_else(|p| p.into_inner());
+                    lock.clone()
+                };
+                let trimmed = partial.trim().to_string();
+                if !trimmed.is_empty() {
+                    mgr.history.push(ChatMessage {
+                        role: "user".to_string(),
+                        text: Some(active.user_message),
+                        content: None,
+                        parts: Some(active.user_parts),
+                    });
+                    mgr.history.push(ChatMessage {
+                        role: "model".to_string(),
+                        text: Some(trimmed),
+                        content: None,
+                        parts: None,
+                    });
+                    while mgr.history.len() > 10 {
+                        mgr.history.drain(0..1);
+                    }
+                }
+            }
+        }
+    });
+    Ok(())
+}
+
+#[tauri::command]
+fn chat_clear() -> Result<(), String> {
+    with_chat_manager(|mgr| {
+        if let Some(active) = mgr.active.take() {
+            active.abort_handle.abort();
+        }
+        mgr.history.clear();
+    });
+    with_attachment_store(|store| {
+        store.clear();
+    });
+    Ok(())
+}
+
+#[tauri::command]
+fn chat_pop_last_turn() -> Result<(), String> {
+    with_chat_manager(|mgr| {
+        if let Some(last) = mgr.history.last() {
+            if last.role == "model" {
+                mgr.history.pop();
+            }
+        }
+        if let Some(last) = mgr.history.last() {
+            if last.role == "user" {
+                mgr.history.pop();
+            }
+        }
+    });
+    Ok(())
+}
+
+fn process_dropped_file_paths(paths: Vec<std::path::PathBuf>) -> AttachmentBatchResult {
+    with_attachment_store(|store| {
+        let mut added = Vec::new();
+        let mut first_error = None;
+
+        let mut staged_bytes: usize = store.values().map(|a| a.bytes.len()).sum();
+        let mut count = store.len();
+
+        for path in paths {
+            if count >= 4 {
+                if first_error.is_none() {
+                    first_error = Some("Maximum 4 attachments allowed.".to_string());
+                }
+                break;
+            }
+
+            match process_file_path(&path, count, staged_bytes) {
+                Ok(att) => {
+                    count += 1;
+                    staged_bytes += att.bytes.len();
+                    added.push(att.meta.clone());
+                    store.insert(att.meta.id.clone(), att);
+                }
+                Err(e) => {
+                    if first_error.is_none() {
+                        first_error = Some(e);
+                    }
+                }
+            }
+        }
+
+        AttachmentBatchResult {
+            attachments: added,
+            error: first_error,
+        }
+    })
+}
+
+#[tauri::command]
+async fn pick_attachments(current_ids: Vec<String>) -> Result<AttachmentBatchResult, String> {
+    if current_ids.len() >= 4 {
+        return Err("Maximum 4 attachments allowed.".to_string());
+    }
+
+    let picked = tokio::task::spawn_blocking(move || {
+        rfd::FileDialog::new()
+            .set_title("Attach image or file")
+            .add_filter(
+                "Supported files",
+                &[
+                    "png", "jpg", "jpeg", "webp", "gif", "pdf", "txt", "md", "json", "csv", "tsv",
+                    "log", "js", "ts", "jsx", "tsx", "py", "rs", "go", "java", "c", "cpp", "h",
+                    "cs", "html", "css", "xml", "yml", "yaml", "toml", "ini", "sql", "sh", "ps1",
+                ],
+            )
+            .add_filter("Images (*.png, *.jpg, *.webp, *.gif)", &["png", "jpg", "jpeg", "webp", "gif"])
+            .add_filter("Documents (*.pdf)", &["pdf"])
+            .add_filter(
+                "Text & Code",
+                &[
+                    "txt", "md", "json", "csv", "tsv", "log", "js", "ts", "jsx", "tsx", "py",
+                    "rs", "go", "java", "c", "cpp", "h", "cs", "html", "css", "xml", "yml",
+                    "yaml", "toml", "ini", "sql", "sh", "ps1",
+                ],
+            )
+            .pick_files()
+    })
+    .await
+    .map_err(|e| format!("Dialog error: {}", e))?;
+
+    let files = match picked {
+        Some(f) if !f.is_empty() => f,
+        _ => return Ok(AttachmentBatchResult { attachments: Vec::new(), error: None }),
+    };
+
+    let mut added_metas = Vec::new();
+    let mut first_error: Option<String> = None;
+
+    with_attachment_store(|store| {
+        let mut staged_bytes: usize = current_ids
+            .iter()
+            .filter_map(|id| store.get(id))
+            .map(|a| a.bytes.len())
+            .sum();
+        let mut count = current_ids.len();
+
+        for path in files {
+            if count >= 4 {
+                if first_error.is_none() {
+                    first_error = Some("Maximum 4 attachments allowed.".to_string());
+                }
+                break;
+            }
+
+            match process_file_path(&path, count, staged_bytes) {
+                Ok(att) => {
+                    count += 1;
+                    staged_bytes += att.bytes.len();
+                    added_metas.push(att.meta.clone());
+                    store.insert(att.meta.id.clone(), att);
+                }
+                Err(err) => {
+                    if first_error.is_none() {
+                        first_error = Some(err);
+                    }
+                }
+            }
+        }
+    });
+
+    Ok(AttachmentBatchResult {
+        attachments: added_metas,
+        error: first_error,
+    })
+}
+
+#[tauri::command]
+async fn paste_from_clipboard(
+    app: tauri::AppHandle,
+    current_ids: Vec<String>,
+) -> Result<AttachmentMeta, String> {
+    use tauri_plugin_clipboard_manager::ClipboardExt;
+
+    if current_ids.len() >= 4 {
+        return Err("Maximum 4 attachments allowed.".to_string());
+    }
+
+    let current_bytes: usize = with_attachment_store(|store| {
+        current_ids
+            .iter()
+            .filter_map(|id| store.get(id))
+            .map(|a| a.bytes.len())
+            .sum()
+    });
+
+    // 1. Try reading image
+    if let Ok(img) = app.clipboard().read_image() {
+        let rgba = img.rgba();
+        let w = img.width();
+        let h = img.height();
+        if !rgba.is_empty() && w > 0 && h > 0 {
+            let png_bytes = rgba_to_png(rgba, w, h)?;
+            let size = png_bytes.len();
+            if size > 10 * 1024 * 1024 {
+                return Err("Pasted image exceeds 10 MB limit.".to_string());
+            }
+            if current_bytes + size > 15 * 1024 * 1024 {
+                return Err("Total attachments exceed 15 MB limit.".to_string());
+            }
+
+            let id = format!(
+                "att_{}_{}",
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap()
+                    .as_millis(),
+                ATTACHMENT_ID_COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+            );
+
+            let meta = AttachmentMeta {
+                id: id.clone(),
+                name: "Pasted image.png".to_string(),
+                mime: "image/png".to_string(),
+                size,
+                kind: "image".to_string(),
+                has_secret: false,
+                preview: None,
+            };
+
+            with_attachment_store(|store| {
+                store.insert(
+                    id,
+                    StoredAttachment {
+                        meta: meta.clone(),
+                        bytes: png_bytes,
+                        text_content: None,
+                    },
+                );
+            });
+
+            return Ok(meta);
+        }
+    }
+
+    // 2. Try reading text
+    if let Ok(text) = app.clipboard().read_text() {
+        let trimmed = text.trim();
+        if !trimmed.is_empty() {
+            let bytes = text.as_bytes().to_vec();
+            let size = bytes.len();
+            if size > 200 * 1024 {
+                return Err("Clipboard text exceeds 200 KB limit.".to_string());
+            }
+            if current_bytes + size > 15 * 1024 * 1024 {
+                return Err("Total attachments exceed 15 MB limit.".to_string());
+            }
+
+            let has_secret = scan_for_secrets(&text);
+            let preview_raw: String = text.chars().take(200).collect();
+            let preview = mask_secrets(&preview_raw);
+
+            let id = format!(
+                "att_{}_{}",
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap()
+                    .as_millis(),
+                ATTACHMENT_ID_COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+            );
+
+            let meta = AttachmentMeta {
+                id: id.clone(),
+                name: "Clipboard text".to_string(),
+                mime: "text/plain".to_string(),
+                size: text.chars().count(),
+                kind: "text".to_string(),
+                has_secret,
+                preview: Some(preview),
+            };
+
+            with_attachment_store(|store| {
+                store.insert(
+                    id,
+                    StoredAttachment {
+                        meta: meta.clone(),
+                        bytes,
+                        text_content: Some(text),
+                    },
+                );
+            });
+
+            return Ok(meta);
+        }
+    }
+
+    Err("The clipboard is empty.".to_string())
+}
+
+#[tauri::command]
+fn remove_attachment(id: String) -> Result<(), String> {
+    with_attachment_store(|store| {
+        store.remove(&id);
+    });
+    Ok(())
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct OpenLinkResponse {
+    pub status: String, // "opened", "needs_confirm", "rejected"
+    pub host: Option<String>,
+    pub message: Option<String>,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum LinkValidationResult {
+    Valid(String),
+    NeedsConfirm(String),
+    Rejected,
+}
+
+pub fn validate_link(url_str: &str, confirmed: bool) -> LinkValidationResult {
+    let trimmed = url_str.trim();
+    if trimmed.len() > 2048 {
+        return LinkValidationResult::Rejected;
+    }
+
+    if trimmed.chars().any(|c| c.is_whitespace() || c.is_control()) {
+        return LinkValidationResult::Rejected;
+    }
+
+    let parsed = match url::Url::parse(trimmed) {
+        Ok(u) => u,
+        Err(_) => return LinkValidationResult::Rejected,
+    };
+
+    let scheme = parsed.scheme().to_lowercase();
+    if scheme != "http" && scheme != "https" {
+        return LinkValidationResult::Rejected;
+    }
+
+    if !parsed.username().is_empty() || parsed.password().is_some() {
+        return LinkValidationResult::Rejected;
+    }
+
+    let host = match parsed.host() {
+        Some(h) => h,
+        None => return LinkValidationResult::Rejected,
+    };
+
+    let domain = match host {
+        url::Host::Ipv4(_) | url::Host::Ipv6(_) => {
+            return LinkValidationResult::Rejected;
+        }
+        url::Host::Domain(d) => d,
+    };
+
+    let d_lower = domain.to_lowercase();
+    if !d_lower.contains('.')
+        || d_lower == "localhost"
+        || d_lower.ends_with(".localhost")
+        || d_lower.ends_with(".local")
+        || d_lower.ends_with(".internal")
+        || d_lower.ends_with(".lan")
+    {
+        return LinkValidationResult::Rejected;
+    }
+
+    let is_punycode_or_non_ascii = d_lower.starts_with("xn--")
+        || d_lower.contains(".xn--")
+        || !domain.is_ascii();
+
+    if is_punycode_or_non_ascii && !confirmed {
+        return LinkValidationResult::NeedsConfirm(domain.to_string());
+    }
+
+    LinkValidationResult::Valid(parsed.to_string())
+}
+
+pub fn process_open_link(url_str: &str, confirmed: bool) -> OpenLinkResponse {
+    match validate_link(url_str, confirmed) {
+        LinkValidationResult::Rejected => OpenLinkResponse {
+            status: "rejected".into(),
+            host: None,
+            message: Some("This link can't be opened.".into()),
+        },
+        LinkValidationResult::NeedsConfirm(host) => OpenLinkResponse {
+            status: "needs_confirm".into(),
+            host: Some(host),
+            message: None,
+        },
+        LinkValidationResult::Valid(normalized) => {
+            match tauri_plugin_opener::open_url(&normalized, None::<&str>) {
+                Ok(_) => OpenLinkResponse {
+                    status: "opened".into(),
+                    host: None,
+                    message: None,
+                },
+                Err(_) => OpenLinkResponse {
+                    status: "rejected".into(),
+                    host: None,
+                    message: Some("This link can't be opened.".into()),
+                },
+            }
+        }
+    }
+}
+
+#[tauri::command]
+async fn open_link(url: String, confirmed: Option<bool>) -> Result<OpenLinkResponse, String> {
+    Ok(process_open_link(&url, confirmed.unwrap_or(false)))
+}
+
+#[tauri::command]
+async fn chat_stream(
+    app: tauri::AppHandle,
+    request_id: String,
+    message: String,
+    attachment_ids: Vec<String>,
+) -> Result<(), String> {
+    let (history_snapshot, old_active) = with_chat_manager(|mgr| {
+        let old = mgr.active.take();
+        (mgr.history.clone(), old)
+    });
+
+    if let Some(old) = old_active {
+        old.abort_handle.abort();
+        let partial = {
+            let lock = old.accumulated_text.lock().unwrap_or_else(|p| p.into_inner());
+            lock.clone()
+        };
+        let trimmed = partial.trim().to_string();
+        if !trimmed.is_empty() {
+            with_chat_manager(|mgr| {
+                mgr.history.push(ChatMessage {
+                    role: "user".to_string(),
+                    text: Some(old.user_message),
+                    content: None,
+                    parts: Some(old.user_parts),
+                });
+                mgr.history.push(ChatMessage {
+                    role: "model".to_string(),
+                    text: Some(trimmed),
+                    content: None,
+                    parts: None,
+                });
+                while mgr.history.len() > 10 {
+                    mgr.history.drain(0..1);
+                }
+            });
+        }
+    }
+
+    let settings = get_settings(app.clone());
+    let api_key = get_api_key_from_store()
+        .ok()
+        .flatten()
+        .filter(|k| !k.trim().is_empty())
+        .or_else(|| settings.api_key.filter(|k| !k.trim().is_empty()))
+        .or_else(|| std::env::var("GEMINI_API_KEY").ok().filter(|k| !k.trim().is_empty()));
+
+    let api_key = match api_key {
+        Some(k) if !k.trim().is_empty() => k.trim().to_string(),
+        _ => {
+            let _ = app.emit(
+                "chat-error",
+                serde_json::json!({
+                    "requestId": &request_id,
+                    "message": "NO_API_KEY"
+                }),
+            );
+            return Err("NO_API_KEY".into());
+        }
+    };
+
+    let user_msg = if message.trim().is_empty() && !attachment_ids.is_empty() {
+        "Look at the attached content, tell me what it is and the key points.".to_string()
+    } else {
+        message.trim().to_string()
+    };
+
+    if user_msg.is_empty() && attachment_ids.is_empty() {
+        let _ = app.emit(
+            "chat-error",
+            serde_json::json!({
+                "requestId": &request_id,
+                "message": "Cannot send an empty message."
+            }),
+        );
+        return Err("Cannot send an empty message.".into());
+    }
+
+    let mut user_parts: Vec<serde_json::Value> = Vec::new();
+    user_parts.push(serde_json::json!({ "text": &user_msg }));
+
+    let mut att_sizes: Vec<usize> = Vec::new();
+    let mut att_mimes: Vec<String> = Vec::new();
+
+    with_attachment_store(|store| {
+        for id in &attachment_ids {
+            if let Some(att) = store.get(id) {
+                att_sizes.push(att.bytes.len());
+                att_mimes.push(att.meta.mime.clone());
+
+                if att.meta.kind == "text" {
+                    let content = att.text_content.as_deref().unwrap_or("");
+                    user_parts.push(serde_json::json!({
+                        "text": format!("File: {}\n```\n{}\n```", att.meta.name, content)
+                    }));
+                } else {
+                    use base64::Engine;
+                    let b64 = base64::engine::general_purpose::STANDARD.encode(&att.bytes);
+                    user_parts.push(serde_json::json!({
+                        "inline_data": {
+                            "mime_type": att.meta.mime,
+                            "data": b64
+                        },
+                        "_name": att.meta.name,
+                        "_size": att.bytes.len()
+                    }));
+                }
+            }
+        }
+    });
+
+    #[cfg(debug_assertions)]
+    {
+        if !att_sizes.is_empty() {
+            println!(
+                "[Chat Debug] attachments sent count: {}, sizes: {:?}, mime_types: {:?}",
+                att_sizes.len(),
+                att_sizes,
+                att_mimes
+            );
+        }
+    }
+
+    let raw_model = settings
+        .model
+        .filter(|m| !m.trim().is_empty())
+        .unwrap_or_else(|| "gemini-3.5-flash".into());
+
+    let mut model_clean = raw_model.trim();
+    if let Some(stripped) = model_clean.strip_prefix("models/") {
+        model_clean = stripped.trim();
+    }
+    if model_clean.is_empty() || model_clean == "gemini-flash-latest" {
+        model_clean = "gemini-3.5-flash";
+    }
+
+    let url = format!(
+        "https://generativelanguage.googleapis.com/v1beta/models/{}:streamGenerateContent?alt=sse",
+        model_clean
+    );
+
+    let content_turns = build_validated_content_turns(&history_snapshot, user_parts.clone());
+
+    let mut body_map = serde_json::Map::new();
+
+    let personality = settings
+        .personality
+        .filter(|p| !p.trim().is_empty())
+        .unwrap_or_else(|| "You are a cute, friendly mascot".into());
+
+    let trimmed_personality = personality.trim();
+    const HIDDEN_LINK_INSTRUCTION: &str = "When the user asks for a video, song, article, map or website, give a clickable Markdown link. Never invent a direct link to a specific video, song or page unless you are certain it exists. For videos use a search link such as [Search on YouTube](https://www.youtube.com/results?search_query=URL_ENCODED_QUERY), and similarly for Google (https://www.google.com/search?q=...), Google Maps (https://www.google.com/maps/search/?api=1&query=...), Spotify (https://open.spotify.com/search/...) and Wikipedia (https://en.wikipedia.org/w/index.php?search=...). Give a direct link only to well-known official pages when you are certain. Always URL-encode the query.";
+
+    let combined_instruction = if trimmed_personality.is_empty() {
+        HIDDEN_LINK_INSTRUCTION.to_string()
+    } else {
+        format!("{}\n\n{}", trimmed_personality, HIDDEN_LINK_INSTRUCTION)
+    };
+
+    body_map.insert(
+        "systemInstruction".to_string(),
+        serde_json::json!({
+            "parts": [{ "text": combined_instruction }]
+        }),
+    );
+
+    body_map.insert("contents".to_string(), serde_json::Value::Array(content_turns));
+
+    let request_body = serde_json::Value::Object(body_map);
+
+    let accumulated_text = std::sync::Arc::new(std::sync::Mutex::new(String::new()));
+    let accumulated_clone = accumulated_text.clone();
+    let req_id_clone = request_id.clone();
+    let user_msg_clone = user_msg.clone();
+    let user_parts_clone = user_parts.clone();
+    let app_handle = app.clone();
+    let had_attachments = !att_sizes.is_empty();
+
+    let task_handle = tokio::spawn(async move {
+        use futures_util::StreamExt;
+
+        let start_time = std::time::Instant::now();
+        let mut time_to_first_chunk: Option<std::time::Duration> = None;
+        let mut chunk_count: usize = 0;
+        let mut first_chunk_received = false;
+
+        let client = match reqwest::Client::builder()
+            .connect_timeout(std::time::Duration::from_secs(30))
+            .build()
+        {
+            Ok(c) => c,
+            Err(e) => {
+                let _ = app_handle.emit(
+                    "chat-error",
+                    serde_json::json!({
+                        "requestId": &req_id_clone,
+                        "message": format!("Client error: {}", e)
+                    }),
+                );
+                with_chat_manager(|mgr| {
+                    if let Some(ref a) = mgr.active {
+                        if a.request_id == req_id_clone {
+                            mgr.active = None;
+                        }
+                    }
+                });
+                return;
+            }
+        };
+
+        const RETRY_DELAYS: [u64; 2] = [1, 2];
+        let max_attempts = 2; // 3 attempts total
+
+        for attempt in 0..=max_attempts {
+            if attempt > 0 {
+                let delay_secs = RETRY_DELAYS[(attempt - 1).min(RETRY_DELAYS.len() - 1)];
+                tokio::time::sleep(std::time::Duration::from_secs(delay_secs)).await;
+            }
+
+            let send_res = client
+                .post(&url)
+                .header("Content-Type", "application/json")
+                .header("x-goog-api-key", api_key.trim())
+                .json(&request_body)
+                .send()
+                .await;
+
+            let res = match send_res {
+                Ok(r) => r,
+                Err(e) => {
+                    if attempt < max_attempts && (e.is_timeout() || e.is_connect()) {
+                        continue;
+                    }
+                    let err_msg = if e.is_timeout() {
+                        "Request timed out. Please try again.".to_string()
+                    } else {
+                        "Network error. Please check your connection.".to_string()
+                    };
+
+                    let _ = app_handle.emit(
+                        "chat-error",
+                        serde_json::json!({
+                            "requestId": &req_id_clone,
+                            "message": err_msg
+                        }),
+                    );
+                    with_chat_manager(|mgr| {
+                        if let Some(ref a) = mgr.active {
+                            if a.request_id == req_id_clone {
+                                mgr.active = None;
+                            }
+                        }
+                    });
+                    return;
+                }
+            };
+
+            let status = res.status();
+            let status_code = status.as_u16();
+
+            if !status.is_success() {
+                let err_body = res.text().await.unwrap_or_default();
+
+                if status_code == 400 && had_attachments {
+                    let body_lower = err_body.to_lowercase();
+                    if body_lower.contains("content")
+                        || body_lower.contains("size")
+                        || body_lower.contains("inline")
+                        || body_lower.contains("payload")
+                        || body_lower.contains("blob")
+                        || body_lower.contains("attachment")
+                        || body_lower.contains("image")
+                        || body_lower.contains("document")
+                        || body_lower.contains("bytes")
+                    {
+                        let _ = app_handle.emit(
+                            "chat-error",
+                            serde_json::json!({
+                                "requestId": &req_id_clone,
+                                "message": "Gemini could not read this attachment. Try a smaller or different file.",
+                                "isAttachmentError": true
+                            }),
+                        );
+                        with_chat_manager(|mgr| {
+                            if let Some(ref a) = mgr.active {
+                                if a.request_id == req_id_clone {
+                                    mgr.active = None;
+                                }
+                            }
+                        });
+                        return;
+                    }
+                }
+
+                let (error_status, error_message) = if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&err_body) {
+                    let err_obj = parsed.get("error");
+                    let st = err_obj
+                        .and_then(|e| e.get("status"))
+                        .and_then(|s| s.as_str())
+                        .map(|s| s.trim().to_string())
+                        .filter(|s| !s.is_empty());
+                    let msg = err_obj
+                        .and_then(|e| e.get("message"))
+                        .and_then(|m| m.as_str())
+                        .map(|m| m.trim().to_string())
+                        .filter(|m| !m.is_empty());
+                    (st, msg)
+                } else {
+                    (None, None)
+                };
+
+                if (status_code == 503 || status_code == 500 || status_code == 429) && attempt < max_attempts {
+                    continue;
+                }
+
+                let formatted_error = if let Some(ref msg) = error_message {
+                    let cleaned_msg = clean_and_truncate_text(msg, &api_key, 200);
+                    if let Some(ref st) = error_status {
+                        format!("Gemini error {} ({}): {}", status_code, st, cleaned_msg)
+                    } else {
+                        format!("Gemini error {}: {}", status_code, cleaned_msg)
+                    }
+                } else {
+                    let trimmed_body = err_body.trim();
+                    if !trimmed_body.is_empty() && !trimmed_body.starts_with('{') && !trimmed_body.starts_with('<') {
+                        let cleaned_body = clean_and_truncate_text(trimmed_body, &api_key, 200);
+                        if let Some(ref st) = error_status {
+                            format!("Gemini error {} ({}): {}", status_code, st, cleaned_body)
+                        } else {
+                            format!("Gemini error {}: {}", status_code, cleaned_body)
+                        }
+                    } else if let Some(ref st) = error_status {
+                        format!("Gemini error {} ({}).", status_code, st)
+                    } else {
+                        format!("Gemini error {}.", status_code)
+                    }
+                };
+
+                let _ = app_handle.emit(
+                    "chat-error",
+                    serde_json::json!({
+                        "requestId": &req_id_clone,
+                        "message": formatted_error
+                    }),
+                );
+                with_chat_manager(|mgr| {
+                    if let Some(ref a) = mgr.active {
+                        if a.request_id == req_id_clone {
+                            mgr.active = None;
+                        }
+                    }
+                });
+                return;
+            }
+
+            // Stream response
+            let mut byte_stream = res.bytes_stream();
+            let mut sse_buffer = String::new();
+            let mut last_finish_reason: Option<String> = None;
+
+            loop {
+                let next_item = tokio::time::timeout(
+                    std::time::Duration::from_secs(30),
+                    byte_stream.next(),
+                )
+                .await;
+
+                match next_item {
+                    Err(_elapsed) => {
+                        if !first_chunk_received && attempt < max_attempts {
+                            break;
+                        }
+                        let _ = app_handle.emit(
+                            "chat-error",
+                            serde_json::json!({
+                                "requestId": &req_id_clone,
+                                "message": "Request timed out. Please try again."
+                            }),
+                        );
+                        with_chat_manager(|mgr| {
+                            if let Some(ref a) = mgr.active {
+                                if a.request_id == req_id_clone {
+                                    mgr.active = None;
+                                }
+                            }
+                        });
+                        return;
+                    }
+                    Ok(None) => {
+                        if !sse_buffer.trim().is_empty() {
+                            let line = sse_buffer.trim().to_string();
+                            if let Some(data_str) = line.strip_prefix("data:") {
+                                let trimmed_data = data_str.trim();
+                                if !trimmed_data.is_empty() && trimmed_data != "[DONE]" {
+                                    if let Ok(json_val) = serde_json::from_str::<serde_json::Value>(trimmed_data) {
+                                        if let Some(candidates) = json_val.get("candidates").and_then(|c| c.as_array()) {
+                                            if let Some(candidate) = candidates.first() {
+                                                if let Some(fr) = candidate.get("finishReason").and_then(|f| f.as_str()) {
+                                                    last_finish_reason = Some(fr.to_string());
+                                                }
+                                                if let Some(parts) = candidate
+                                                    .get("content")
+                                                    .and_then(|c| c.get("parts"))
+                                                    .and_then(|p| p.as_array())
+                                                {
+                                                    for part in parts {
+                                                        if let Some(t) = part.get("text").and_then(|t| t.as_str()) {
+                                                            if !t.is_empty() {
+                                                                if !first_chunk_received {
+                                                                    first_chunk_received = true;
+                                                                    time_to_first_chunk = Some(start_time.elapsed());
+                                                                }
+                                                                chunk_count += 1;
+                                                                accumulated_clone
+                                                                    .lock()
+                                                                    .unwrap_or_else(|p| p.into_inner())
+                                                                    .push_str(t);
+                                                                let _ = app_handle.emit(
+                                                                    "chat-chunk",
+                                                                    serde_json::json!({
+                                                                        "requestId": &req_id_clone,
+                                                                        "text": t
+                                                                    }),
+                                                                );
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        let total_text = {
+                            let lock = accumulated_clone.lock().unwrap_or_else(|p| p.into_inner());
+                            lock.clone()
+                        };
+
+                        if total_text.trim().is_empty() {
+                            if attempt < max_attempts {
+                                break;
+                            }
+                            let _ = app_handle.emit(
+                                "chat-error",
+                                serde_json::json!({
+                                    "requestId": &req_id_clone,
+                                    "message": "Received an empty response from Gemini."
+                                }),
+                            );
+                            with_chat_manager(|mgr| {
+                                if let Some(ref a) = mgr.active {
+                                    if a.request_id == req_id_clone {
+                                        mgr.active = None;
+                                    }
+                                }
+                            });
+                            return;
+                        }
+
+                        let finish_reason = last_finish_reason.unwrap_or_else(|| "STOP".into());
+                        let _ = app_handle.emit(
+                            "chat-done",
+                            serde_json::json!({
+                                "requestId": &req_id_clone,
+                                "finishReason": finish_reason
+                            }),
+                        );
+
+                        with_chat_manager(|mgr| {
+                            if let Some(ref a) = mgr.active {
+                                if a.request_id == req_id_clone {
+                                    mgr.active = None;
+                                    mgr.history.push(ChatMessage {
+                                        role: "user".to_string(),
+                                        text: Some(user_msg_clone.clone()),
+                                        content: None,
+                                        parts: Some(user_parts_clone),
+                                    });
+                                    mgr.history.push(ChatMessage {
+                                        role: "model".to_string(),
+                                        text: Some(total_text.trim().to_string()),
+                                        content: None,
+                                        parts: None,
+                                    });
+
+                                    // Cap total attachment bytes in history at 15 MB
+                                    let mut total_att_bytes: usize = 0;
+                                    for msg in &mgr.history {
+                                        if let Some(ref parts) = msg.parts {
+                                            for p in parts {
+                                                if let Some(sz) = p.get("_size").and_then(|s| s.as_u64()) {
+                                                    total_att_bytes += sz as usize;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    while total_att_bytes > 15 * 1024 * 1024 {
+                                        let mut replaced = false;
+                                        for msg in &mut mgr.history {
+                                            if let Some(ref mut parts) = msg.parts {
+                                                for p in parts.iter_mut() {
+                                                    if let Some(sz) = p.get("_size").and_then(|s| s.as_u64()) {
+                                                        let name = p
+                                                            .get("_name")
+                                                            .and_then(|n| n.as_str())
+                                                            .unwrap_or("attachment");
+                                                        total_att_bytes = total_att_bytes.saturating_sub(sz as usize);
+                                                        *p = serde_json::json!({
+                                                            "text": format!("[attachment removed: {}]", name)
+                                                        });
+                                                        replaced = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            if replaced {
+                                                break;
+                                            }
+                                        }
+                                        if !replaced {
+                                            break;
+                                        }
+                                    }
+
+                                    while mgr.history.len() > 10 {
+                                        mgr.history.drain(0..1);
+                                    }
+                                }
+                            }
+                        });
+
+                        #[cfg(debug_assertions)]
+                        {
+                            let total_time = start_time.elapsed();
+                            println!(
+                                "[Chat Stream] time_to_first_chunk: {:?}, chunks: {}, total_time: {:?}",
+                                time_to_first_chunk.unwrap_or(total_time),
+                                chunk_count,
+                                total_time
+                            );
+                        }
+
+                        return;
+                    }
+                    Ok(Some(Err(e))) => {
+                        if !first_chunk_received && attempt < max_attempts {
+                            break;
+                        }
+                        let err_msg = if e.is_timeout() {
+                            "Request timed out. Please try again."
+                        } else {
+                            "Network error. Please check your connection."
+                        };
+                        let _ = app_handle.emit(
+                            "chat-error",
+                            serde_json::json!({
+                                "requestId": &req_id_clone,
+                                "message": err_msg
+                            }),
+                        );
+                        with_chat_manager(|mgr| {
+                            if let Some(ref a) = mgr.active {
+                                if a.request_id == req_id_clone {
+                                    mgr.active = None;
+                                }
+                            }
+                        });
+                        return;
+                    }
+                    Ok(Some(Ok(bytes))) => {
+                        let text_chunk = String::from_utf8_lossy(&bytes);
+                        sse_buffer.push_str(&text_chunk);
+
+                        while let Some(pos) = sse_buffer.find('\n') {
+                            let line = sse_buffer[..pos].trim_end_matches('\r').to_string();
+                            sse_buffer.drain(..=pos);
+
+                            let trimmed_line = line.trim();
+                            if trimmed_line.is_empty() {
+                                continue;
+                            }
+
+                            if let Some(data_payload) = trimmed_line.strip_prefix("data:") {
+                                let trimmed_data = data_payload.trim();
+                                if trimmed_data.is_empty() || trimmed_data == "[DONE]" {
+                                    continue;
+                                }
+
+                                if let Ok(json_val) = serde_json::from_str::<serde_json::Value>(trimmed_data) {
+                                    if let Some(err_obj) = json_val.get("error") {
+                                        let msg = err_obj
+                                            .get("message")
+                                            .and_then(|m| m.as_str())
+                                            .unwrap_or("Gemini stream error");
+                                        let clean_msg = clean_and_truncate_text(msg, &api_key, 200);
+                                        let _ = app_handle.emit(
+                                            "chat-error",
+                                            serde_json::json!({
+                                                "requestId": &req_id_clone,
+                                                "message": format!("Gemini error: {}", clean_msg)
+                                            }),
+                                        );
+                                        with_chat_manager(|mgr| {
+                                            if let Some(ref a) = mgr.active {
+                                                if a.request_id == req_id_clone {
+                                                    mgr.active = None;
+                                                }
+                                            }
+                                        });
+                                        return;
+                                    }
+
+                                    if let Some(candidates) = json_val.get("candidates").and_then(|c| c.as_array()) {
+                                        if let Some(candidate) = candidates.first() {
+                                            if let Some(fr) = candidate.get("finishReason").and_then(|f| f.as_str()) {
+                                                last_finish_reason = Some(fr.to_string());
+                                            }
+                                            if let Some(parts) = candidate
+                                                .get("content")
+                                                .and_then(|c| c.get("parts"))
+                                                .and_then(|p| p.as_array())
+                                            {
+                                                for part in parts {
+                                                    if let Some(t) = part.get("text").and_then(|t| t.as_str()) {
+                                                        if !t.is_empty() {
+                                                            if !first_chunk_received {
+                                                                first_chunk_received = true;
+                                                                time_to_first_chunk = Some(start_time.elapsed());
+                                                            }
+                                                            chunk_count += 1;
+                                                            accumulated_clone
+                                                                .lock()
+                                                                .unwrap_or_else(|p| p.into_inner())
+                                                                .push_str(t);
+                                                            let _ = app_handle.emit(
+                                                                "chat-chunk",
+                                                                serde_json::json!({
+                                                                    "requestId": &req_id_clone,
+                                                                    "text": t
+                                                                }),
+                                                            );
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if attempt < max_attempts {
+                continue;
+            }
+        }
+    });
+
+    with_chat_manager(|mgr| {
+        mgr.active = Some(ActiveChatRequest {
+            request_id,
+            user_message: user_msg,
+            user_parts,
+            accumulated_text,
+            abort_handle: task_handle.abort_handle(),
+        });
+    });
+
+    Ok(())
+}
+
 #[tauri::command]
 async fn test_connection(app: tauri::AppHandle) -> Result<String, String> {
     send_gemini_request_internal(
@@ -2489,6 +4189,7 @@ pub fn run() {
             Some(vec!["--autostart"]),
         ))
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_clipboard_manager::init())
         .invoke_handler(tauri::generate_handler![
             greet,
             open_dude_settings,
@@ -2497,6 +4198,14 @@ pub fn run() {
             quit_app,
             show_context_menu,
             ask_gemini,
+            chat_stream,
+            chat_cancel,
+            chat_clear,
+            chat_pop_last_turn,
+            pick_attachments,
+            paste_from_clipboard,
+            remove_attachment,
+            open_link,
             test_connection,
             get_settings,
             save_settings,
@@ -2553,10 +4262,36 @@ pub fn run() {
             resolve_agent_approval,
             set_approvals_failsafe,
             log_perf_metric,
-            save_asset_webp
+            save_asset_webp,
+            sound::play_sound,
+            sound::stop_all_sounds,
+            sound::get_sound_debug_info,
+            sound::play_startup_sound_if_manual,
+            clipboard_history::get_clipboard_state,
+            clipboard_history::copy_clipboard_item,
+            clipboard_history::delete_clipboard_item,
+            clipboard_history::clear_clipboard_history,
+            clipboard_history::set_clipboard_enabled,
+            clipboard_history::toggle_clipboard_debug_preview,
+            audio_visualizer::start_audio_visualizer,
+            audio_visualizer::stop_audio_visualizer
         ])
         .setup(|app| {
+            // Procedurally generate sound buffers in memory at startup
+            let _ = sound::get_sound_engine();
+            clipboard_history::init(&app.handle());
+
+            let handle = app.handle().clone();
+            handle.listen("behavior-changed", move |event| {
+                if let Ok(val) = serde_json::from_str::<serde_json::Value>(event.payload()) {
+                    if val.get("soundEnabled") == Some(&serde_json::Value::Bool(false)) {
+                        sound::stop_all_sounds_internal();
+                    }
+                }
+            });
+
             init_brightness_worker(app.handle().clone());
+            init_now_playing_worker(app.handle().clone());
 
             let handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
@@ -2611,13 +4346,38 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| {
-            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                if IS_QUITTING.load(Ordering::SeqCst) {
-                    return;
+            match event {
+                tauri::WindowEvent::CloseRequested { api, .. } => {
+                    if IS_QUITTING.load(Ordering::SeqCst) {
+                        return;
+                    }
+                    // Prevent app from quitting when settings, main, or menu windows are closed
+                    api.prevent_close();
+                    let _ = window.hide();
                 }
-                // Prevent app from quitting when settings, main, or menu windows are closed
-                api.prevent_close();
-                let _ = window.hide();
+                tauri::WindowEvent::DragDrop(drag_event) => {
+                    match drag_event {
+                        tauri::DragDropEvent::Enter { .. } | tauri::DragDropEvent::Over { .. } => {
+                            let _ = window.emit("file-drop-hover", serde_json::json!({ "hovering": true }));
+                        }
+                        tauri::DragDropEvent::Leave => {
+                            let _ = window.emit("file-drop-hover", serde_json::json!({ "hovering": false }));
+                        }
+                        tauri::DragDropEvent::Drop { paths, .. } => {
+                            let _ = window.emit("file-drop-hover", serde_json::json!({ "hovering": false }));
+                            let batch = process_dropped_file_paths(paths.clone());
+                            let _ = window.emit(
+                                "files-dropped",
+                                serde_json::json!({
+                                    "attachments": batch.attachments,
+                                    "error": batch.error
+                                }),
+                            );
+                        }
+                        _ => {}
+                    }
+                }
+                _ => {}
             }
         })
         .build(tauri::generate_context!())
@@ -2657,4 +4417,549 @@ mod tests {
         assert!(is_quitting());
         IS_QUITTING.store(prev, Ordering::SeqCst);
     }
+
+    #[test]
+    fn test_keyring_presence() {
+        let key_opt = get_api_key_from_store().ok().flatten();
+        println!("Keyring key present: {}", key_opt.is_some());
+    }
+
+    #[tokio::test]
+    #[ignore]
+    async fn test_live_stream_call() {
+        let key = match get_api_key_from_store().ok().flatten() {
+            Some(k) => k,
+            None => {
+                println!("No keyring key available, skipping live test");
+                return;
+            }
+        };
+
+        let client = reqwest::Client::builder()
+            .connect_timeout(std::time::Duration::from_secs(30))
+            .build()
+            .unwrap();
+
+        let available_models = fetch_models_from_google(&key).await.unwrap_or_else(|_| vec!["gemini-1.5-flash".to_string()]);
+        println!("Available models: {:?}", available_models);
+        let model = available_models.first().cloned().unwrap_or_else(|| "gemini-1.5-flash".to_string());
+        println!("Testing streaming with model: {}", model);
+
+        let url = format!("https://generativelanguage.googleapis.com/v1beta/models/{}:streamGenerateContent?alt=sse", model);
+        let body = serde_json::json!({
+            "contents": [{
+                "role": "user",
+                "parts": [{ "text": "Write a short poem about stars (5 lines)" }]
+            }]
+        });
+
+        use futures_util::StreamExt;
+        let start = std::time::Instant::now();
+        let mut time_to_first_chunk = None;
+        let mut chunk_count = 0;
+
+        let res = client
+            .post(url)
+            .header("Content-Type", "application/json")
+            .header("x-goog-api-key", key.trim())
+            .json(&body)
+            .send()
+            .await
+            .unwrap();
+
+        assert!(res.status().is_success(), "HTTP status: {}", res.status());
+
+        let mut stream = res.bytes_stream();
+        let mut buffer = String::new();
+
+        while let Some(item) = stream.next().await {
+            let bytes = item.unwrap();
+            buffer.push_str(&String::from_utf8_lossy(&bytes));
+            while let Some(pos) = buffer.find('\n') {
+                let line = buffer[..pos].trim_end_matches('\r').to_string();
+                buffer.drain(..=pos);
+                if let Some(payload) = line.strip_prefix("data:") {
+                    let trimmed = payload.trim();
+                    if trimmed.is_empty() || trimmed == "[DONE]" {
+                        continue;
+                    }
+                    if let Ok(v) = serde_json::from_str::<serde_json::Value>(trimmed) {
+                        if let Some(cands) = v.get("candidates").and_then(|c| c.as_array()) {
+                            if let Some(c) = cands.first() {
+                                if let Some(parts) = c.get("content").and_then(|co| co.get("parts")).and_then(|p| p.as_array()) {
+                                    for p in parts {
+                                        if let Some(t) = p.get("text").and_then(|t| t.as_str()) {
+                                            if !t.is_empty() {
+                                                if time_to_first_chunk.is_none() {
+                                                    time_to_first_chunk = Some(start.elapsed());
+                                                }
+                                                chunk_count += 1;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        let total = start.elapsed();
+        println!("\n>>> LIVE STREAM RESULT <<<");
+        println!("Time to first chunk: {:?}", time_to_first_chunk);
+        println!("Chunk count: {}", chunk_count);
+        println!("Total time: {:?}", total);
+        assert!(chunk_count > 0);
+    }
+
+    #[test]
+    fn test_chat_manager_cancel_and_partial_history() {
+        chat_clear().unwrap();
+
+        // 1. When canceled with partial reply, history records user message + partial reply
+        let dummy_task = tokio::runtime::Builder::new_current_thread()
+            .build()
+            .unwrap()
+            .spawn(async { tokio::time::sleep(std::time::Duration::from_secs(60)).await });
+
+        let accum = std::sync::Arc::new(std::sync::Mutex::new(String::from("Hello, I am part")));
+        with_chat_manager(|mgr| {
+            mgr.active = Some(ActiveChatRequest {
+                request_id: "req_test_1".to_string(),
+                user_message: "Tell me a joke".to_string(),
+                user_parts: Vec::new(),
+                accumulated_text: accum,
+                abort_handle: dummy_task.abort_handle(),
+            });
+        });
+
+        assert!(chat_cancel("req_test_1".to_string()).is_ok());
+
+        with_chat_manager(|mgr| {
+            assert!(mgr.active.is_none());
+            assert_eq!(mgr.history.len(), 2);
+            assert_eq!(mgr.history[0].role, "user");
+            assert_eq!(mgr.history[0].text.as_deref(), Some("Tell me a joke"));
+            assert_eq!(mgr.history[1].role, "model");
+            assert_eq!(mgr.history[1].text.as_deref(), Some("Hello, I am part"));
+        });
+
+        // 2. When canceled before ANY text arrives, history appends nothing
+        let dummy_task_2 = tokio::runtime::Builder::new_current_thread()
+            .build()
+            .unwrap()
+            .spawn(async { tokio::time::sleep(std::time::Duration::from_secs(60)).await });
+
+        let empty_accum = std::sync::Arc::new(std::sync::Mutex::new(String::new()));
+        with_chat_manager(|mgr| {
+            mgr.active = Some(ActiveChatRequest {
+                request_id: "req_test_2".to_string(),
+                user_message: "Another message".to_string(),
+                user_parts: Vec::new(),
+                accumulated_text: empty_accum,
+                abort_handle: dummy_task_2.abort_handle(),
+            });
+        });
+
+        assert!(chat_cancel("req_test_2".to_string()).is_ok());
+
+        with_chat_manager(|mgr| {
+            assert!(mgr.active.is_none());
+            // Length remains 2 because no text arrived for req_test_2
+            assert_eq!(mgr.history.len(), 2);
+        });
+
+        // 3. chat_clear clears history
+        assert!(chat_clear().is_ok());
+        with_chat_manager(|mgr| {
+            assert_eq!(mgr.history.len(), 0);
+            assert!(mgr.active.is_none());
+        });
+    }
+
+    #[test]
+    fn test_chat_turn_validation_and_trimming() {
+        let mut history = Vec::new();
+        for i in 1..=8 {
+            history.push(ChatMessage {
+                role: "user".to_string(),
+                text: Some(format!("user {}", i)),
+                content: None,
+                parts: None,
+            });
+            history.push(ChatMessage {
+                role: "model".to_string(),
+                text: Some(format!("model {}", i)),
+                content: None,
+                parts: None,
+            });
+        }
+
+        let turns = build_validated_turns(&history, "final prompt");
+        // Must have at most 10 turns
+        assert!(turns.len() <= 10);
+        // Must start with user and end with final prompt
+        assert_eq!(turns.first().unwrap().0, "user");
+        assert_eq!(turns.last().unwrap().0, "user");
+        assert_eq!(turns.last().unwrap().1, "final prompt");
+
+        // Roles must alternate
+        for i in 0..(turns.len() - 1) {
+            assert_ne!(turns[i].0, turns[i + 1].0);
+        }
+    }
+
+    #[test]
+    fn test_sse_buffering_across_network_chunks() {
+        let chunk1 = "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"He";
+        let chunk2 = "llo\"}]}}]}\n\ndata: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \" world!\"}]}}]}\n";
+
+        let mut sse_buffer = String::new();
+        let mut extracted_texts = Vec::new();
+
+        // Push chunk 1 (incomplete JSON)
+        sse_buffer.push_str(chunk1);
+        while let Some(pos) = sse_buffer.find('\n') {
+            let line = sse_buffer[..pos].trim_end_matches('\r').to_string();
+            sse_buffer.drain(..=pos);
+            if let Some(data_payload) = line.strip_prefix("data:") {
+                let trimmed = data_payload.trim();
+                if let Ok(json_val) = serde_json::from_str::<serde_json::Value>(trimmed) {
+                    if let Some(candidates) = json_val.get("candidates").and_then(|c| c.as_array()) {
+                        if let Some(cand) = candidates.first() {
+                            if let Some(parts) = cand.get("content").and_then(|c| c.get("parts")).and_then(|p| p.as_array()) {
+                                for p in parts {
+                                    if let Some(t) = p.get("text").and_then(|t| t.as_str()) {
+                                        extracted_texts.push(t.to_string());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // Chunk 1 has no newline, so buffer holds incomplete text and no texts extracted yet
+        assert_eq!(extracted_texts.len(), 0);
+        assert!(!sse_buffer.is_empty());
+
+        // Push chunk 2 (completes chunk 1 and adds chunk 2)
+        sse_buffer.push_str(chunk2);
+        while let Some(pos) = sse_buffer.find('\n') {
+            let line = sse_buffer[..pos].trim_end_matches('\r').to_string();
+            sse_buffer.drain(..=pos);
+            if let Some(data_payload) = line.strip_prefix("data:") {
+                let trimmed = data_payload.trim();
+                if let Ok(json_val) = serde_json::from_str::<serde_json::Value>(trimmed) {
+                    if let Some(candidates) = json_val.get("candidates").and_then(|c| c.as_array()) {
+                        if let Some(cand) = candidates.first() {
+                            if let Some(parts) = cand.get("content").and_then(|c| c.get("parts")).and_then(|p| p.as_array()) {
+                                for p in parts {
+                                    if let Some(t) = p.get("text").and_then(|t| t.as_str()) {
+                                        extracted_texts.push(t.to_string());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        assert_eq!(extracted_texts, vec!["Hello".to_string(), " world!".to_string()]);
+    }
+
+    #[test]
+    fn test_chat_pop_last_turn() {
+        with_chat_manager(|mgr| {
+            mgr.history.clear();
+            mgr.history.push(ChatMessage {
+                role: "user".to_string(),
+                text: Some("Question 1".to_string()),
+                content: None,
+                parts: None,
+            });
+            mgr.history.push(ChatMessage {
+                role: "model".to_string(),
+                text: Some("Answer 1".to_string()),
+                content: None,
+                parts: None,
+            });
+            mgr.history.push(ChatMessage {
+                role: "user".to_string(),
+                text: Some("Question 2".to_string()),
+                content: None,
+                parts: None,
+            });
+            mgr.history.push(ChatMessage {
+                role: "model".to_string(),
+                text: Some("Answer 2".to_string()),
+                content: None,
+                parts: None,
+            });
+        });
+
+        assert_eq!(chat_pop_last_turn(), Ok(()));
+
+        with_chat_manager(|mgr| {
+            assert_eq!(mgr.history.len(), 2);
+            assert_eq!(mgr.history[0].role, "user");
+            assert_eq!(mgr.history[0].text.as_deref(), Some("Question 1"));
+            assert_eq!(mgr.history[1].role, "model");
+            assert_eq!(mgr.history[1].text.as_deref(), Some("Answer 1"));
+        });
+    }
+
+    #[test]
+    fn test_sensitive_filenames() {
+        assert!(is_sensitive_filename(".env"));
+        assert!(is_sensitive_filename(".env.local"));
+        assert!(is_sensitive_filename(".env.production"));
+        assert!(is_sensitive_filename("cert.pem"));
+        assert!(is_sensitive_filename("private.key"));
+        assert!(is_sensitive_filename("cert.pfx"));
+        assert!(is_sensitive_filename("cert.p12"));
+        assert!(is_sensitive_filename("id_rsa"));
+        assert!(is_sensitive_filename("id_rsa.pub"));
+        assert!(is_sensitive_filename("credentials.json"));
+        assert!(is_sensitive_filename("secrets.toml"));
+
+        assert!(!is_sensitive_filename("main.rs"));
+        assert!(!is_sensitive_filename("app.py"));
+        assert!(!is_sensitive_filename("photo.png"));
+        assert!(!is_sensitive_filename("document.pdf"));
+    }
+
+    #[test]
+    fn test_secret_patterns_scanning() {
+        assert!(scan_for_secrets("AIzaSyD-fakeKeyExample12345678901234"));
+        assert!(scan_for_secrets("key: 'AIzaFAKEFAKEFAKEFAKEFAKEFAKE1234'"));
+        assert!(scan_for_secrets("sk-proj-1234567890abcdef"));
+        assert!(scan_for_secrets("ghp_1234567890abcdef1234567890abcdef"));
+        assert!(scan_for_secrets("AQ123456789012345678"));
+        assert!(scan_for_secrets("Authorization: Bearer 1234567890123456789012345"));
+        assert!(scan_for_secrets("-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0B"));
+
+        assert!(!scan_for_secrets("def hello():\n    print('Hello World!')\n"));
+        assert!(!scan_for_secrets("Just a regular chat message with no secret tokens."));
+    }
+
+    #[test]
+    fn test_masking_secrets() {
+        let input = "Here is my key: AIzaFAKEFAKEFAKEFAKEFAKEFAKE1234 and done.";
+        let masked = mask_secrets(input);
+        assert!(!masked.contains("AIzaFAKE"));
+        assert!(masked.contains("[SECRET_MASKED]"));
+    }
+
+    #[test]
+    fn test_rgba_to_png_encoding() {
+        let rgba = vec![255u8, 0, 0, 255]; // 1x1 red pixel
+        let res = rgba_to_png(&rgba, 1, 1);
+        assert!(res.is_ok());
+        let png = res.unwrap();
+        assert!(png.starts_with(&[0x89, b'P', b'N', b'G']));
+    }
+
+    #[test]
+    fn test_attachment_history_capping() {
+        let mut parts: Vec<serde_json::Value> = Vec::new();
+        // 16 MB dummy inline_data part
+        parts.push(serde_json::json!({
+            "inline_data": {
+                "mime_type": "image/png",
+                "data": "dummy"
+            },
+            "_name": "big_image.png",
+            "_size": 16 * 1024 * 1024
+        }));
+
+        let msg = ChatMessage {
+            role: "user".to_string(),
+            text: Some("Look at this image".to_string()),
+            content: None,
+            parts: Some(parts),
+        };
+
+        with_chat_manager(|mgr| {
+            mgr.history.clear();
+            mgr.history.push(msg);
+
+            let mut total_att_bytes: usize = 0;
+            for m in &mgr.history {
+                if let Some(ref p_list) = m.parts {
+                    for p in p_list {
+                        if let Some(sz) = p.get("_size").and_then(|s| s.as_u64()) {
+                            total_att_bytes += sz as usize;
+                        }
+                    }
+                }
+            }
+
+            while total_att_bytes > 15 * 1024 * 1024 {
+                let mut replaced = false;
+                for m in &mut mgr.history {
+                    if let Some(ref mut p_list) = m.parts {
+                        for p in p_list.iter_mut() {
+                            if let Some(sz) = p.get("_size").and_then(|s| s.as_u64()) {
+                                let name = p.get("_name").and_then(|n| n.as_str()).unwrap_or("attachment");
+                                total_att_bytes = total_att_bytes.saturating_sub(sz as usize);
+                                *p = serde_json::json!({
+                                    "text": format!("[attachment removed: {}]", name)
+                                });
+                                replaced = true;
+                                break;
+                            }
+                        }
+                    }
+                    if replaced {
+                        break;
+                    }
+                }
+                if !replaced {
+                    break;
+                }
+            }
+
+            let first_turn = &mgr.history[0];
+            let first_part = &first_turn.parts.as_ref().unwrap()[0];
+            assert_eq!(
+                first_part.get("text").and_then(|t| t.as_str()),
+                Some("[attachment removed: big_image.png]")
+            );
+        });
+    }
+
+    #[test]
+    fn test_process_file_path_scenarios() {
+        let temp_dir = std::env::temp_dir().join(format!("dude_test_{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis()));
+        std::fs::create_dir_all(&temp_dir).unwrap();
+
+        // 1. .env file
+        let env_file = temp_dir.join(".env");
+        std::fs::write(&env_file, "SECRET=123").unwrap();
+        let res = process_file_path(&env_file, 0, 0);
+        assert_eq!(res.err(), Some("This file looks sensitive and was not attached.".to_string()));
+
+        // 2. .py file valid
+        let py_file = temp_dir.join("script.py");
+        std::fs::write(&py_file, "print('hello from python')").unwrap();
+        let res = process_file_path(&py_file, 0, 0);
+        assert!(res.is_ok());
+        let att = res.unwrap();
+        assert_eq!(att.meta.kind, "text");
+        assert_eq!(att.meta.mime, "text/plain");
+        assert!(!att.meta.has_secret);
+
+        // 3. Text file with fake secret key
+        let secret_txt = temp_dir.join("config.txt");
+        std::fs::write(&secret_txt, "google_api_key = 'AIzaFAKEFAKEFAKEFAKEFAKEFAKE1234'").unwrap();
+        let res = process_file_path(&secret_txt, 0, 0);
+        assert!(res.is_ok());
+        let att = res.unwrap();
+        assert!(att.meta.has_secret);
+
+        // 4. Text file with invalid UTF-8
+        let invalid_utf8 = temp_dir.join("broken.txt");
+        std::fs::write(&invalid_utf8, &[0xFF, 0xFE, 0xFD]).unwrap();
+        let res = process_file_path(&invalid_utf8, 0, 0);
+        assert_eq!(res.err(), Some("Text file is not valid UTF-8.".to_string()));
+
+        // 5. Text file > 200 KB
+        let large_txt = temp_dir.join("large.txt");
+        let big_content = vec![b'a'; 201 * 1024];
+        std::fs::write(&large_txt, &big_content).unwrap();
+        let res = process_file_path(&large_txt, 0, 0);
+        assert_eq!(res.err(), Some("Text file exceeds 200 KB limit.".to_string()));
+
+        // 6. Max 4 attachments limit (current_count == 4)
+        let res = process_file_path(&py_file, 4, 0);
+        assert_eq!(res.err(), Some("Maximum 4 attachments allowed.".to_string()));
+
+        // 7. Total size > 15 MB limit
+        let res = process_file_path(&py_file, 1, 15 * 1024 * 1024);
+        assert_eq!(res.err(), Some("Total attachments exceed 15 MB limit.".to_string()));
+
+        // 8. Image > 10 MB limit
+        let large_img = temp_dir.join("large.png");
+        let big_img_data = vec![0u8; 11 * 1024 * 1024];
+        std::fs::write(&large_img, &big_img_data).unwrap();
+        let res = process_file_path(&large_img, 0, 0);
+        assert_eq!(res.err(), Some("File exceeds 10 MB limit.".to_string()));
+
+        // 9. Valid PDF
+        let pdf_file = temp_dir.join("doc.pdf");
+        std::fs::write(&pdf_file, b"%PDF-1.4 dummy pdf content").unwrap();
+        let res = process_file_path(&pdf_file, 0, 0);
+        assert!(res.is_ok());
+        let att = res.unwrap();
+        assert_eq!(att.meta.kind, "pdf");
+        assert_eq!(att.meta.mime, "application/pdf");
+
+        // 10. Valid PNG
+        let png_file = temp_dir.join("sample.png");
+        std::fs::write(&png_file, &[0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A]).unwrap();
+        let res = process_file_path(&png_file, 0, 0);
+        assert!(res.is_ok());
+        let att = res.unwrap();
+        assert_eq!(att.meta.kind, "image");
+        assert_eq!(att.meta.mime, "image/png");
+
+        let _ = std::fs::remove_dir_all(&temp_dir);
+    }
+
+    #[test]
+    fn test_link_validation_scenarios() {
+        // 1. Valid URLs
+        assert_eq!(
+            validate_link("https://www.youtube.com/results?search_query=lofi+music", false),
+            LinkValidationResult::Valid("https://www.youtube.com/results?search_query=lofi+music".to_string())
+        );
+        assert_eq!(
+            validate_link("https://en.wikipedia.org/wiki/Rust_(programming_language)", false),
+            LinkValidationResult::Valid("https://en.wikipedia.org/wiki/Rust_(programming_language)".to_string())
+        );
+
+        // 2. Localhost, loopback, private IP, IPv6
+        assert_eq!(validate_link("http://localhost:3000", false), LinkValidationResult::Rejected);
+        assert_eq!(validate_link("http://192.168.1.1", false), LinkValidationResult::Rejected);
+        assert_eq!(validate_link("http://127.0.0.1:8080", false), LinkValidationResult::Rejected);
+        assert_eq!(validate_link("http://[::1]:8080", false), LinkValidationResult::Rejected);
+
+        // 3. Credentials in URL
+        assert_eq!(validate_link("http://user:pass@example.com", false), LinkValidationResult::Rejected);
+
+        // 4. Punycode / IDN / non-ASCII host
+        assert_eq!(
+            validate_link("https://xn--pple-43d.com", false),
+            LinkValidationResult::NeedsConfirm("xn--pple-43d.com".to_string())
+        );
+        assert_eq!(
+            validate_link("https://xn--pple-43d.com", true),
+            LinkValidationResult::Valid("https://xn--pple-43d.com/".to_string())
+        );
+
+        // 5. 3000-character URL
+        let long_url = format!("https://example.com/{}", "a".repeat(3000));
+        assert_eq!(validate_link(&long_url, false), LinkValidationResult::Rejected);
+
+        // 6. Schemes other than http/https
+        assert_eq!(validate_link("javascript:alert(1)", false), LinkValidationResult::Rejected);
+        assert_eq!(validate_link("file:///C:/Windows/win.ini", false), LinkValidationResult::Rejected);
+        assert_eq!(validate_link("data:text/html,test", false), LinkValidationResult::Rejected);
+
+        // 7. Single-label, .local, .internal, .lan
+        assert_eq!(validate_link("http://singlelabel", false), LinkValidationResult::Rejected);
+        assert_eq!(validate_link("http://myhost.local", false), LinkValidationResult::Rejected);
+        assert_eq!(validate_link("http://test.internal", false), LinkValidationResult::Rejected);
+        assert_eq!(validate_link("http://router.lan", false), LinkValidationResult::Rejected);
+
+        // 8. Normal domain
+        assert_eq!(
+            validate_link("https://evil.example/login", false),
+            LinkValidationResult::Valid("https://evil.example/login".to_string())
+        );
+    }
 }
+

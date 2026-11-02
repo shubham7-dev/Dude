@@ -2257,13 +2257,13 @@
       -webkit-app-region: no-drag;
     }
 
-    /* Behavior Card 2 (no title): left 48px, top 377px, 531x131px */
+    /* Behavior Card 2 (no title): left 48px, top 377px, 531x186px */
     .behavior-card-2 {
       position: absolute;
       left: 48px;
       top: 377px;
       width: 531px;
-      height: 131px;
+      height: 186px;
       background: var(--behavior-card-img) center / cover no-repeat;
       border-radius: 6px;
       box-shadow: var(--behavior-card-shadow, 0 4px 3px rgba(0, 0, 0, 0.6));
@@ -2372,6 +2372,10 @@
 
     .behavior-card-2 .tile-b-sub-bottom {
       top: 70px;
+    }
+
+    .behavior-card-2 .tile-b-sub-sound {
+      top: 125px;
     }
 
     .behavior-card-2 .tile-text-wrap {
@@ -4105,6 +4109,15 @@
             <div class="toggle-knob"></div>
           </div>
         </div>
+        <div class="tile tile-b-499 tile-b-sub-sound" data-setting="soundEnabled" data-section="behavior">
+          <div class="tile-text-wrap">
+            <span class="tile-label">Sound effects</span>
+            <span class="tile-subtitle">Soft sounds when the island opens, closes and replies.</span>
+          </div>
+          <div class="toggle-track toggle-switch active" role="switch" aria-checked="true" data-toggle="soundEnabled">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -5365,16 +5378,95 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
       };
     }
 
+    function runBehaviorAlignmentAudit() {
+      showTab('behavior');
+      const panel = document.getElementById('behavior-panel');
+      const card2 = panel ? panel.querySelector('.behavior-card-2') : null;
+      if (!panel || !card2) {
+        console.warn('[ALIGNMENT AUDIT] Behavior panel elements not found');
+        return { allPass: false, results: [] };
+      }
+
+      const c2Rect = card2.getBoundingClientRect();
+      const tile1 = card2.querySelector('.tile-b-sub-top');
+      const tile2 = card2.querySelector('.tile-b-sub-bottom');
+      const tile3 = card2.querySelector('.tile-b-sub-sound');
+
+      const t1Rect = tile1 ? tile1.getBoundingClientRect() : null;
+      const t2Rect = tile2 ? tile2.getBoundingClientRect() : null;
+      const t3Rect = tile3 ? tile3.getBoundingClientRect() : null;
+
+      const round = (n) => Math.round(n * 10) / 10;
+      const results = [];
+
+      function check(item, measured, expected, unit = 'px') {
+        const pass = typeof expected === 'number'
+          ? Math.abs(measured - expected) <= 0.5
+          : measured === expected;
+        results.push({
+          Item: item,
+          Measured: `${round(measured)}${unit}`,
+          Expected: `${expected}${unit}`,
+          Status: pass ? 'PASS' : 'FAIL'
+        });
+      }
+
+      check('Behavior card 2 width', c2Rect.width, 531);
+      check('Behavior card 2 height (grown by 1 tile + gap)', c2Rect.height, 186);
+
+      if (t1Rect) check('Tile 1 (Auto collapse) top inside card', t1Rect.top - c2Rect.top, 15);
+      if (t2Rect) check('Tile 2 (Animation speed) top inside card', t2Rect.top - c2Rect.top, 70);
+      if (t3Rect) check('Tile 3 (Sound effects) top inside card', t3Rect.top - c2Rect.top, 125);
+
+      if (t1Rect && t2Rect) check('Vertical gap between Tile 1 & Tile 2', t2Rect.top - t1Rect.bottom, 11);
+      if (t2Rect && t3Rect) check('Vertical gap between Tile 2 & Tile 3', t3Rect.top - t2Rect.bottom, 11);
+
+      if (t3Rect) {
+        check('Tile 3 (Sound effects) height', t3Rect.height, 44);
+        check('Tile 3 (Sound effects) width', t3Rect.width, 499);
+        check('Tile 3 left offset inside card', t3Rect.left - c2Rect.left, 16);
+      }
+
+      const tog3 = tile3 ? tile3.querySelector('.toggle-track') : null;
+      if (tog3 && t3Rect) {
+        const togRect = tog3.getBoundingClientRect();
+        check('Tile 3 toggle right inset', t3Rect.right - togRect.right, 9);
+      }
+
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      console.log(`\n=== [ALIGNMENT AUDIT] Behavior Section (${currentTheme.toUpperCase()} theme) ===`);
+      console.table(results);
+
+      let allPass = true;
+      for (const r of results) {
+        const line = `[ALIGNMENT AUDIT] ${r.Item}: ${r.Measured} (Expected ${r.Expected}) -> ${r.Status}`;
+        console.log(line);
+        if (r.Status === 'FAIL') allPass = false;
+        try {
+          window.__TAURI__?.core?.invoke?.('log_perf_metric', { message: line }).catch(() => {});
+        } catch (_) {}
+      }
+      const summary = `[ALIGNMENT AUDIT] Behavior Section Overall: ${allPass ? 'ALL PASS' : 'FAILURES DETECTED'}`;
+      console.log(summary);
+      try {
+        window.__TAURI__?.core?.invoke?.('log_perf_metric', { message: summary }).catch(() => {});
+      } catch (_) {}
+
+      return { allPass, results };
+    }
+
     function runAlignmentAudit() {
       const startupResult = runStartupAlignmentAudit();
       const agentsResult = runAgentsAlignmentAudit();
       const aboutResult = runAboutAlignmentAudit();
+      const behaviorResult = runBehaviorAlignmentAudit();
       showTab('startup');
       return {
-        allPass: startupResult.allPass && agentsResult.allPass && aboutResult.allPass,
+        allPass: startupResult.allPass && agentsResult.allPass && aboutResult.allPass && behaviorResult.allPass,
         startup: startupResult,
         agents: agentsResult,
-        about: aboutResult
+        about: aboutResult,
+        behavior: behaviorResult
       };
     }
 
@@ -6844,7 +6936,8 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
       blushSmile: true,
       reactToReplies: true,
       autoCollapse: false,
-      fastAnimations: false
+      fastAnimations: false,
+      soundEnabled: true
     };
 
     const STARTUP_DEFAULTS = {

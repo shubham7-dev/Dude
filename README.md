@@ -74,6 +74,10 @@ Hardware and Windows support can vary by device.
 - View active code snippets and events received through a local named pipe.
 - Manage Antigravity hook integration from Settings.
 
+### Clipboard history
+
+- Clipboard history, opt-in, in memory only.
+
 ### Customization and system integration
 
 - Cream, Pink, Blue, and Black mascot color options.
@@ -155,6 +159,8 @@ Dude's project documentation describes the following privacy goals:
 - No user account or registration required.
 - API keys stored in Windows Credential Manager.
 - Laptop controls and agent event data kept locally on your machine.
+- Clipboard history is off by default. When you turn it on, text you copy is kept in memory only until you quit Dude; copies from password managers and text that looks like a secret are skipped; nothing is sent anywhere.
+- Links in chat replies open in your default browser only when you click them. Dude does not load link previews or contact those sites itself.
 
 Read the [Privacy Policy](docs/PRIVACY.md) for more information.
 
