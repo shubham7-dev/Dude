@@ -106,6 +106,7 @@ The following typefaces are utilized by the application interface:
 | `base64` | `0.22` | [crates.io/crates/base64](https://crates.io/crates/base64) | MIT OR Apache-2.0 |
 | `keyring` | `4.2.0` | [crates.io/crates/keyring](https://crates.io/crates/keyring) | MIT OR Apache-2.0 |
 | `log` | `0.4` | [crates.io/crates/log](https://crates.io/crates/log) | MIT OR Apache-2.0 |
+| `rodio` | `0.23` | [crates.io/crates/rodio](https://crates.io/crates/rodio) | MIT OR Apache-2.0 |
 
 ---
 
