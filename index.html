@@ -2437,6 +2437,13 @@
       will-change: auto !important;
     }
 
+    .widget.now-playing .shared-top-bar {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
     .widget.now-playing .mascot-wrapper {
       opacity: 0;
       pointer-events: none;
@@ -2537,9 +2544,10 @@
       justify-content: space-between;
       width: 100%;
       overflow: hidden;
-      height: 15px;
-      line-height: 15px;
-      margin-top: 1px;
+      height: 14px;
+      line-height: 14px;
+      margin: 0;
+      box-sizing: border-box;
     }
 
     .now-playing-title {
@@ -2553,6 +2561,7 @@
       text-overflow: ellipsis;
       flex: 1 1 auto;
       min-width: 0;
+      max-width: 100%;
       opacity: 1;
       transition: opacity 200ms ease;
     }
@@ -2569,6 +2578,7 @@
       flex: 0 0 auto;
       text-align: right;
       margin-left: 6px;
+      max-width: 100%;
       opacity: 1;
       transition: opacity 200ms ease;
     }
@@ -2578,14 +2588,14 @@
       opacity: 0;
     }
 
-    /* Bars row: height 20px, vertically centered */
+    /* Bars row: height 16px, vertically centered, 4px margin below text row */
     .now-playing-bars-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 20px;
+      height: 16px;
       width: 100%;
-      margin-top: 2px;
+      margin-top: 4px;
       box-sizing: border-box;
       pointer-events: none;
     }
@@ -2598,21 +2608,21 @@
       transition: transform 55ms cubic-bezier(0.2, 0.8, 0.4, 1);
     }
 
-    /* Measured static heights and per-bar gradient accents */
-    .now-playing-bar.bar-1  { height: 12px; }
-    .now-playing-bar.bar-2  { height: 6.5px; }
-    .now-playing-bar.bar-3  { height: 12px; }
-    .now-playing-bar.bar-4  { height: 6.5px; }
-    .now-playing-bar.bar-5  { height: 20px; background: linear-gradient(180deg, #2EEBFF 0%, #825EFF 100%); }
-    .now-playing-bar.bar-6  { height: 17px; background: linear-gradient(180deg, #2EEBFF 0%, #825EFF 100%); }
-    .now-playing-bar.bar-7  { height: 6.5px; }
-    .now-playing-bar.bar-8  { height: 12px; }
-    .now-playing-bar.bar-9  { height: 6.5px; }
-    .now-playing-bar.bar-10 { height: 12px; }
-    .now-playing-bar.bar-11 { height: 12px; }
-    .now-playing-bar.bar-12 { height: 6.5px; }
-    .now-playing-bar.bar-13 { height: 20px; }
-    .now-playing-bar.bar-14 { height: 12px; }
+    /* Measured static heights and per-bar gradient accents (scaled to 15.5px peak static height so dynamic scaling fits cleanly) */
+    .now-playing-bar.bar-1  { height: 9.5px; }
+    .now-playing-bar.bar-2  { height: 5px; }
+    .now-playing-bar.bar-3  { height: 9.5px; }
+    .now-playing-bar.bar-4  { height: 5px; }
+    .now-playing-bar.bar-5  { height: 15.5px; background: linear-gradient(180deg, #2EEBFF 0%, #825EFF 100%); }
+    .now-playing-bar.bar-6  { height: 13px; background: linear-gradient(180deg, #2EEBFF 0%, #825EFF 100%); }
+    .now-playing-bar.bar-7  { height: 5px; }
+    .now-playing-bar.bar-8  { height: 9.5px; }
+    .now-playing-bar.bar-9  { height: 5px; }
+    .now-playing-bar.bar-10 { height: 9.5px; }
+    .now-playing-bar.bar-11 { height: 9.5px; }
+    .now-playing-bar.bar-12 { height: 5px; }
+    .now-playing-bar.bar-13 { height: 15.5px; }
+    .now-playing-bar.bar-14 { height: 9.5px; }
 
     /* While paused or not active: smoothly returns to static reference height */
     .widget.now-playing.is-paused .now-playing-bar,
@@ -5258,18 +5268,18 @@
           if (artFallback) artFallback.style.display = 'flex';
         }
 
-        // Artist truncation check: min 40px; if it does not fit at all, hide artist and give title full width
+        // Artist truncation check: min 36px; if it does not fit at all, hide artist and give title full width
         if (artistEl.style.display !== 'none') {
           const textRow = document.getElementById('now-playing-text-row');
           const rowWidth = textRow ? (textRow.clientWidth || 138) : 138;
           const titleLen = (currentMediaSession.title || '').length;
           const estimatedTitleWidth = titleLen * 6.5;
           const availableForArtist = rowWidth - estimatedTitleWidth - 8;
-          if (availableForArtist < 40 && titleLen > 14) {
+          if (availableForArtist < 36 && titleLen > 12) {
             artistEl.style.display = 'none';
           } else {
             artistEl.style.display = '';
-            artistEl.style.maxWidth = `${Math.max(40, availableForArtist)}px`;
+            artistEl.style.maxWidth = `${Math.max(36, availableForArtist)}px`;
           }
         }
       };
@@ -5303,6 +5313,9 @@
 
       isNowPlayingActive = true;
       widget.classList.add('now-playing');
+      if (typeof syncInteractiveVisibility === 'function') {
+        syncInteractiveVisibility();
+      }
       if (currentMediaSession.status === 'playing') {
         widget.classList.add('is-playing');
         widget.classList.remove('is-paused');
@@ -5337,6 +5350,9 @@
       if (trackChangeGraceTimer) { clearTimeout(trackChangeGraceTimer); trackChangeGraceTimer = null; }
 
       widget.classList.remove('now-playing', 'is-playing', 'is-paused');
+      if (typeof syncInteractiveVisibility === 'function') {
+        syncInteractiveVisibility();
+      }
 
       // Resume mascot blink and eye tracking if collapsed
       if (behavior.blink && !isAsleep) {

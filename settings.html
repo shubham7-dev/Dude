@@ -7801,7 +7801,7 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
     var agentsClearAllowedBtn = document.getElementById('agents-clear-allowed-btn');
 
     function updateApprovalsUI() {
-      const isApprovalsFlagOn = (typeof __FEATURE_APPROVALS__ !== 'undefined' ? Boolean(__FEATURE_APPROVALS__) : false);
+      const isApprovalsFlagOn = (typeof __FEATURE_APPROVALS__ !== 'undefined' ? Boolean(__FEATURE_APPROVALS__) : true);
       const approvalsCardEl = document.getElementById('agents-approvals-card');
       if (approvalsCardEl) {
         approvalsCardEl.style.display = isApprovalsFlagOn ? 'block' : 'none';

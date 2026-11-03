@@ -7,10 +7,12 @@ const host = process.env.TAURI_DEV_HOST;
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const isApprovals = process.env.VITE_FEATURE_APPROVALS === "true" ||
-                      process.env.VITE_FEATURE_APPROVALS === "1" ||
-                      env.VITE_FEATURE_APPROVALS === "true" ||
-                      env.VITE_FEATURE_APPROVALS === "1";
+  // Approvals feature is enabled by default across development and production builds,
+  // matching Cargo's default feature ["approvals"]. Can be opted out via VITE_FEATURE_APPROVALS=false.
+  const isApprovals = process.env.VITE_FEATURE_APPROVALS !== "false" &&
+                      process.env.VITE_FEATURE_APPROVALS !== "0" &&
+                      env.VITE_FEATURE_APPROVALS !== "false" &&
+                      env.VITE_FEATURE_APPROVALS !== "0";
 
   return {
     define: {
