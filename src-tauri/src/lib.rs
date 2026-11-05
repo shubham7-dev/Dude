@@ -3334,6 +3334,36 @@ fn remove_attachment(id: String) -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
+async fn attach_from_vault(
+    app: tauri::AppHandle,
+    id: String,
+    current_ids: Vec<String>,
+) -> Result<AttachmentMeta, String> {
+    if current_ids.len() >= 4 {
+        return Err("Maximum 4 attachments allowed.".to_string());
+    }
+
+    let current_bytes: usize = with_attachment_store(|store| {
+        current_ids
+            .iter()
+            .filter_map(|id| store.get(id))
+            .map(|a| a.bytes.len())
+            .sum()
+    });
+
+    let path = dropvault::resolve_vault_path_for_id(&app, &id)?;
+
+    let att = process_file_path(&path, current_ids.len(), current_bytes)?;
+    let meta = att.meta.clone();
+
+    with_attachment_store(|store| {
+        store.insert(meta.id.clone(), att);
+    });
+
+    Ok(meta)
+}
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct OpenLinkResponse {
     pub status: String, // "opened", "needs_confirm", "rejected"
@@ -4348,6 +4378,7 @@ pub fn run() {
             pick_attachments,
             paste_from_clipboard,
             remove_attachment,
+            attach_from_vault,
             open_link,
             test_connection,
             get_settings,
@@ -5146,6 +5177,64 @@ mod tests {
         assert_eq!(att.meta.mime, "image/png");
 
         let _ = std::fs::remove_dir_all(&temp_dir);
+    }
+
+    #[test]
+    fn test_dropvault_attachment_pipeline() {
+        let temp_vault = std::env::temp_dir().join(format!("dude_vault_test_{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis()));
+        std::fs::create_dir_all(&temp_vault).unwrap();
+
+        // 1. PNG file
+        let png = temp_vault.join("picture.png");
+        std::fs::write(&png, &[0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A]).unwrap();
+        let res_png = process_file_path(&png, 0, 0);
+        assert!(res_png.is_ok(), "PNG should be accepted");
+        let att_png = res_png.unwrap();
+        assert_eq!(att_png.meta.kind, "image");
+
+        // 2. PDF file
+        let pdf = temp_vault.join("document.pdf");
+        std::fs::write(&pdf, b"%PDF-1.4 test content").unwrap();
+        let res_pdf = process_file_path(&pdf, 1, 100);
+        assert!(res_pdf.is_ok(), "PDF should be accepted");
+        let att_pdf = res_pdf.unwrap();
+        assert_eq!(att_pdf.meta.kind, "pdf");
+
+        // 3. Small .py file
+        let py = temp_vault.join("script.py");
+        std::fs::write(&py, "print('testing vault')").unwrap();
+        let res_py = process_file_path(&py, 2, 200);
+        assert!(res_py.is_ok(), "Python script should be accepted");
+        let att_py = res_py.unwrap();
+        assert_eq!(att_py.meta.kind, "text");
+
+        // 4. .env file
+        let env_file = temp_vault.join(".env");
+        std::fs::write(&env_file, "API_KEY=sensitive").unwrap();
+        let res_env = process_file_path(&env_file, 3, 300);
+        assert_eq!(res_env.err(), Some("This file looks sensitive and was not attached.".to_string()));
+
+        // 5. Fake secret in file
+        let secret_file = temp_vault.join("config_secret.txt");
+        std::fs::write(&secret_file, "key = 'AIzaFakeSecretKeyHere1234567890'").unwrap();
+        let res_sec = process_file_path(&secret_file, 3, 300);
+        assert!(res_sec.is_ok());
+        assert!(res_sec.unwrap().meta.has_secret, "Secret must be detected");
+
+        // 6. Oversized file (>10 MB)
+        let large_file = temp_vault.join("heavy.png");
+        let large_bytes = vec![0u8; 11 * 1024 * 1024];
+        std::fs::write(&large_file, &large_bytes).unwrap();
+        let res_large = process_file_path(&large_file, 3, 300);
+        assert_eq!(res_large.err(), Some("File exceeds 10 MB limit.".to_string()));
+
+        // 7. 5th attachment rejection
+        let fifth_file = temp_vault.join("fifth.txt");
+        std::fs::write(&fifth_file, "fifth").unwrap();
+        let res_fifth = process_file_path(&fifth_file, 4, 300);
+        assert_eq!(res_fifth.err(), Some("Maximum 4 attachments allowed.".to_string()));
+
+        let _ = std::fs::remove_dir_all(&temp_vault);
     }
 
     #[test]
