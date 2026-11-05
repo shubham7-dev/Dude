@@ -428,16 +428,15 @@ const EXECUTABLE_EXTS: &[&str] = &[
     "application", "gadget", "inf",
 ];
 
-/// Open a vault file or reveal in Explorer if executable
-#[tauri::command]
-pub fn vault_open(app: AppHandle, id: String) -> Result<String, String> {
+/// Resolve opaque DropVault file ID to canonical PathBuf inside the vault
+pub fn resolve_vault_path_for_id(app: &AppHandle, id: &str) -> Result<PathBuf, String> {
     let resolved_path = {
         let map = session_map().lock().unwrap();
-        map.get(&id).cloned().ok_or_else(|| "File not found".to_string())?
+        map.get(id).cloned().ok_or_else(|| "File not found in DropVault".to_string())?
     };
 
-    let vault_dir = get_configured_vault_path(&app)
-        .ok_or_else(|| "Vault not configured".to_string())?
+    let vault_dir = get_configured_vault_path(app)
+        .ok_or_else(|| "DropVault is not configured".to_string())?
         .canonicalize()
         .map_err(|e| e.to_string())?;
 
@@ -453,6 +452,18 @@ pub fn vault_open(app: AppHandle, id: String) -> Result<String, String> {
     if meta.file_type().is_symlink() || (meta.file_attributes() & 0x400) != 0 {
         return Err("Reparse points are not supported".to_string());
     }
+
+    if !canon.is_file() {
+        return Err("Not a regular file".to_string());
+    }
+
+    Ok(canon)
+}
+
+/// Open a vault file or reveal in Explorer if executable
+#[tauri::command]
+pub fn vault_open(app: AppHandle, id: String) -> Result<String, String> {
+    let canon = resolve_vault_path_for_id(&app, &id)?;
 
     let ext = canon
         .extension()
@@ -800,6 +811,28 @@ mod tests {
 
         assert_eq!(loaded.get("photo.png"), Some(&1700000000));
         assert_eq!(loaded.get("doc.pdf"), Some(&1700000100));
+
+        let _ = std::fs::remove_dir_all(&temp_dir);
+    }
+
+    #[test]
+    fn test_session_map_lookup() {
+        let temp_dir = std::env::temp_dir().join("dude_dropvault_test_lookup");
+        let _ = std::fs::create_dir_all(&temp_dir);
+        let test_file = temp_dir.join("sample.png");
+        let _ = std::fs::File::create(&test_file);
+
+        let test_id = "test_item_999";
+        {
+            let mut map = session_map().lock().unwrap();
+            map.insert(test_id.to_string(), test_file.clone());
+        }
+
+        {
+            let map = session_map().lock().unwrap();
+            assert_eq!(map.get(test_id), Some(&test_file));
+            assert_eq!(map.get("non_existent_id"), None);
+        }
 
         let _ = std::fs::remove_dir_all(&temp_dir);
     }
