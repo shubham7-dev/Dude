@@ -257,13 +257,18 @@
       height: 203px;
     }
 
+    .widget.expanded.panel-open.tab-dropvault {
+      width: 359px;
+      height: 317px;
+    }
+
     .widget.expanded.panel-open.tab-agents {
-      width: 478px;
+      width: 560px;
       height: 271px;
     }
 
     .widget.expanded.panel-open.tab-agents.approval-state {
-      width: 478px;
+      width: 560px;
       height: 295px;
     }
 
@@ -355,6 +360,7 @@
     .widget.expanded.panel-open.tab-controls .mascot-wrapper,
     .widget.expanded.panel-open.tab-hub .mascot-wrapper,
     .widget.expanded.panel-open.tab-clipboard .mascot-wrapper,
+    .widget.expanded.panel-open.tab-dropvault .mascot-wrapper,
     .widget.expanded.panel-open.tab-chat.chat-max .mascot-wrapper,
     .widget.chat-max .mascot-wrapper {
       opacity: 0 !important;
@@ -474,7 +480,9 @@
     .widget.expanded.panel-open.tab-hub #top-bar-agents-btn,
     .tab-hub #top-bar-agents-btn.active,
     .widget.expanded.panel-open.tab-clipboard #top-bar-agents-btn,
-    .tab-clipboard #top-bar-agents-btn.active {
+    .tab-clipboard #top-bar-agents-btn.active,
+    .widget.expanded.panel-open.tab-dropvault #top-bar-agents-btn,
+    .tab-dropvault #top-bar-agents-btn.active {
       color: #8B5CF6;
     }
 
@@ -661,7 +669,8 @@
     .widget.expanded.panel-open.tab-chat .tab-content-chat,
     .widget.expanded.panel-open.tab-controls .tab-content-controls,
     .widget.expanded.panel-open.tab-hub .tab-content-hub,
-    .widget.expanded.panel-open.tab-clipboard .tab-content-clipboard {
+    .widget.expanded.panel-open.tab-clipboard .tab-content-clipboard,
+    .widget.expanded.panel-open.tab-dropvault .tab-content-dropvault {
       display: block;
       opacity: 1;
       pointer-events: auto;
@@ -1424,6 +1433,355 @@
     }
 
     /* ============================================================
+       DROPVAULT TAB (Figma Image 1): Pill 359 x 317 px
+       ============================================================ */
+    .tab-content-dropvault {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .dropvault-header-row {
+      position: absolute;
+      left: 0;
+      top: 47px;
+      width: 100%;
+      height: 28px;
+      box-sizing: border-box;
+      pointer-events: auto;
+      z-index: 2;
+    }
+
+    .dropvault-recent-chip {
+      position: absolute;
+      left: 12px;
+      top: 0;
+      width: 66px;
+      height: 21px;
+      border-radius: 11px;
+      background: #3B9BFF;
+      color: #FFFFFF;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      border: none;
+      padding: 0 4px;
+      margin: 0;
+      cursor: default;
+      outline: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .dropvault-recent-icon {
+      width: 13px;
+      height: 13px;
+      display: block;
+      pointer-events: none;
+      flex-shrink: 0;
+    }
+
+    .dropvault-folder-btn {
+      position: absolute;
+      left: 88px;
+      top: -3px;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--pill-contrast, #FFFFFF);
+      opacity: 0.85;
+      cursor: pointer;
+      outline: none;
+      transition: color 120ms ease, opacity 120ms ease, background-color 120ms ease;
+    }
+
+    .dropvault-folder-btn:hover {
+      color: #FFFFFF;
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .dropvault-folder-btn:focus-visible {
+      outline: 2px solid #8B5CF6;
+      outline-offset: 1px;
+    }
+
+    .dropvault-folder-icon {
+      width: 20px;
+      height: 20px;
+      display: block;
+      pointer-events: none;
+    }
+
+    .dropvault-grid {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: auto;
+      outline: none;
+    }
+
+    .dropvault-card {
+      position: absolute;
+      width: 78px;
+      height: 100px;
+      border-radius: 9px;
+      box-sizing: border-box;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: transform 120ms ease, opacity 150ms ease;
+      outline: none;
+      opacity: 1;
+    }
+
+    .dropvault-card.entering {
+      opacity: 0;
+    }
+
+    .dropvault-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .dropvault-card:active {
+      transform: translateY(0px) scale(0.98);
+    }
+
+    .dropvault-card:focus-visible {
+      outline: 2px solid #8B5CF6;
+      outline-offset: 2px;
+    }
+
+    .dropvault-card:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    .dropvault-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.12);
+      opacity: 0;
+      transition: opacity 120ms ease;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .dropvault-card:hover::after {
+      opacity: 1;
+    }
+
+    /* 4 Color Palettes sampled from Image 1 */
+    .dropvault-palette-0 {
+      background: linear-gradient(180deg, #A9C9F5 0%, #7FA6E3 100%);
+    }
+
+    .dropvault-palette-1 {
+      background: linear-gradient(180deg, #9C8DFF 0%, #7E74E6 100%);
+    }
+
+    .dropvault-palette-2 {
+      background: linear-gradient(180deg, #D6BB7C 0%, #B99D60 100%);
+    }
+
+    .dropvault-palette-3 {
+      background: linear-gradient(180deg, #92E58E 0%, #5CC55B 100%);
+    }
+
+    .dropvault-card-spine {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 6px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 0 9px 9px 0;
+      pointer-events: none;
+    }
+
+    .dropvault-card-clip {
+      position: absolute;
+      right: -3px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 5px;
+      border-radius: 2.5px;
+      background: #99C2F8;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .dropvault-label-chip {
+      position: absolute;
+      left: 9px;
+      top: 63px;
+      width: 60px;
+      height: 30px;
+      border-radius: 5px;
+      background: #D9D9D9;
+      box-sizing: border-box;
+      padding: 2px 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .dropvault-label-text {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      line-height: 1.1;
+      color: #000000;
+      word-break: break-word;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-align: center;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* State Screens (not_created, missing, empty) */
+    .dropvault-state-screen {
+      position: absolute;
+      left: 0;
+      top: 40px;
+      width: 100%;
+      height: calc(100% - 40px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 24px;
+      box-sizing: border-box;
+      pointer-events: auto;
+      z-index: 3;
+    }
+
+    .dropvault-state-icon {
+      width: 36px;
+      height: 36px;
+      color: var(--pill-contrast, #FFFFFF);
+      opacity: 0.7;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .dropvault-state-title {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--pill-contrast, #FFFFFF);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .dropvault-missing-note {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: #FF7B8A;
+      margin-bottom: 6px;
+    }
+
+    .dropvault-state-desc {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--pill-contrast, #FFFFFF);
+      opacity: 0.65;
+      line-height: 1.4;
+      max-width: 280px;
+      margin-bottom: 14px;
+    }
+
+    .dropvault-create-btn {
+      height: 28px;
+      padding: 0 16px;
+      border-radius: 8px;
+      background: #6B5BFF;
+      color: #FFFFFF;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 120ms ease;
+      outline: none;
+    }
+
+    .dropvault-create-btn:hover {
+      background: #7B6DFF;
+    }
+
+    .dropvault-create-btn:active {
+      transform: scale(0.98);
+    }
+
+    .dropvault-create-btn:focus-visible {
+      outline: 2px solid #8B5CF6;
+      outline-offset: 2px;
+    }
+
+    .dropvault-state-error {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: #FF7B8A;
+      margin-top: 8px;
+    }
+
+    /* Light pill adaptations for contrast >= 4.5:1 */
+    .widget.light-pill .tab-content-dropvault .dropvault-folder-btn {
+      color: #111111;
+      opacity: 0.85;
+    }
+    .widget.light-pill .tab-content-dropvault .dropvault-folder-btn:hover {
+      color: #000000;
+      opacity: 1;
+      background: rgba(0, 0, 0, 0.08);
+    }
+    .widget.light-pill .tab-content-dropvault .dropvault-state-icon {
+      color: #111111;
+      opacity: 0.7;
+    }
+    .widget.light-pill .tab-content-dropvault .dropvault-state-title {
+      color: #111111;
+    }
+    .widget.light-pill .tab-content-dropvault .dropvault-state-desc {
+      color: #374151;
+      opacity: 1;
+    }
+
+
+    /* ============================================================
        AGENTS TAB (Image 1): Pill 478 x 271 px
        ============================================================ */
     .tab-content-agents {
@@ -1433,12 +1791,12 @@
       height: 100%;
     }
 
-    /* Dark panel: relative to pill's top-left, left 15px, top 56px, 448 x 200px, radius 8px, background #151B28 */
+    /* Dark panel: relative to pill's top-left, left 15px, top 56px, 530 x 200px, radius 8px, background #151B28 */
     .agents-dark-panel {
       position: absolute;
       left: 15px;
       top: 56px;
-      width: 448px;
+      width: 530px;
       height: 200px;
       background-color: #151B28;
       border: 1px solid #FFFFFF;
@@ -1448,7 +1806,8 @@
       user-select: none;
       -webkit-user-select: none;
       z-index: 1;
-      transition: height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+                  height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .widget.expanded.panel-open.tab-agents.approval-state .agents-dark-panel {
@@ -1564,21 +1923,23 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* File tab: left 109px, top 14px, 83 x 15px, background black, radius 5px 5px 0 0, 6px side padding */
+    /* File tab: left 109px, top 14px, max-width 60%, background black, radius 5px 5px 0 0 */
     .agent-file-tab {
       position: absolute;
       left: 109px;
       top: 14px;
-      width: 83px;
+      width: auto;
+      max-width: 60%;
       height: 15px;
       background-color: #000000;
       border-radius: 5px 5px 0 0;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       padding: 0 6px;
       gap: 4px;
       box-sizing: border-box;
       z-index: 2;
+      cursor: default;
     }
 
     .agent-file-icon {
@@ -1597,65 +1958,294 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      min-width: 0;
     }
 
-    /* Code box: left 109px, top 29px, 329 x 159px, background #000000, radius 6px (square top-left) */
+    .agent-file-stats {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      margin-left: auto;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .agent-file-stats .stat-add {
+      color: #5FD38D;
+    }
+
+    .agent-file-stats .stat-del {
+      color: #FF7B8A;
+    }
+
+    .agent-file-stats .stat-new {
+      color: #5FD38D;
+    }
+
+    /* Code box: left 109px, top 29px, 411 x 159px, background near-black #0B0C11, radius 6px */
     .agent-code-box {
       position: absolute;
       left: 109px;
       top: 29px;
-      width: 329px;
+      width: 411px;
       height: 159px;
-      background-color: #000000;
-      border-radius: 0 6px 6px 6px;
+      background-color: #0B0C11;
+      border-radius: 6px;
       box-sizing: border-box;
-      overflow: hidden;
+      overflow: auto;
+      min-height: 0;
+      min-width: 0;
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      touch-action: pan-x pan-y;
       z-index: 1;
+      outline: none;
     }
 
-    /* Line-number column: right edge at x 34px (monospace bold 9.5px, white) */
-    .agent-code-linenums {
+    .agent-code-box::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    .agent-code-box:focus-visible {
+      outline: 2px solid #8B5CF6;
+      outline-offset: -2px;
+      border-radius: 4px;
+    }
+
+    .agent-code-box:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    /* 14px edge fades */
+    .agent-code-fade-bottom {
       position: absolute;
-      left: 0;
-      top: 12px;
-      width: 34px;
-      text-align: right;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 9.5px;
-      font-weight: 700;
+      left: 109px;
+      top: 174px;
+      width: 411px;
+      height: 14px;
+      background: linear-gradient(to bottom, transparent, #0B0C11);
+      pointer-events: none;
+      z-index: 4;
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+
+    .agent-code-fade-right {
+      position: absolute;
+      left: 506px;
+      top: 29px;
+      width: 14px;
+      height: 159px;
+      background: linear-gradient(to right, transparent, #0B0C11);
+      pointer-events: none;
+      z-index: 4;
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+
+    .agent-code-fade-bottom.visible,
+    .agent-code-fade-right.visible {
+      opacity: 1;
+    }
+
+    /* Auto-follow Latest Button */
+    .agent-latest-btn {
+      position: absolute;
+      left: 447px;
+      top: 160px;
+      height: 20px;
+      border-radius: 10px;
+      background-color: #3B3B52;
       color: #FFFFFF;
-      line-height: 13px;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-weight: 600;
+      font-size: 10.5px;
+      line-height: 20px;
+      padding: 0 10px;
+      border: none;
+      cursor: pointer;
+      z-index: 10;
+      display: none;
+      align-items: center;
+      justify-content: center;
       user-select: none;
       -webkit-user-select: none;
     }
 
-    /* 1px vertical divider at x 41px from y 12px to y 64px (rgba(255,255,255,0.35)) */
-    .agent-code-divider {
-      position: absolute;
-      left: 41px;
-      top: 12px;
-      width: 1px;
-      height: 52px;
-      background-color: rgba(255, 255, 255, 0.35);
+    .agent-latest-btn.visible {
+      display: inline-flex;
     }
 
-    /* Code text starting at x 49px, line height 13px, first line top at 12px, JetBrains Mono 9.5px semibold */
-    .agent-code-text {
-      position: absolute;
-      left: 49px;
-      top: 12px;
+    /* Blinking Caret on Last Added Row */
+    .agent-diff-caret {
+      display: inline-block;
+      width: 1.5px;
+      height: 12px;
+      background-color: #E8EAF0;
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: agentCaretBlink 1060ms steps(1) infinite;
+    }
+
+    @keyframes agentCaretBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .agent-diff-caret {
+        animation: none !important;
+        opacity: 1 !important;
+      }
+    }
+
+    .widget:not(.panel-open) .agent-diff-caret,
+    .widget:not(.tab-agents) .agent-diff-caret {
+      display: none !important;
+      animation: none !important;
+    }
+
+    /* Diff Container & Grid Rows */
+    .agent-diff-table {
+      display: inline-block;
+      min-width: 100%;
+      width: max-content;
+      padding-top: 4px;
+      padding-bottom: 4px;
+      box-sizing: border-box;
+    }
+
+    .agent-diff-row {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      min-width: 100%;
+      height: 17px;
+      line-height: 17px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .agent-diff-row.diff-context {
+      background: transparent;
+    }
+
+    .agent-diff-row.diff-removed {
+      background-color: #3A1D25;
+    }
+
+    .agent-diff-row.diff-added {
+      background-color: #143225;
+    }
+
+    .agent-diff-row.diff-separator,
+    .agent-diff-row.diff-truncated {
+      background: transparent;
+      color: #6B7280;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 9.5px;
-      font-weight: 600;
-      color: #FFFFFF;
-      line-height: 13px;
+      font-size: 10px;
+      font-style: italic;
+      padding-left: 48px;
+      line-height: 17px;
+    }
+
+    /* Sticky Gutter (Line Number + Marker) */
+    .agent-diff-gutter {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      box-sizing: border-box;
+    }
+
+    .agent-diff-row.diff-context .agent-diff-gutter {
+      background-color: #0B0C11;
+    }
+
+    .agent-diff-row.diff-removed .agent-diff-gutter {
+      background-color: #3A1D25;
+      box-shadow: inset 2px 0 0 #E5484D;
+    }
+
+    .agent-diff-row.diff-added .agent-diff-gutter {
+      background-color: #143225;
+      box-shadow: inset 2px 0 0 #30A46C;
+    }
+
+    .agent-diff-linenum {
+      width: 32px;
+      padding-right: 6px;
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      line-height: 17px;
+      box-sizing: border-box;
+    }
+
+    .agent-diff-row.diff-context .agent-diff-linenum {
+      color: #6B7280;
+    }
+
+    .agent-diff-row.diff-removed .agent-diff-linenum {
+      color: #FF7B8A;
+    }
+
+    .agent-diff-row.diff-added .agent-diff-linenum {
+      color: #5FD38D;
+    }
+
+    .agent-diff-marker {
+      width: 12px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 17px;
+      flex-shrink: 0;
+    }
+
+    .agent-diff-row.diff-removed .agent-diff-marker {
+      color: #FF7B8A;
+    }
+
+    .agent-diff-row.diff-added .agent-diff-marker {
+      color: #5FD38D;
+    }
+
+    .agent-diff-text {
+      padding-left: 6px;
+      padding-right: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 500;
+      line-height: 17px;
       white-space: pre;
       user-select: text;
       -webkit-user-select: text;
+      flex-grow: 1;
+      color: #FFFFFF;
     }
 
-    /* Syntax colors: keywords magenta #E879F9, identifiers & methods cyan #67E8F9, strings lime #A3E635 */
-    
+    .agent-diff-row.diff-removed .agent-diff-text {
+      color: #E8C4CA;
+      text-decoration: line-through;
+    }
+
+    .agent-diff-row.diff-added .agent-diff-text {
+      color: #FFFFFF;
+    }
+
     /* Syntax colors & Code box styling */
     .agent-tok-kw { color: #E879F9; }
     .agent-tok-id { color: #67E8F9; }
@@ -1664,12 +2254,201 @@
     .agent-tok-err { color: #FF6B6B; }
     .agent-tok-done { color: #4CD800; }
 
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+      pointer-events: none !important;
+    }
+
+    /* --- File Drop Folder Artwork (Figma Design) --- */
+    :root {
+      --drop-folder-width: 180px;
+    }
+
+    .drop-folder-container {
+      position: absolute;
+      width: var(--drop-folder-width, 180px);
+      height: 118px;
+      aspect-ratio: 436 / 286;
+      pointer-events: none;
+      z-index: 10000;
+      display: none;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      filter: none !important;
+      backdrop-filter: none !important;
+      user-select: none;
+      -webkit-user-select: none;
+      transform-origin: center center;
+    }
+
+    .drop-folder-container.visible {
+      display: block;
+    }
+
+    .drop-folder-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      filter: none !important;
+      backdrop-filter: none !important;
+      transition: opacity 100ms ease;
+    }
+
+    .drop-folder-img.over {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    .drop-folder-img.dropped {
+      opacity: 0;
+      z-index: 2;
+    }
+
+    .drop-folder-container.state-dropped .drop-folder-img.over {
+      opacity: 0;
+    }
+
+    .drop-folder-container.state-dropped .drop-folder-img.dropped {
+      opacity: 1;
+    }
+
+    @keyframes dropFolderEnter {
+      from {
+        transform: scale(0.85);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .drop-folder-container.anim-enter {
+      animation: dropFolderEnter 220ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes dropFolderLeave {
+      from {
+        transform: scale(1);
+        opacity: 1;
+      }
+      to {
+        transform: scale(0.85);
+        opacity: 0;
+      }
+    }
+
+    .drop-folder-container.anim-leave {
+      animation: dropFolderLeave 180ms ease forwards;
+    }
+
+    @keyframes dropFolderPulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.06);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .drop-folder-container.anim-pulse {
+      animation: dropFolderPulse 260ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes dropFolderExit {
+      from {
+        transform: scale(1);
+        opacity: 1;
+      }
+      to {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+    }
+
+    .drop-folder-container.anim-exit {
+      animation: dropFolderExit 200ms ease forwards;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .drop-folder-container.anim-enter,
+      .drop-folder-container.anim-leave,
+      .drop-folder-container.anim-pulse,
+      .drop-folder-container.anim-exit {
+        animation: none !important;
+        transform: none !important;
+      }
+      .drop-folder-img {
+        transition: opacity 120ms ease !important;
+      }
+    }
+
+    /* Pill hiding while file-drop is active: fade over 150ms */
+    .widget.file-drop-active {
+      background-color: transparent !important;
+      box-shadow: none !important;
+      border-color: transparent !important;
+    }
+
+    .widget.file-drop-active > * {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: opacity 150ms ease !important;
+    }
+
+    .widget.file-drop-active.hidden-content > * {
+      visibility: hidden !important;
+    }
+
+    .drop-rejected-pill-msg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #FF7B8A;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 200ms ease;
+    }
+
+    .drop-rejected-pill-msg.visible {
+      opacity: 1;
+    }
+
+    .drop-rejected-pill-msg.success {
+      color: #FFFFFF;
+    }
+
     /* Agent Empty State Overlay in the code box area */
     .agent-empty-overlay {
       position: absolute;
       left: 109px;
       top: 14px;
-      width: 329px;
+      width: 411px;
       height: 174px;
       background-color: #000000;
       border-radius: 6px;
@@ -1988,6 +2767,7 @@
     }
     .widget.approval-state .tab-content-hub,
     .widget.approval-state .tab-content-clipboard,
+    .widget.approval-state .tab-content-dropvault,
     .widget.approval-state .tab-content-chat,
     .widget.approval-state .tab-content-controls {
       display: none !important;
@@ -4627,9 +5407,9 @@
             <path d="M 67 8 L 91 21 L 67 34" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <!-- Card 2: Coming soon -->
+        <!-- Card 2: DropVault -->
         <div class="hub-card" id="hub-card-2" role="option" aria-selected="false" data-index="2" data-offset="1" style="--offset: 1;">
-          <span class="hub-card-label">Coming soon</span>
+          <span class="hub-card-label">DropVault</span>
         </div>
       </div>
 
@@ -4641,7 +5421,7 @@
         <button type="button" class="hub-dot-btn active" id="hub-dot-1" data-index="1" aria-label="Agents">
           <span class="hub-dot"></span>
         </button>
-        <button type="button" class="hub-dot-btn" id="hub-dot-2" data-index="2" aria-label="Coming soon">
+        <button type="button" class="hub-dot-btn" id="hub-dot-2" data-index="2" aria-label="DropVault">
           <span class="hub-dot"></span>
         </button>
       </div>
@@ -4709,6 +5489,52 @@
         <div class="clipboard-empty-text">Nothing copied yet. Copy some text and it appears here.</div>
       </div>
     </div>
+
+    <!-- DROPVAULT TAB (Pill: 359 x 317 px) -->
+    <div class="tab-content tab-content-dropvault" id="tab-content-dropvault" role="region" aria-label="DropVault" inert aria-hidden="true" style="display: none;">
+      <!-- Header row: top 47px inside pill (left 12 for recent chip, left 88 for folder button) -->
+      <div class="dropvault-header-row" id="dropvault-header-row">
+        <button type="button" class="dropvault-recent-chip" id="dropvault-recent-chip" aria-pressed="true" aria-label="Recent files">
+          <svg class="dropvault-recent-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="7" cy="7" r="5.5"/>
+            <polyline points="7 4 7 7 4.5 7"/>
+          </svg>
+          <span>Recent</span>
+        </button>
+        <button type="button" class="dropvault-folder-btn" id="dropvault-folder-btn" aria-label="Open DropVault folder">
+          <svg class="dropvault-folder-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2.5 5.5A1.5 1.5 0 0 1 4 4h3.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 0 11.121 6.5H16A1.5 1.5 0 0 1 17.5 8v6.5a1.5 1.5 0 0 1-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5V5.5z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Grid view: 3 cols x 2 rows, cards 78x100 -->
+      <div class="dropvault-grid" id="dropvault-grid" role="listbox" aria-label="DropVault recent files" tabindex="0">
+        <!-- Up to 6 cards generated dynamically or diff-updated -->
+      </div>
+
+      <!-- State screen: Not Created or Missing -->
+      <div class="dropvault-state-screen" id="dropvault-state-setup" style="display: none;" inert aria-hidden="true">
+        <svg class="dropvault-state-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4.5 9.5A2.5 2.5 0 0 1 7 7h6.5a2.5 2.5 0 0 1 1.77.73l2.5 2.54A2.5 2.5 0 0 0 19.54 11H29a2.5 2.5 0 0 1 2.5 2.5V26a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V9.5z"/>
+        </svg>
+        <div class="dropvault-state-title" id="dropvault-setup-title">Create your DropVault folder</div>
+        <div class="dropvault-missing-note" id="dropvault-setup-missing-note" style="display: none;">The DropVault folder was not found.</div>
+        <div class="dropvault-state-desc" id="dropvault-setup-desc">Files you drop on the island are saved here: Documents\DropVault</div>
+        <button type="button" class="dropvault-create-btn" id="dropvault-create-btn">Create folder</button>
+        <div class="dropvault-state-error" id="dropvault-setup-error" style="display: none;">Couldn't create the folder. Try again.</div>
+      </div>
+
+      <!-- State screen: Empty ("ready" but 0 files) -->
+      <div class="dropvault-state-screen" id="dropvault-state-empty" style="display: none;" inert aria-hidden="true">
+        <svg class="dropvault-state-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4.5 9.5A2.5 2.5 0 0 1 7 7h6.5a2.5 2.5 0 0 1 1.77.73l2.5 2.54A2.5 2.5 0 0 0 19.54 11H29a2.5 2.5 0 0 1 2.5 2.5V26a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V9.5z"/>
+        </svg>
+        <div class="dropvault-state-title">Nothing here yet.</div>
+        <div class="dropvault-state-desc">Drag a file onto the island to save it in DropVault.</div>
+      </div>
+    </div>
+
 
     <!-- AGENTS TAB (Pill: 478 x 271 px) -->
     <div class="tab-content tab-content-agents" id="tab-content-agents">
@@ -4799,27 +5625,45 @@
 
         <!-- Code Component Container: File Tab + Code Box -->
         <div class="agent-code-component" id="agent-code-component">
-          <!-- File tab: left 109px, top 14px, 83 x 15px, background black, radius 5px 5px 0 0 -->
-          <div class="agent-file-tab">
-            <svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#FF8A1F" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <!-- File tab: left 109px, top 14px, max-width 60%, background black, radius 5px 5px 0 0 -->
+          <div class="agent-file-tab" id="agent-file-tab" role="tab" aria-label="settings.html" data-tooltip="settings.html">
+            <svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#FF8A1F" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M 3 2.5 L 1 5 L 3 7.5" />
               <path d="M 7 2.5 L 9 5 L 7 7.5" />
               <line x1="6" y1="2" x2="4" y2="8" />
             </svg>
-            <span class="agent-file-name">settings.html</span>
+            <span class="agent-file-name" id="agent-file-name">settings.html</span>
+            <span class="agent-file-stats" id="agent-file-stats"></span>
           </div>
 
-          <!-- Code box: left 109px, top 29px, 329 x 159px, background #000000, radius 6px (square top-left) -->
-          <div class="agent-code-box">
-            <div class="agent-code-linenums">
-              <div>120</div>
-              <div>121</div>
-              <div>122</div>
-              <div>123</div>
+          <!-- Code box: left 109px, top 29px, 411 x 159px, background #0B0C11, radius 6px -->
+          <div class="agent-code-box" id="agent-code-box" tabindex="0" role="region" aria-label="Code diff viewer">
+            <div class="agent-diff-table" id="agent-diff-table">
+              <div class="agent-diff-row diff-context" data-idx="0">
+                <div class="agent-diff-gutter"><span class="agent-diff-linenum">120</span><span class="agent-diff-marker"></span></div>
+                <div class="agent-diff-text"><span class="agent-tok-kw">function</span> <span class="agent-tok-id">expandwidget</span>() {</div>
+              </div>
+              <div class="agent-diff-row diff-context" data-idx="1">
+                <div class="agent-diff-gutter"><span class="agent-diff-linenum">121</span><span class="agent-diff-marker"></span></div>
+                <div class="agent-diff-text">  <span class="agent-tok-kw">const</span> <span class="agent-tok-id">island</span> = document.<span class="agent-tok-id">getElementById</span>(<span class="agent-tok-str">"island"</span>);</div>
+              </div>
+              <div class="agent-diff-row diff-context" data-idx="2">
+                <div class="agent-diff-gutter"><span class="agent-diff-linenum">122</span><span class="agent-diff-marker"></span></div>
+                <div class="agent-diff-text">  <span class="agent-tok-id">island</span>.<span class="agent-tok-id">classList.add</span>(<span class="agent-tok-str">"expanded"</span>);</div>
+              </div>
+              <div class="agent-diff-row diff-context" data-idx="3">
+                <div class="agent-diff-gutter"><span class="agent-diff-linenum">123</span><span class="agent-diff-marker"></span></div>
+                <div class="agent-diff-text">}</div>
+              </div>
             </div>
-            <div class="agent-code-divider"></div>
-            <div class="agent-code-text"><div><span class="agent-tok-kw">function</span> <span class="agent-tok-id">expandwidget</span>() {</div><div>  <span class="agent-tok-kw">const</span> <span class="agent-tok-id">island</span> = document.<span class="agent-tok-id">getElementById</span>(<span class="agent-tok-str">"island"</span>);</div><div>  <span class="agent-tok-id">island</span>.<span class="agent-tok-id">classList.add</span>(<span class="agent-tok-str">"expanded"</span>);</div><div>}</div></div>
           </div>
+
+          <!-- 14px Edge Fades: bottom and right -->
+          <div class="agent-code-fade-bottom" id="agent-code-fade-bottom" aria-hidden="true"></div>
+          <div class="agent-code-fade-right" id="agent-code-fade-right" aria-hidden="true"></div>
+
+          <!-- Auto-follow Latest Button: Inter 600 10.5px, white on #3B3B52, radius 10px, height 20px, 8px from bottom-right -->
+          <button type="button" class="agent-latest-btn" id="agent-latest-btn" inert aria-hidden="true" tabindex="-1">Latest</button>
 
           <!-- Agent Empty State Overlay -->
           <div class="agent-empty-overlay" id="agent-empty-overlay">
@@ -5099,9 +5943,19 @@
       <!-- Toast text on panel -->
       <div class="cc-toast" id="cc-toast"></div>
     </div>
+    <div class="drop-rejected-pill-msg" id="drop-rejected-pill-msg" aria-hidden="true"></div>
     <!-- Custom In-Pill Tooltip -->
     <div id="pill-custom-tooltip" class="pill-custom-tooltip" role="tooltip" aria-hidden="true"></div>
   </div>
+
+  <!-- File Drop Folder Artwork Container (Image 1 "over", Image 2 "dropped") -->
+  <div class="drop-folder-container" id="drop-folder-container" role="img" aria-label="Drop File" inert aria-hidden="true">
+    <img id="drop-folder-img-over" class="drop-folder-img over" src="assets/drop-folder-over.webp" alt="" draggable="false" />
+    <img id="drop-folder-img-dropped" class="drop-folder-img dropped" src="assets/drop-folder-dropped.webp" alt="" draggable="false" />
+  </div>
+
+  <!-- Screen reader live announcer -->
+  <div class="sr-only" aria-live="polite" id="drop-folder-announcer"></div>
 
   <script type="module">
     import mascotBaseCream from './assets/mascot-base.png';
@@ -5109,6 +5963,8 @@
     import mascotBaseBlue from './assets/mascot-base-blue.png';
     import mascotBaseBlack from './assets/mascot-base-black.png';
     import albumArtPlaceholder from './assets/album-art.jpg';
+    import dropFolderOverUrl from './assets/drop-folder-over.webp';
+    import dropFolderDroppedUrl from './assets/drop-folder-dropped.webp';
 
     // Global error logger in debug builds only
     let isDebugMode = false;
@@ -5190,6 +6046,7 @@
     const tabContentChat = document.getElementById('tab-content-chat');
     const tabContentControls = document.getElementById('tab-content-controls');
     const tabContentClipboard = document.getElementById('tab-content-clipboard');
+    const tabContentDropvault = document.getElementById('tab-content-dropvault');
     const topBarClipboardTitle = document.getElementById('top-bar-clipboard-title');
     const agentsContentPanel = document.getElementById('agents-dark-panel');
     const topBarBatteryIndicator = document.getElementById('top-bar-battery-indicator');
@@ -5202,6 +6059,7 @@
     if (tabContentChat) tabContentChat.style.display = 'none';
     if (tabContentControls) tabContentControls.style.display = 'none';
     if (tabContentClipboard) tabContentClipboard.style.display = 'none';
+    if (tabContentDropvault) tabContentDropvault.style.display = 'none';
 
     // --- Now Playing Pill State Management ---
     let isNowPlayingActive = false;
@@ -5226,7 +6084,7 @@
       if (!widget) return false;
       if (widget.classList.contains('expanded')) return false;
       if (typeof currentTab !== 'undefined' && currentTab !== null) return false;
-      if (widget.classList.contains('tab-agents') || widget.classList.contains('tab-chat') || widget.classList.contains('tab-controls') || widget.classList.contains('tab-hub') || widget.classList.contains('tab-clipboard')) return false;
+      if (widget.classList.contains('tab-agents') || widget.classList.contains('tab-chat') || widget.classList.contains('tab-controls') || widget.classList.contains('tab-hub') || widget.classList.contains('tab-clipboard') || widget.classList.contains('tab-dropvault')) return false;
       if (widget.classList.contains('panel-open') || widget.classList.contains('chat-open') || widget.classList.contains('control-center-open')) return false;
       if (widget.classList.contains('approval-state') || widget.classList.contains('approval-compact')) return false;
       return true;
@@ -7868,8 +8726,306 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       });
     }
 
+    // --- File Drop Artwork & Lifecycle ---
+    let isFileDropActive = false;
+    let fileDropLeaveDebounceTimer = null;
+    let fileDropLeaveFinishTimer = null;
+    let fileDropHoldTimer = null;
+    let currentDropResult = null;
+    let isDropAnimationHolding = false;
+    let isHoldDurationElapsed = false;
+    let dropRectLeaveTimer = null;
+    let isDragLButtonActive = false;
+
+    // Bind image elements to resolved asset URLs
+    const dropFolderImgOverEl = document.getElementById('drop-folder-img-over');
+    if (dropFolderImgOverEl) dropFolderImgOverEl.src = dropFolderOverUrl;
+    const dropFolderImgDroppedEl = document.getElementById('drop-folder-img-dropped');
+    if (dropFolderImgDroppedEl) dropFolderImgDroppedEl.src = dropFolderDroppedUrl;
+
+    // Preload & decode both images when window is idle
+    try {
+      const preloadOver = new Image();
+      preloadOver.src = dropFolderOverUrl;
+      preloadOver.decode?.().catch(() => {});
+      const preloadDropped = new Image();
+      preloadDropped.src = dropFolderDroppedUrl;
+      preloadDropped.decode?.().catch(() => {});
+    } catch (_) {}
+
+    function updateDropFolderPosition() {
+      const folder = document.getElementById('drop-folder-container');
+      if (!folder || !widget) return;
+      const pillRect = widget.getBoundingClientRect();
+      const folderWidth = 180;
+      const folderHeight = Math.round(180 / (436 / 286)); // ~118px
+
+      const pillCenterX = pillRect.left + pillRect.width / 2;
+      const pillCenterY = pillRect.top + pillRect.height / 2;
+
+      let x = Math.round(pillCenterX - folderWidth / 2);
+      let y = Math.round(pillCenterY - folderHeight / 2);
+
+      if (y < pillRect.top) {
+        y = Math.round(pillRect.top);
+      }
+
+      x = Math.max(0, Math.min(640 - folderWidth, x));
+      y = Math.max(0, Math.min(420 - folderHeight, y));
+
+      folder.style.left = `${x}px`;
+      folder.style.top = `${y}px`;
+      folder.style.width = `${folderWidth}px`;
+      folder.style.height = `${folderHeight}px`;
+    }
+
+    function announceDropState(text) {
+      const ann = document.getElementById('drop-folder-announcer');
+      if (ann) ann.textContent = text;
+    }
+
+    function enterFileDropState() {
+      if (widget.classList.contains('approval-state')) {
+        return;
+      }
+      if (fileDropLeaveDebounceTimer) {
+        clearTimeout(fileDropLeaveDebounceTimer);
+        fileDropLeaveDebounceTimer = null;
+      }
+      if (fileDropLeaveFinishTimer) {
+        clearTimeout(fileDropLeaveFinishTimer);
+        fileDropLeaveFinishTimer = null;
+      }
+      if (isFileDropActive) return;
+
+      isFileDropActive = true;
+      updateDropFolderPosition();
+
+      const folder = document.getElementById('drop-folder-container');
+      if (folder) {
+        folder.classList.remove('anim-leave', 'anim-exit', 'anim-pulse', 'state-dropped');
+        folder.classList.add('visible', 'anim-enter');
+        folder.removeAttribute('inert');
+        folder.removeAttribute('aria-hidden');
+        folder.setAttribute('aria-label', 'Drop File');
+      }
+
+      widget.classList.add('file-drop-active');
+      setTimeout(() => {
+        if (isFileDropActive) {
+          widget.classList.add('hidden-content');
+          for (const child of widget.children) {
+            if (child.id !== 'drop-rejected-pill-msg') {
+              child.setAttribute('inert', '');
+              child.setAttribute('aria-hidden', 'true');
+            }
+          }
+        }
+      }, 150);
+    }
+
+    function leaveFileDropState() {
+      if (!isFileDropActive || isDropAnimationHolding) return;
+      if (fileDropLeaveDebounceTimer) {
+        clearTimeout(fileDropLeaveDebounceTimer);
+        fileDropLeaveDebounceTimer = null;
+      }
+
+      fileDropLeaveDebounceTimer = setTimeout(() => {
+        fileDropLeaveDebounceTimer = null;
+        if (!isFileDropActive || isDropAnimationHolding) return;
+
+        const folder = document.getElementById('drop-folder-container');
+        if (folder) {
+          folder.classList.remove('anim-enter', 'anim-pulse');
+          folder.classList.add('anim-leave');
+          if (fileDropLeaveFinishTimer) {
+            clearTimeout(fileDropLeaveFinishTimer);
+            fileDropLeaveFinishTimer = null;
+          }
+          fileDropLeaveFinishTimer = setTimeout(() => {
+            fileDropLeaveFinishTimer = null;
+            if (isDropAnimationHolding) return;
+            isFileDropActive = false;
+            folder.classList.remove('visible', 'anim-leave', 'state-dropped');
+            folder.setAttribute('inert', '');
+            folder.setAttribute('aria-hidden', 'true');
+
+            widget.classList.remove('hidden-content');
+            widget.classList.remove('file-drop-active');
+            for (const child of widget.children) {
+              child.removeAttribute('inert');
+              child.removeAttribute('aria-hidden');
+            }
+            if (typeof syncInteractiveVisibility === 'function') {
+              syncInteractiveVisibility();
+            }
+          }, 180);
+        }
+      }, 120);
+    }
+
+    function onFileDropDropped() {
+      if (fileDropLeaveDebounceTimer) {
+        clearTimeout(fileDropLeaveDebounceTimer);
+        fileDropLeaveDebounceTimer = null;
+      }
+      if (fileDropLeaveFinishTimer) {
+        clearTimeout(fileDropLeaveFinishTimer);
+        fileDropLeaveFinishTimer = null;
+      }
+
+      isFileDropActive = true;
+      isDropAnimationHolding = true;
+      isHoldDurationElapsed = false;
+      currentDropResult = null;
+
+      updateDropFolderPosition();
+
+      const folder = document.getElementById('drop-folder-container');
+      if (folder) {
+        folder.classList.remove('anim-enter', 'anim-leave', 'anim-exit');
+        folder.classList.add('visible', 'state-dropped', 'anim-pulse');
+        folder.removeAttribute('inert');
+        folder.removeAttribute('aria-hidden');
+        folder.setAttribute('aria-label', 'File added');
+      }
+
+      announceDropState('File added');
+      if (typeof playSound === 'function') {
+        playSound('copy');
+      }
+
+      if (dropSavingTimer) clearTimeout(dropSavingTimer);
+      dropSavingTimer = setTimeout(() => {
+        dropSavingTimer = null;
+        if (isFileDropActive || currentDropResult === null) {
+          showDropPillMessage('Saving...', false);
+        }
+      }, 1000);
+
+      if (fileDropHoldTimer) {
+        clearTimeout(fileDropHoldTimer);
+      }
+      fileDropHoldTimer = setTimeout(() => {
+        fileDropHoldTimer = null;
+        isHoldDurationElapsed = true;
+        maybeFinishDrop();
+      }, 900);
+    }
+
+    function onFileDropResult(payload) {
+      currentDropResult = payload;
+      maybeFinishDrop();
+    }
+
+    function maybeFinishDrop() {
+      if (!isDropAnimationHolding) return;
+      if (!isHoldDurationElapsed || !currentDropResult) return;
+
+      isDropAnimationHolding = false;
+      if (fileDropHoldTimer) {
+        clearTimeout(fileDropHoldTimer);
+        fileDropHoldTimer = null;
+      }
+
+      const folder = document.getElementById('drop-folder-container');
+      if (folder) {
+        folder.classList.remove('anim-pulse');
+        folder.classList.add('anim-exit');
+      }
+
+      widget.classList.remove('hidden-content');
+      widget.classList.remove('file-drop-active');
+      for (const child of widget.children) {
+        child.removeAttribute('inert');
+        child.removeAttribute('aria-hidden');
+      }
+
+      setTimeout(() => {
+        isFileDropActive = false;
+        if (folder) {
+          folder.classList.remove('visible', 'anim-exit', 'state-dropped');
+          folder.setAttribute('inert', '');
+          folder.setAttribute('aria-hidden', 'true');
+        }
+        if (typeof syncInteractiveVisibility === 'function') {
+          syncInteractiveVisibility();
+        }
+
+        handleDropOutcome(currentDropResult);
+        currentDropResult = null;
+      }, 200);
+    }
+
+    let dropSavingTimer = null;
+
+    function handleDropOutcome(res) {
+      if (dropSavingTimer) {
+        clearTimeout(dropSavingTimer);
+        dropSavingTimer = null;
+      }
+      const { accepted, rejected } = res || {};
+      if (accepted > 0) {
+        const msg = accepted === 1 ? 'Saved to DropVault' : `${accepted} files saved`;
+        showDropPillMessage(msg, false);
+      } else {
+        let msg = "Couldn't save the file.";
+        if (Array.isArray(rejected)) {
+          if (rejected.includes('no-vault')) {
+            msg = "Create your DropVault folder first.";
+          } else if (rejected.includes('folder')) {
+            msg = "Folders aren't supported.";
+          } else if (rejected.includes('too-large')) {
+            msg = "Too large (max 1 GB).";
+          } else if (rejected.includes('disk')) {
+            msg = "Not enough disk space.";
+          } else if (rejected.includes('denied')) {
+            msg = "Couldn't save the file.";
+          }
+        }
+        showDropPillMessage(msg, true);
+      }
+      if (currentTab === 'dropvault' && typeof refreshDropVaultUI === 'function') {
+        refreshDropVaultUI();
+      }
+    }
+
+    function showDropPillMessage(text, isError = false) {
+      const el = document.getElementById('drop-rejected-pill-msg');
+      if (!el) return;
+      el.textContent = text;
+      el.classList.toggle('success', !isError);
+      el.classList.add('visible');
+      el.removeAttribute('aria-hidden');
+      setTimeout(() => {
+        el.classList.remove('visible');
+        el.setAttribute('aria-hidden', 'true');
+        setTimeout(() => {
+          if (!el.classList.contains('visible')) {
+            el.textContent = '';
+            el.classList.remove('success');
+          }
+        }, 200);
+      }, 2000);
+    }
+
     if (window.__TAURI__?.event?.listen) {
-      window.__TAURI__.event.listen('chat-chunk', (event) => {
+      window.__TAURI__.event.listen('file-drop', (event) => {
+        if (!ENABLE_FILE_DROP) return;
+        const payload = event.payload || {};
+        const state = payload.state;
+        if (state === 'enter' || state === 'over') {
+          enterFileDropState();
+        } else if (state === 'leave') {
+          leaveFileDropState();
+        } else if (state === 'dropped') {
+          onFileDropDropped();
+        } else if (state === 'result') {
+          onFileDropResult(payload);
+        }
+      });
+      window.__TAURI__.event.listen('chat-chunk' , (event) => {
         handleChatChunk(event);
       });
       window.__TAURI__.event.listen('chat-done', (event) => {
@@ -7969,6 +9125,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         !widget.classList.contains('tab-controls') &&
         !widget.classList.contains('tab-hub') &&
         !widget.classList.contains('tab-clipboard') &&
+        !widget.classList.contains('tab-dropvault') &&
         !widget.classList.contains('chat-open') &&
         !widget.classList.contains('control-center-open') &&
         !widget.classList.contains('chat-closing') &&
@@ -8059,6 +9216,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         exitNowPlayingState(true);
       }
       if (currentTab === tabName && isPanelOpen()) return;
+      if (currentTab === 'agents' && tabName !== 'agents') {
+        if (window.AgentCodeViewer?.onPanelClosed) window.AgentCodeViewer.onPanelClosed();
+      }
 
       const isSwitching = isPanelOpen() && currentTab !== tabName;
       const isOpening = !isPanelOpen();
@@ -8092,13 +9252,14 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       widget.classList.toggle('tab-controls', tabName === 'controls');
       widget.classList.toggle('tab-hub', tabName === 'hub');
       widget.classList.toggle('tab-clipboard', tabName === 'clipboard');
+      widget.classList.toggle('tab-dropvault', tabName === 'dropvault');
 
       // Backwards-compatible class toggles
       widget.classList.toggle('chat-open', tabName === 'chat');
       widget.classList.toggle('control-center-open', tabName === 'controls');
 
       // Update top bar icon active states
-      if (topBarAgentsBtn) topBarAgentsBtn.classList.toggle('active', tabName === 'agents' || tabName === 'hub' || tabName === 'clipboard');
+      if (topBarAgentsBtn) topBarAgentsBtn.classList.toggle('active', tabName === 'agents' || tabName === 'hub' || tabName === 'clipboard' || tabName === 'dropvault');
       if (topBarControlsBtn) topBarControlsBtn.classList.toggle('active', tabName === 'controls');
       if (topBarChatBtn) topBarChatBtn.classList.toggle('active', tabName === 'chat');
 
@@ -8168,6 +9329,21 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           tabContentClipboard.setAttribute('inert', '');
           tabContentClipboard.setAttribute('aria-hidden', 'true');
           closeClipboardTab();
+        }
+      }
+      if (tabContentDropvault) {
+        const isActive = tabName === 'dropvault';
+        tabContentDropvault.classList.toggle('active', isActive);
+        tabContentDropvault.style.display = isActive ? 'block' : 'none';
+        tabContentDropvault.style.pointerEvents = isActive ? 'auto' : 'none';
+        if (isActive) {
+          tabContentDropvault.removeAttribute('inert');
+          tabContentDropvault.removeAttribute('aria-hidden');
+          openDropVaultTab();
+        } else {
+          tabContentDropvault.setAttribute('inert', '');
+          tabContentDropvault.setAttribute('aria-hidden', 'true');
+          closeDropVaultTab();
         }
       }
 
@@ -8283,7 +9459,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       if (isChatMaximized) {
         setChatMaximized(false);
       }
-      widget.classList.remove('panel-open', 'tab-agents', 'tab-chat', 'tab-controls', 'tab-hub', 'tab-clipboard', 'chat-open', 'control-center-open', 'approval-compact', 'chat-max');
+      widget.classList.remove('panel-open', 'tab-agents', 'tab-chat', 'tab-controls', 'tab-hub', 'tab-clipboard', 'tab-dropvault', 'chat-open', 'control-center-open', 'approval-compact', 'chat-max');
 
       if (animate && widget.classList.contains('expanded')) {
         widget.classList.add('chat-closing');
@@ -8438,6 +9614,16 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       const isChatActive = (currentTab === 'chat' || widget.classList.contains('tab-chat')) && isPanel;
       const isControlsActive = (currentTab === 'controls' || widget.classList.contains('tab-controls')) && isPanel;
       const isClipboardActive = (currentTab === 'clipboard' || widget.classList.contains('tab-clipboard')) && isPanel;
+      const isDropVaultActive = (currentTab === 'dropvault' || widget.classList.contains('tab-dropvault')) && isPanel;
+      if (tabContentDropvault) {
+        if (isDropVaultActive) {
+          tabContentDropvault.removeAttribute('inert');
+          tabContentDropvault.removeAttribute('aria-hidden');
+        } else {
+          tabContentDropvault.setAttribute('inert', '');
+          tabContentDropvault.setAttribute('aria-hidden', 'true');
+        }
+      }
 
       if (tabContentHub) {
         if (isHubActive) {
@@ -8611,7 +9797,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         }
         if (currentTab === 'hub' && isPanelOpen()) {
           closePanel(true);
-        } else if ((currentTab === 'agents' || currentTab === 'clipboard') && isPanelOpen()) {
+        } else if ((currentTab === 'agents' || currentTab === 'clipboard' || currentTab === 'dropvault') && isPanelOpen()) {
           switchTab('hub');
         } else {
           lastActiveHubCardIndex = 1;
@@ -8871,8 +10057,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         lastActiveHubCardIndex = 0;
         switchTab('clipboard');
       } else if (currentHubActiveIndex === 2) {
-        // Coming soon shows tiny in-pill message "More is coming soon"
-        showHubMessage(activeCard, 'More is coming soon', 1500);
+        // DropVault opens the DropVault panel
+        lastActiveHubCardIndex = 2;
+        switchTab('dropvault');
       }
     }
 
@@ -8882,12 +10069,11 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       if (card) {
         card.addEventListener('click', (e) => {
           e.stopPropagation();
-          if (lastDragDistance > 10) return;
+          if (lastDragDistance > 8) return;
           const cardIdx = parseInt(card.dataset.index, 10);
-          if (cardIdx === currentHubActiveIndex) {
+          if (cardIdx >= 0 && cardIdx <= 2) {
+            hubSetCard(cardIdx, false);
             hubActivateCenterCard();
-          } else {
-            hubSetCard(cardIdx, true);
           }
         });
 
@@ -8896,10 +10082,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             e.preventDefault();
             e.stopPropagation();
             const cardIdx = parseInt(card.dataset.index, 10);
-            if (cardIdx === currentHubActiveIndex) {
+            if (cardIdx >= 0 && cardIdx <= 2) {
+              hubSetCard(cardIdx, false);
               hubActivateCenterCard();
-            } else {
-              hubSetCard(cardIdx, true);
             }
           }
         });
@@ -9029,6 +10214,8 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       let isDragging = false;
       let currentPointerId = null;
 
+      let hasCapturedPointer = false;
+
       hubCarouselEl.addEventListener('pointerdown', (e) => {
         if (e.button !== 0) return;
         dragStartX = e.clientX;
@@ -9036,38 +10223,70 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         dragDeltaX = 0;
         lastDragDistance = 0;
         isDragging = true;
+        hasCapturedPointer = false;
         currentPointerId = e.pointerId;
-        try {
-          hubCarouselEl.setPointerCapture(e.pointerId);
-        } catch (_) {}
       });
 
       hubCarouselEl.addEventListener('pointermove', (e) => {
         if (!isDragging || e.pointerId !== currentPointerId) return;
         dragDeltaX = e.clientX - dragStartX;
         lastDragDistance = Math.abs(dragDeltaX);
+        if (lastDragDistance > 6 && !hasCapturedPointer) {
+          try {
+            hubCarouselEl.setPointerCapture(e.pointerId);
+            hasCapturedPointer = true;
+          } catch (_) {}
+        }
       });
 
       const finishPointerDrag = (e) => {
         if (!isDragging || e.pointerId !== currentPointerId) return;
         isDragging = false;
-        try {
-          hubCarouselEl.releasePointerCapture(e.pointerId);
-        } catch (_) {}
+        if (hasCapturedPointer) {
+          try {
+            hubCarouselEl.releasePointerCapture(e.pointerId);
+          } catch (_) {}
+          hasCapturedPointer = false;
+        }
 
-        lastDragDistance = Math.abs(dragDeltaX);
+        const distance = Math.abs(dragDeltaX);
+        lastDragDistance = distance;
+
         if (dragDeltaX < -30) {
           hubNavigate(1);
         } else if (dragDeltaX > 30) {
           hubNavigate(-1);
+        } else if (distance <= 8) {
+          const card = (e.target && e.target.closest) ? e.target.closest('.hub-card') : null;
+          const targetCard = card || document.elementFromPoint(e.clientX, e.clientY)?.closest('.hub-card');
+          if (targetCard) {
+            const cardIdx = parseInt(targetCard.dataset.index, 10);
+            if (cardIdx >= 0 && cardIdx <= 2) {
+              hubSetCard(cardIdx, false);
+              hubActivateCenterCard();
+            }
+          }
         }
         setTimeout(() => {
           lastDragDistance = 0;
-        }, 50);
+        }, 80);
       };
 
       hubCarouselEl.addEventListener('pointerup', finishPointerDrag);
       hubCarouselEl.addEventListener('pointercancel', finishPointerDrag);
+
+      hubCarouselEl.addEventListener('click', (e) => {
+        if (lastDragDistance > 8) return;
+        const card = e.target.closest('.hub-card');
+        if (card) {
+          e.stopPropagation();
+          const cardIdx = parseInt(card.dataset.index, 10);
+          if (cardIdx >= 0 && cardIdx <= 2) {
+            hubSetCard(cardIdx, false);
+            hubActivateCenterCard();
+          }
+        }
+      });
     }
 
     // ============================================================
@@ -9500,44 +10719,374 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       agentsDarkPanelEl.addEventListener('mousedown', (e) => e.stopPropagation());
     }
 
+    // Syntax token cache & tokenizer (capped at 400 chars per row, cached per row)
+    const syntaxCache = new Map();
+    const AGENT_KEYWORDS = new Set([
+      'const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while',
+      'switch', 'case', 'break', 'continue', 'import', 'export', 'from', 'default',
+      'class', 'interface', 'type', 'async', 'await', 'try', 'catch', 'finally',
+      'throw', 'new', 'this', 'typeof', 'instanceof', 'void', 'pub', 'fn', 'struct',
+      'enum', 'impl', 'mut', 'match', 'use', 'mod', 'def', 'and', 'or', 'not',
+      'is', 'in', 'elif', 'true', 'false', 'null', 'undefined', 'self', 'Self'
+    ]);
+
+    function highlightAgentSyntax(raw) {
+      const tokenRegex = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/|#[^\n]*)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`)|([a-zA-Z_$][a-zA-Z0-9_$]*)(?=\s*\()|([a-zA-Z_$][a-zA-Z0-9_$]*)|([^\s\w]+|\s+)/g;
+      let out = '';
+      let match;
+      while ((match = tokenRegex.exec(raw)) !== null) {
+        const [full, comment, str, func, word, other] = match;
+        if (comment) {
+          out += `<span class="agent-tok-comment" style="color: #6B7280;">${escapeHtml(comment)}</span>`;
+        } else if (str) {
+          out += `<span class="agent-tok-str" style="color: #A3E635;">${escapeHtml(str)}</span>`;
+        } else if (func) {
+          if (AGENT_KEYWORDS.has(func)) {
+            out += `<span class="agent-tok-kw" style="color: #E879F9;">${escapeHtml(func)}</span>`;
+          } else {
+            out += `<span class="agent-tok-id" style="color: #67E8F9;">${escapeHtml(func)}</span>`;
+          }
+        } else if (word) {
+          if (AGENT_KEYWORDS.has(word)) {
+            out += `<span class="agent-tok-kw" style="color: #E879F9;">${escapeHtml(word)}</span>`;
+          } else {
+            out += `<span style="color: #FFFFFF;">${escapeHtml(word)}</span>`;
+          }
+        } else if (other) {
+          out += `<span style="color: #FFFFFF;">${escapeHtml(other)}</span>`;
+        } else {
+          out += escapeHtml(full);
+        }
+      }
+      return out || '&nbsp;';
+    }
+
+    function tokenizeCodeLine(raw) {
+      if (!raw) return '&nbsp;';
+      const truncated = raw.length > 400 ? raw.slice(0, 400) : raw;
+      const cached = syntaxCache.get(truncated);
+      if (cached !== undefined) return cached;
+      const highlighted = highlightAgentSyntax(truncated);
+      if (syntaxCache.size > 2000) syntaxCache.clear();
+      syntaxCache.set(truncated, highlighted);
+      return highlighted;
+    }
+
+    function redactSecretsInText(str) {
+      if (!str || typeof str !== 'string') return '';
+      return str
+        .replace(/\bAIza[0-9A-Za-z-_]{20,}/g, '••••')
+        .replace(/\bAQ[A-Za-z0-9_-]{10,}/g, '••••')
+        .replace(/\bsk-[A-Za-z0-9_-]{10,}/g, '••••')
+        .replace(/\bghp_[A-Za-z0-9]{15,}/g, '••••')
+        .replace(/\bBearer\s+[A-Za-z0-9_.\-~+/=]{20,}/gi, 'Bearer ••••');
+    }
+
+    function isSensitiveFileName(filePath) {
+      if (!filePath) return false;
+      const base = String(filePath).replace(/^.*[\\/]/, '').toLowerCase();
+      if (base === '.env' || base.startsWith('.env.')) return true;
+      if (base.endsWith('.pem') || base.endsWith('.key') || base.endsWith('.pfx') || base.endsWith('.p12')) return true;
+      if (base.startsWith('id_rsa') || base.startsWith('credentials') || base.startsWith('secrets')) return true;
+      return false;
+    }
+
+    function updateEdgeFades() {
+      const cb = document.getElementById('agent-code-box');
+      const fadeBottom = document.getElementById('agent-code-fade-bottom');
+      const fadeRight = document.getElementById('agent-code-fade-right');
+      if (!cb) return;
+      if (fadeBottom) {
+        const hasMoreDown = cb.scrollTop < (cb.scrollHeight - cb.clientHeight - 2);
+        fadeBottom.classList.toggle('visible', hasMoreDown);
+      }
+      if (fadeRight) {
+        const hasMoreRight = cb.scrollLeft < (cb.scrollWidth - cb.clientWidth - 2);
+        fadeRight.classList.toggle('visible', hasMoreRight);
+      }
+    }
+
+    let userScrolledDetached = false;
+    let autoFollowResumeTimer = null;
+
+    function setLatestButtonVisibility(show) {
+      const btn = document.getElementById('agent-latest-btn');
+      if (!btn) return;
+      if (show) {
+        btn.classList.add('visible');
+        btn.removeAttribute('inert');
+        btn.setAttribute('aria-hidden', 'false');
+        btn.tabIndex = 0;
+      } else {
+        btn.classList.remove('visible');
+        btn.setAttribute('inert', '');
+        btn.setAttribute('aria-hidden', 'true');
+        btn.tabIndex = -1;
+      }
+    }
+
+    function handleUserScrollInteraction() {
+      userScrolledDetached = true;
+      setLatestButtonVisibility(true);
+      if (autoFollowResumeTimer) clearTimeout(autoFollowResumeTimer);
+      autoFollowResumeTimer = setTimeout(() => {
+        userScrolledDetached = false;
+        const cb = document.getElementById('agent-code-box');
+        if (cb && cb.scrollTop >= (cb.scrollHeight - cb.clientHeight - 34)) {
+          setLatestButtonVisibility(false);
+        }
+      }, 5000);
+    }
+
+    let lastRenderedSignature = '';
+
     // Reusable code component interface for dynamic updates
     window.AgentCodeViewer = {
       render(data = {}) {
         const root = document.getElementById('agent-code-component');
         if (!root) return;
-        if (data.fileName) {
-          const nameEl = root.querySelector('.agent-file-name');
-          if (nameEl) nameEl.textContent = data.fileName;
+
+        const cb = document.getElementById('agent-code-box');
+        const table = document.getElementById('agent-diff-table');
+        const tabEl = document.getElementById('agent-file-tab');
+        const nameEl = document.getElementById('agent-file-name');
+        const statsEl = document.getElementById('agent-file-stats');
+
+        // 1. File tab name, tooltip, aria-label (NEVER native title)
+        const fileName = data.fileName || 'file';
+        if (nameEl) {
+          nameEl.textContent = fileName;
+          nameEl.removeAttribute('title');
         }
-        const tabEl = root.querySelector('.agent-file-tab');
+        if (tabEl) {
+          tabEl.setAttribute('aria-label', fileName);
+          tabEl.setAttribute('data-tooltip', fileName);
+          tabEl.removeAttribute('title');
+        }
+
+        // 2. File tab icon
         if (tabEl && data.iconKind) {
           let iconSvg = '';
           if (data.iconKind === 'terminal') {
-            iconSvg = '<svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#67E8F9" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M 2 2.5 L 5 5 L 2 7.5" /><line x1="6" y1="7.5" x2="8.5" y2="7.5" /></svg>';
+            iconSvg = '<svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#67E8F9" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M 2 2.5 L 5 5 L 2 7.5" /><line x1="6" y1="7.5" x2="8.5" y2="7.5" /></svg>';
           } else if (data.iconKind === 'search') {
-            iconSvg = '<svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#E879F9" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4" r="2.8" /><line x1="6.2" y1="6.2" x2="8.8" y2="8.8" /></svg>';
+            iconSvg = '<svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#E879F9" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="2.8" /><line x1="6.2" y1="6.2" x2="8.8" y2="8.8" /></svg>';
           } else {
-            iconSvg = '<svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#FF8A1F" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M 3 2.5 L 1 5 L 3 7.5" /><path d="M 7 2.5 L 9 5 L 7 7.5" /><line x1="6" y1="2" x2="4" y2="8" /></svg>';
+            iconSvg = '<svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#FF8A1F" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M 3 2.5 L 1 5 L 3 7.5" /><path d="M 7 2.5 L 9 5 L 7 7.5" /><line x1="6" y1="2" x2="4" y2="8" /></svg>';
           }
           const existingSvg = tabEl.querySelector('svg');
-          if (existingSvg) {
-            existingSvg.outerHTML = iconSvg;
+          if (existingSvg) existingSvg.outerHTML = iconSvg;
+        }
+
+        // 3. File tab stats (+N in green, -M in red, or 'new' in green)
+        if (statsEl) {
+          if (data.stats) {
+            if (data.stats.isNew) {
+              statsEl.innerHTML = '<span class="stat-new">new</span>';
+            } else {
+              let sHtml = '';
+              if (data.stats.add > 0) sHtml += `<span class="stat-add">+${data.stats.add}</span>`;
+              if (data.stats.del > 0) sHtml += `<span class="stat-del">-${data.stats.del}</span>`;
+              statsEl.innerHTML = sHtml;
+            }
+          } else {
+            statsEl.innerHTML = '';
           }
         }
-        if (Array.isArray(data.lines)) {
-          const numsEl = root.querySelector('.agent-code-linenums');
-          const textEl = root.querySelector('.agent-code-text');
-          const dividerEl = root.querySelector('.agent-code-divider');
-          if (numsEl) numsEl.innerHTML = data.lines.map((l) => `<div>${l.num}</div>`).join('');
-          if (textEl) textEl.innerHTML = data.lines.map((l) => `<div>${l.html !== undefined ? l.html : (l.code || '')}</div>`).join('');
-          if (dividerEl) {
-            const h = Math.max(13, data.lines.length * 13);
-            dividerEl.style.height = `${h}px`;
+
+        // 4. Build Rows Model
+        let rows = [];
+        if (Array.isArray(data.rows)) {
+          rows = data.rows;
+        } else if (Array.isArray(data.lines)) {
+          rows = data.lines.map(l => ({
+            type: 'context',
+            num: l.num,
+            marker: '',
+            code: l.code || '',
+            html: l.html
+          }));
+        }
+
+        // Cap at 600 rows
+        let renderedRows = rows;
+        if (renderedRows.length > 600) {
+          const moreCount = renderedRows.length - 600;
+          renderedRows = renderedRows.slice(0, 600);
+          renderedRows.push({
+            type: 'truncated',
+            num: '',
+            marker: '',
+            code: `... ${moreCount} more lines`
+          });
+        }
+
+        // Find last added row for blinking caret
+        let lastAddedIdx = -1;
+        for (let i = renderedRows.length - 1; i >= 0; i--) {
+          if (renderedRows[i].type === 'added') {
+            lastAddedIdx = i;
+            break;
           }
         }
+
+        const isWorking = data.status === 'working';
+        const showCaret = isWorking && lastAddedIdx !== -1;
+
+        // Signature comparison to avoid unnecessary DOM rebuilds
+        const sig = JSON.stringify({
+          f: fileName,
+          st: data.status,
+          stats: data.stats,
+          cnt: renderedRows.length,
+          lastAdd: showCaret ? lastAddedIdx : -1,
+          firstRow: renderedRows[0]?.code || renderedRows[0]?.html || '',
+          lastRow: renderedRows[renderedRows.length - 1]?.code || renderedRows[renderedRows.length - 1]?.html || ''
+        });
+
+        if (sig === lastRenderedSignature) {
+          return;
+        }
+        lastRenderedSignature = sig;
+
+        // Render HTML for rows
+        let rowsHtml = '';
+        for (let i = 0; i < renderedRows.length; i++) {
+          const r = renderedRows[i];
+          const rType = r.type || 'context';
+          const numStr = r.num !== undefined && r.num !== null ? String(r.num) : '';
+          const markerStr = r.marker || '';
+
+          if (rType === 'separator') {
+            rowsHtml += `<div class="agent-diff-row diff-separator"><div class="agent-diff-gutter"><span class="agent-diff-linenum"></span><span class="agent-diff-marker"></span></div><div class="agent-diff-text">...</div></div>`;
+            continue;
+          }
+          if (rType === 'truncated') {
+            rowsHtml += `<div class="agent-diff-row diff-truncated"><div class="agent-diff-gutter"><span class="agent-diff-linenum"></span><span class="agent-diff-marker"></span></div><div class="agent-diff-text">${escapeHtml(r.code)}</div></div>`;
+            continue;
+          }
+
+          let textHtml = '';
+          if (r.html !== undefined) {
+            textHtml = r.html;
+          } else if (rType === 'removed') {
+            textHtml = escapeHtml(r.code || '');
+          } else {
+            textHtml = tokenizeCodeLine(r.code || '');
+          }
+
+          const hasCaret = showCaret && i === lastAddedIdx;
+          const caretHtml = hasCaret ? '<span class="agent-diff-caret" aria-hidden="true"></span>' : '';
+
+          rowsHtml += `<div class="agent-diff-row diff-${rType}" data-idx="${i}">` +
+            `<div class="agent-diff-gutter"><span class="agent-diff-linenum">${escapeHtml(numStr)}</span><span class="agent-diff-marker">${escapeHtml(markerStr)}</span></div>` +
+            `<div class="agent-diff-text">${textHtml}${caretHtml}</div>` +
+            `</div>`;
+        }
+
+        if (table) {
+          table.innerHTML = rowsHtml;
+        }
+
+        // Auto-follow: smooth scroll down keeping latest change visible (~2 rows breathing room)
+        if (cb && !userScrolledDetached) {
+          const maxScroll = Math.max(0, cb.scrollHeight - cb.clientHeight);
+          const targetScroll = Math.max(0, maxScroll - 34);
+          cb.scrollTo({
+            top: targetScroll,
+            left: 0,
+            behavior: 'smooth'
+          });
+        }
+
+        requestAnimationFrame(() => {
+          updateEdgeFades();
+        });
+      },
+
+      onPanelClosed() {
+        lastRenderedSignature = '';
+        userScrolledDetached = false;
+        setLatestButtonVisibility(false);
+        if (autoFollowResumeTimer) {
+          clearTimeout(autoFollowResumeTimer);
+          autoFollowResumeTimer = null;
+        }
+        const caret = document.querySelector('.agent-diff-caret');
+        if (caret) caret.remove();
       }
     };
 
+    // Attach listeners to code box and latest button
+    const agentCodeBoxEl = document.getElementById('agent-code-box');
+    if (agentCodeBoxEl) {
+      agentCodeBoxEl.addEventListener('scroll', () => {
+        updateEdgeFades();
+        if (agentCodeBoxEl.scrollTop >= (agentCodeBoxEl.scrollHeight - agentCodeBoxEl.clientHeight - 10)) {
+          userScrolledDetached = false;
+          setLatestButtonVisibility(false);
+        }
+      }, { passive: true });
+
+      agentCodeBoxEl.addEventListener('wheel', () => {
+        handleUserScrollInteraction();
+      }, { passive: true });
+
+      agentCodeBoxEl.addEventListener('touchmove', () => {
+        handleUserScrollInteraction();
+      }, { passive: true });
+
+      agentCodeBoxEl.addEventListener('keydown', (e) => {
+        let handled = false;
+        if (e.key === 'ArrowDown') {
+          agentCodeBoxEl.scrollTop += 17;
+          handled = true;
+        } else if (e.key === 'ArrowUp') {
+          agentCodeBoxEl.scrollTop -= 17;
+          handled = true;
+        } else if (e.key === 'PageDown') {
+          agentCodeBoxEl.scrollTop += agentCodeBoxEl.clientHeight;
+          handled = true;
+        } else if (e.key === 'PageUp') {
+          agentCodeBoxEl.scrollTop -= agentCodeBoxEl.clientHeight;
+          handled = true;
+        } else if (e.key === 'Home') {
+          agentCodeBoxEl.scrollTop = 0;
+          handled = true;
+        } else if (e.key === 'End') {
+          agentCodeBoxEl.scrollTop = agentCodeBoxEl.scrollHeight;
+          handled = true;
+        } else if (e.key === 'ArrowLeft') {
+          agentCodeBoxEl.scrollLeft -= 20;
+          handled = true;
+        } else if (e.key === 'ArrowRight') {
+          agentCodeBoxEl.scrollLeft += 20;
+          handled = true;
+        }
+        if (handled) {
+          e.preventDefault();
+          handleUserScrollInteraction();
+          updateEdgeFades();
+        }
+      });
+    }
+
+    const agentLatestBtnEl = document.getElementById('agent-latest-btn');
+    if (agentLatestBtnEl) {
+      agentLatestBtnEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userScrolledDetached = false;
+        setLatestButtonVisibility(false);
+        if (agentCodeBoxEl) {
+          const maxScroll = Math.max(0, agentCodeBoxEl.scrollHeight - agentCodeBoxEl.clientHeight);
+          agentCodeBoxEl.scrollTo({
+            top: Math.max(0, maxScroll - 34),
+            left: 0,
+            behavior: 'smooth'
+          });
+        }
+      });
+    }
 
     // =========================================================================
     // LIVE ANTIGRAVITY AGENT EVENTS INTEGRATION
@@ -9601,73 +11150,6 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       return null;
     }
 
-    function redactSecretsInText(str) {
-      if (!str || typeof str !== 'string') return '';
-      return str
-        .replace(/\bAIza[0-9A-Za-z-_]{20,}/g, '••••')
-        .replace(/\bAQ[A-Za-z0-9_-]{10,}/g, '••••')
-        .replace(/\bsk-[A-Za-z0-9_-]{10,}/g, '••••')
-        .replace(/\bghp_[A-Za-z0-9]{15,}/g, '••••')
-        .replace(/\bBearer\s+[A-Za-z0-9_.\-~+/=]{20,}/gi, 'Bearer ••••');
-    }
-
-    function isSensitiveFileName(filePath) {
-      if (!filePath) return false;
-      const base = String(filePath).replace(/^.*[\\/]/, '').toLowerCase();
-      if (base === '.env' || base.startsWith('.env.')) return true;
-      if (base.endsWith('.pem') || base.endsWith('.key') || base.endsWith('.pfx') || base.endsWith('.p12')) return true;
-      if (base.startsWith('id_rsa') || base.startsWith('credentials') || base.startsWith('secrets')) return true;
-      return false;
-    }
-
-    const AGENT_KEYWORDS = new Set([
-      'const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while',
-      'switch', 'case', 'break', 'continue', 'import', 'export', 'from', 'default',
-      'class', 'interface', 'type', 'async', 'await', 'try', 'catch', 'finally',
-      'throw', 'new', 'this', 'typeof', 'instanceof', 'void', 'pub', 'fn', 'struct',
-      'enum', 'impl', 'mut', 'match', 'use', 'mod', 'def', 'and', 'or', 'not',
-      'is', 'in', 'elif', 'true', 'false', 'null', 'undefined', 'self', 'Self'
-    ]);
-
-    function highlightAgentSyntax(raw) {
-      const tokenRegex = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/|#[^\n]*)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`)|([a-zA-Z_$][a-zA-Z0-9_$]*)(?=\s*\()|([a-zA-Z_$][a-zA-Z0-9_$]*)|([^\s\w]+|\s+)/g;
-      let out = '';
-      let match;
-      while ((match = tokenRegex.exec(raw)) !== null) {
-        const [full, comment, str, func, word, other] = match;
-        if (comment) {
-          out += `<span class="agent-tok-comment" style="color: #6B7280;">${escapeHtml(comment)}</span>`;
-        } else if (str) {
-          out += `<span class="agent-tok-str" style="color: #A3E635;">${escapeHtml(str)}</span>`;
-        } else if (func) {
-          if (AGENT_KEYWORDS.has(func)) {
-            out += `<span class="agent-tok-kw" style="color: #E879F9;">${escapeHtml(func)}</span>`;
-          } else {
-            out += `<span class="agent-tok-id" style="color: #67E8F9;">${escapeHtml(func)}</span>`;
-          }
-        } else if (word) {
-          if (AGENT_KEYWORDS.has(word)) {
-            out += `<span class="agent-tok-kw" style="color: #E879F9;">${escapeHtml(word)}</span>`;
-          } else {
-            out += `<span style="color: #FFFFFF;">${escapeHtml(word)}</span>`;
-          }
-        } else if (other) {
-          out += `<span style="color: #FFFFFF;">${escapeHtml(other)}</span>`;
-        } else {
-          out += escapeHtml(full);
-        }
-      }
-      return out || '&nbsp;';
-    }
-
-    function formatLineForCodeViewer(rawLine) {
-      let line = redactSecretsInText(rawLine || '');
-      if (line.length > 120) {
-        line = line.slice(0, 120) + '…';
-      }
-      return highlightAgentSyntax(line);
-    }
-
     function parseToolArguments(toolCall) {
       if (!toolCall) return {};
       let args = toolCall.args;
@@ -9688,24 +11170,175 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
     async function updateCodePanelForPreTool(conv, toolName, toolCall, payload) {
       const args = parseToolArguments(toolCall);
       const t = (toolName || '').toLowerCase().trim();
+      const wsPaths = Array.isArray(payload.workspacePaths) ? payload.workspacePaths : (payload.workspacePath ? [payload.workspacePath] : []);
 
-      if (t === 'view_file') {
-        const filePath = args.AbsolutePath || args.absolute_path || args.path || args.file_path || args.TargetFile || '';
+      if (t === 'replace_file_content' || t === 'multi_replace_file_content') {
+        const filePath = args.TargetFile || args.target_file || args.path || args.file_path || args.FilePath || 'file';
         const baseName = filePath.replace(/^.*[\\/]/, '') || 'file';
-        const startLine = Number(args.StartLine || args.start_line || 1) || 1;
-        const endLine = args.EndLine || args.end_line ? Number(args.EndLine || args.end_line) : (startLine + 11);
 
         if (isSensitiveFileName(filePath)) {
           conv.codeContent = {
             fileName: baseName,
             iconKind: 'file',
-            lines: [{ num: 1, html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]
+            stats: null,
+            rows: [{ type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]
+          };
+          return;
+        }
+
+        let chunks = [];
+        if (t === 'multi_replace_file_content') {
+          chunks = args.ReplacementChunks || args.replacement_chunks || args.chunks || [];
+        }
+        if (!Array.isArray(chunks) || chunks.length === 0) {
+          chunks = [{
+            StartLine: args.StartLine || args.start_line || 1,
+            EndLine: args.EndLine || args.end_line || args.StartLine || args.start_line || 1,
+            TargetContent: args.TargetContent ?? args.target_content ?? args.old_string ?? args.old_content ?? '',
+            ReplacementContent: args.ReplacementContent ?? args.replacement_content ?? args.new_string ?? args.new_content ?? ''
+          }];
+        }
+
+        const allDiffRows = [];
+        let totalAdd = 0;
+        let totalDel = 0;
+
+        for (let ci = 0; ci < chunks.length; ci++) {
+          if (ci > 0) {
+            allDiffRows.push({ type: 'separator', num: '', marker: '', code: '...' });
+          }
+          const chunk = chunks[ci] || {};
+          const startLine = Number(chunk.StartLine || chunk.start_line || 1) || 1;
+          const endLine = Number(chunk.EndLine || chunk.end_line || startLine) || startLine;
+          const targetRaw = chunk.TargetContent ?? chunk.target_content ?? chunk.old_string ?? '';
+          const replacementRaw = chunk.ReplacementContent ?? chunk.replacement_content ?? chunk.new_string ?? '';
+
+          const removedLines = targetRaw ? String(targetRaw).split(/\r?\n/) : [];
+          const addedLines = replacementRaw ? String(replacementRaw).split(/\r?\n/) : [];
+
+          totalDel += removedLines.length;
+          totalAdd += addedLines.length;
+
+          // Read context lines before (up to 3) and after (up to 3) from disk
+          let ctxBefore = [];
+          let ctxAfter = [];
+          try {
+            const readStart = Math.max(1, startLine - 3);
+            const readEnd = endLine + 3;
+            let diskResult = null;
+            if (window.__TAURI__?.core?.invoke) {
+              diskResult = await window.__TAURI__.core.invoke('read_agent_file', {
+                filePath,
+                startLine: readStart,
+                endLine: readEnd,
+                workspacePaths: wsPaths
+              });
+            }
+            if (diskResult && Array.isArray(diskResult.lines)) {
+              const actualStart = diskResult.start_line || readStart;
+              for (let li = 0; li < diskResult.lines.length; li++) {
+                const lineNum = actualStart + li;
+                const lineText = redactSecretsInText(diskResult.lines[li]);
+                if (lineNum < startLine && lineNum >= (startLine - 3)) {
+                  ctxBefore.push({ type: 'context', num: lineNum, marker: '', code: lineText });
+                } else if (lineNum > endLine && lineNum <= (endLine + 3)) {
+                  ctxAfter.push({ lineNum, lineText });
+                }
+              }
+            }
+          } catch (err) {
+            // Disk read failed or outside workspace; proceed with what we have
+          }
+
+          // Add context before
+          for (const r of ctxBefore) {
+            allDiffRows.push(r);
+          }
+
+          // Add removed rows
+          for (let ri = 0; ri < removedLines.length; ri++) {
+            allDiffRows.push({
+              type: 'removed',
+              num: startLine + ri,
+              marker: '-',
+              code: redactSecretsInText(removedLines[ri])
+            });
+          }
+
+          // Add added rows
+          for (let ai = 0; ai < addedLines.length; ai++) {
+            allDiffRows.push({
+              type: 'added',
+              num: startLine + ai,
+              marker: '+',
+              code: redactSecretsInText(addedLines[ai])
+            });
+          }
+
+          // Add context after (line numbers shifted by added - removed)
+          const shift = addedLines.length - removedLines.length;
+          for (const ca of ctxAfter) {
+            allDiffRows.push({
+              type: 'context',
+              num: ca.lineNum + shift,
+              marker: '',
+              code: ca.lineText
+            });
+          }
+        }
+
+        conv.codeContent = {
+          fileName: baseName,
+          iconKind: 'file',
+          stats: { add: totalAdd, del: totalDel },
+          rows: allDiffRows
+        };
+      } else if (t === 'write_to_file') {
+        const filePath = args.TargetFile || args.target_file || args.path || args.file_path || args.FilePath || 'file';
+        const baseName = filePath.replace(/^.*[\\/]/, '') || 'file';
+        const rawCode = args.CodeContent ?? args.code_content ?? args.code ?? args.content ?? '';
+
+        if (isSensitiveFileName(filePath)) {
+          conv.codeContent = {
+            fileName: baseName,
+            iconKind: 'file',
+            stats: { isNew: true },
+            rows: [{ type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]
+          };
+          return;
+        }
+
+        const lines = String(rawCode).split(/\r?\n/);
+        const rows = lines.map((l, i) => ({
+          type: 'added',
+          num: i + 1,
+          marker: '+',
+          code: redactSecretsInText(l)
+        }));
+
+        conv.codeContent = {
+          fileName: baseName,
+          iconKind: 'file',
+          stats: { isNew: true, add: rows.length, del: 0 },
+          rows: rows.length > 0 ? rows : [{ type: 'added', num: 1, marker: '+', code: '' }]
+        };
+      } else if (t === 'view_file') {
+        const filePath = args.AbsolutePath || args.absolute_path || args.path || args.file_path || args.TargetFile || '';
+        const baseName = filePath.replace(/^.*[\\/]/, '') || 'file';
+        const startLine = Number(args.StartLine || args.start_line || 1) || 1;
+        const endLine = args.EndLine || args.end_line ? Number(args.EndLine || args.end_line) : (startLine + 599);
+
+        if (isSensitiveFileName(filePath)) {
+          conv.codeContent = {
+            fileName: baseName,
+            iconKind: 'file',
+            stats: null,
+            rows: [{ type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]
           };
           return;
         }
 
         try {
-          const wsPaths = Array.isArray(payload.workspacePaths) ? payload.workspacePaths : (payload.workspacePath ? [payload.workspacePath] : []);
           let result = null;
           if (window.__TAURI__?.core?.invoke) {
             result = await window.__TAURI__.core.invoke('read_agent_file', {
@@ -9721,77 +11354,41 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               conv.codeContent = {
                 fileName: baseName,
                 iconKind: 'file',
-                lines: [{ num: 1, html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]
+                stats: null,
+                rows: [{ type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]
               };
             } else {
-              const lines = result.lines.slice(0, 12).map((l, i) => ({
+              const rows = result.lines.map((l, i) => ({
+                type: 'context',
                 num: (result.start_line || startLine) + i,
-                html: formatLineForCodeViewer(l)
+                marker: '',
+                code: redactSecretsInText(l)
               }));
-              conv.codeContent = { fileName: baseName, iconKind: 'file', lines };
+              conv.codeContent = { fileName: baseName, iconKind: 'file', stats: null, rows };
             }
           } else {
             conv.codeContent = {
               fileName: baseName,
               iconKind: 'file',
-              lines: [{ num: startLine, html: formatLineForCodeViewer(`// Opened ${baseName}`) }]
+              stats: null,
+              rows: [{ type: 'context', num: startLine, marker: '', code: `// Opened ${baseName}` }]
             };
           }
         } catch (err) {
           conv.codeContent = {
             fileName: baseName,
             iconKind: 'file',
-            lines: [{ num: startLine, html: formatLineForCodeViewer(`// ${baseName}`) }]
+            stats: null,
+            rows: [{ type: 'context', num: startLine, marker: '', code: `// ${baseName}` }]
           };
         }
-      } else if (t === 'write_to_file') {
-        const filePath = args.TargetFile || args.target_file || args.path || args.file_path || 'file';
-        const baseName = filePath.replace(/^.*[\\/]/, '') || 'file';
-        const rawCode = args.CodeContent || args.code_content || args.code || args.content || '';
-        const allLines = String(rawCode).split(/\r?\n/).slice(0, 12);
-        const lines = allLines.map((l, i) => ({
-          num: i + 1,
-          html: formatLineForCodeViewer(l)
-        }));
-        conv.codeContent = {
-          fileName: baseName,
-          iconKind: 'file',
-          lines: lines.length > 0 ? lines : [{ num: 1, html: '&nbsp;' }]
-        };
-      } else if (t === 'replace_file_content' || t === 'multi_replace_file_content') {
-        const filePath = args.TargetFile || args.target_file || args.path || args.file_path || 'file';
-        const baseName = filePath.replace(/^.*[\\/]/, '') || 'file';
-
-        let replacementContent = '';
-        let startLine = Number(args.StartLine || args.start_line || 1) || 1;
-
-        const chunks = args.ReplacementChunks || args.replacement_chunks || args.chunks || [];
-        if (Array.isArray(chunks) && chunks.length > 0) {
-          const firstChunk = chunks[0] || {};
-          replacementContent = firstChunk.ReplacementContent || firstChunk.replacement_content || firstChunk.content || '';
-          if (firstChunk.StartLine || firstChunk.start_line) {
-            startLine = Number(firstChunk.StartLine || firstChunk.start_line);
-          }
-        } else if (args.ReplacementContent || args.replacement_content) {
-          replacementContent = args.ReplacementContent || args.replacement_content;
-        }
-
-        const allLines = String(replacementContent).split(/\r?\n/).slice(0, 12);
-        const lines = allLines.map((l, i) => ({
-          num: startLine + i,
-          html: formatLineForCodeViewer(l)
-        }));
-        conv.codeContent = {
-          fileName: baseName,
-          iconKind: 'file',
-          lines: lines.length > 0 ? lines : [{ num: startLine, html: '&nbsp;' }]
-        };
       } else if (t === 'run_command') {
         const cmd = args.CommandLine || args.command_line || args.command || args.cmd || '';
         conv.lastCommand = cmd;
         conv.codeContent = {
           fileName: 'terminal',
           iconKind: 'terminal',
+          stats: null,
           isTerminal: true,
           lines: [
             { num: '>', html: `<span style="color: #67E8F9;">$</span> <span style="color: #FFFFFF;">${escapeHtml(redactSecretsInText(cmd))}</span>` }
@@ -9802,12 +11399,12 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         conv.codeContent = {
           fileName: 'search',
           iconKind: 'search',
+          stats: null,
           lines: [
             { num: 1, html: `<span style="color: #E879F9;">query:</span> <span style="color: #FFFFFF;">${escapeHtml(redactSecretsInText(String(query)))}</span>` }
           ]
         };
       }
-      // Other tools: keep previous conv.codeContent
     }
 
     function updateCodePanelForPostCommand(conv, errorMsg) {
@@ -9826,6 +11423,839 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       conv.codeContent.lines = lines;
     }
 
+
+    // ============================================================
+    // DROPVAULT CORE LOGIC & EVENT HANDLERS
+    // ============================================================
+    let currentDropVaultCards = [];
+    let isDropVaultRefreshing = false;
+
+    function formatCardFileName(fileName) {
+      if (!fileName || fileName.length <= 32) return fileName;
+      const lastDot = fileName.lastIndexOf('.');
+      let ext = '';
+      let base = fileName;
+      if (lastDot > 0 && lastDot > fileName.length - 8) {
+        ext = fileName.slice(lastDot);
+        base = fileName.slice(0, lastDot);
+      }
+      const maxBase = Math.max(8, 26 - ext.length);
+      const frontChars = Math.ceil(maxBase * 0.55);
+      const backChars = Math.floor(maxBase * 0.45);
+      return base.slice(0, frontChars) + '...' + base.slice(base.length - backChars) + ext;
+    }
+
+    async function refreshDropVaultUI(customCards = null, customStatus = null) {
+      if (isDropVaultRefreshing) return;
+      isDropVaultRefreshing = true;
+      try {
+        let status = customStatus;
+        if (!status && window.__TAURI__?.core?.invoke) {
+          try {
+            status = await window.__TAURI__.core.invoke('vault_status');
+          } catch (_) {}
+        }
+        if (!status) {
+          status = { state: 'not_created', display: 'Documents\\DropVault' };
+        }
+
+        const headerRow = document.getElementById('dropvault-header-row');
+        const gridEl = document.getElementById('dropvault-grid');
+        const setupScreen = document.getElementById('dropvault-state-setup');
+        const emptyScreen = document.getElementById('dropvault-state-empty');
+        const setupTitle = document.getElementById('dropvault-setup-title');
+        const setupMissingNote = document.getElementById('dropvault-setup-missing-note');
+        const setupDesc = document.getElementById('dropvault-setup-desc');
+        const setupError = document.getElementById('dropvault-setup-error');
+
+        if (setupError) setupError.style.display = 'none';
+
+        if (headerRow) {
+          headerRow.style.display = 'block';
+          headerRow.removeAttribute('inert');
+          headerRow.removeAttribute('aria-hidden');
+        }
+
+        if (status.state === 'not_created' || status.state === 'missing') {
+          if (gridEl) {
+            gridEl.style.display = 'none';
+            gridEl.setAttribute('inert', '');
+            gridEl.setAttribute('aria-hidden', 'true');
+            gridEl.innerHTML = '';
+          }
+          if (emptyScreen) {
+            emptyScreen.style.display = 'none';
+            emptyScreen.setAttribute('inert', '');
+            emptyScreen.setAttribute('aria-hidden', 'true');
+          }
+          if (setupScreen) {
+            setupScreen.style.display = 'flex';
+            setupScreen.removeAttribute('inert');
+            setupScreen.removeAttribute('aria-hidden');
+          }
+          if (setupTitle) {
+            setupTitle.textContent = 'Create your DropVault folder';
+          }
+          if (setupMissingNote) {
+            setupMissingNote.style.display = status.state === 'missing' ? 'block' : 'none';
+          }
+          if (setupDesc) {
+            setupDesc.textContent = `Files you drop on the island are saved here: ${status.display || 'Documents\\DropVault'}`;
+          }
+          currentDropVaultCards = [];
+          return;
+        }
+
+        // State is 'ready'
+        if (setupScreen) {
+          setupScreen.style.display = 'none';
+          setupScreen.setAttribute('inert', '');
+          setupScreen.setAttribute('aria-hidden', 'true');
+        }
+
+        let cards = customCards;
+        if (!cards && window.__TAURI__?.core?.invoke) {
+          try {
+            cards = await window.__TAURI__.core.invoke('vault_recent');
+          } catch (_) {}
+        }
+        if (!Array.isArray(cards)) cards = [];
+
+        // Up to 6 cards
+        cards = cards.slice(0, 6);
+
+        if (cards.length === 0) {
+          if (headerRow) {
+            headerRow.style.display = 'block';
+            headerRow.removeAttribute('inert');
+            headerRow.removeAttribute('aria-hidden');
+          }
+          if (gridEl) {
+            gridEl.style.display = 'none';
+            gridEl.setAttribute('inert', '');
+            gridEl.setAttribute('aria-hidden', 'true');
+            gridEl.innerHTML = '';
+          }
+          if (emptyScreen) {
+            emptyScreen.style.display = 'flex';
+            emptyScreen.removeAttribute('inert');
+            emptyScreen.removeAttribute('aria-hidden');
+          }
+          currentDropVaultCards = [];
+          return;
+        }
+
+        // 'ready' with cards
+        if (emptyScreen) {
+          emptyScreen.style.display = 'none';
+          emptyScreen.setAttribute('inert', '');
+          emptyScreen.setAttribute('aria-hidden', 'true');
+        }
+        if (headerRow) {
+          headerRow.style.display = 'block';
+          headerRow.removeAttribute('inert');
+          headerRow.removeAttribute('aria-hidden');
+        }
+        if (gridEl) {
+          gridEl.style.display = 'block';
+          gridEl.removeAttribute('inert');
+          gridEl.removeAttribute('aria-hidden');
+        }
+
+        // Diff cards in requestAnimationFrame
+        requestAnimationFrame(() => {
+          if (!gridEl) return;
+          const existingEls = Array.from(gridEl.children);
+
+          while (existingEls.length > cards.length) {
+            const el = existingEls.pop();
+            if (el) el.remove();
+          }
+
+          cards.forEach((card, i) => {
+            const col = i % 3;
+            const row = Math.floor(i / 3);
+            const left = 23 + col * 115.5;
+            const top = 80 + row * 115;
+            const formattedName = formatCardFileName(card.name);
+
+            let cardEl = existingEls[i];
+            if (!cardEl) {
+              cardEl = document.createElement('div');
+              cardEl.className = `dropvault-card dropvault-palette-${card.color_index} entering`;
+              cardEl.setAttribute('role', 'button');
+              cardEl.setAttribute('tabindex', '0');
+              cardEl.setAttribute('data-index', i.toString());
+              cardEl.setAttribute('data-id', card.id);
+              cardEl.setAttribute('aria-label', `Open ${card.name}`);
+
+              cardEl.style.left = `${left}px`;
+              cardEl.style.top = `${top}px`;
+
+              cardEl.innerHTML = `
+                <div class="dropvault-card-spine"></div>
+                <div class="dropvault-card-clip"></div>
+                <div class="dropvault-label-chip">
+                  <span class="dropvault-label-text">${escapeHtml(formattedName)}</span>
+                </div>
+              `;
+
+              cardEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleVaultOpen(card.id);
+              });
+              cardEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleVaultOpen(card.id);
+                }
+              });
+
+              gridEl.appendChild(cardEl);
+              requestAnimationFrame(() => {
+                cardEl.classList.remove('entering');
+              });
+            } else {
+              const prevId = cardEl.getAttribute('data-id');
+              if (prevId !== card.id) {
+                cardEl.setAttribute('data-id', card.id);
+                cardEl.className = `dropvault-card dropvault-palette-${card.color_index}`;
+                cardEl.setAttribute('aria-label', `Open ${card.name}`);
+                cardEl.style.left = `${left}px`;
+                cardEl.style.top = `${top}px`;
+                const textEl = cardEl.querySelector('.dropvault-label-text');
+                if (textEl) textEl.textContent = formattedName;
+              }
+            }
+          });
+          currentDropVaultCards = cards;
+        });
+      } catch (err) {
+        console.error('Failed to refresh DropVault UI:', err);
+      } finally {
+        isDropVaultRefreshing = false;
+      }
+    }
+
+    async function handleVaultOpen(id) {
+      if (!id || !window.__TAURI__?.core?.invoke) return;
+      try {
+        const res = await window.__TAURI__.core.invoke('vault_open', { id });
+        if (res === 'shown') {
+          showDropPillMessage('Shown in folder (not opened for safety)', false);
+        }
+      } catch (err) {
+        console.error('Failed to open vault item:', err);
+      }
+    }
+
+    async function handleOpenVaultFolder() {
+      if (!window.__TAURI__?.core?.invoke) return;
+      try {
+        await window.__TAURI__.core.invoke('open_vault_folder');
+      } catch (err) {
+        console.error('Failed to open DropVault folder:', err);
+      }
+    }
+
+    async function handleCreateVault() {
+      const btn = document.getElementById('dropvault-create-btn');
+      const errEl = document.getElementById('dropvault-setup-error');
+      if (btn) btn.textContent = 'Creating...';
+      if (errEl) errEl.style.display = 'none';
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          const res = await window.__TAURI__.core.invoke('create_vault');
+          if (res && res.state === 'ready') {
+            await refreshDropVaultUI();
+          } else {
+            if (errEl) errEl.style.display = 'block';
+          }
+        }
+      } catch (err) {
+        if (errEl) errEl.style.display = 'block';
+      } finally {
+        if (btn) btn.textContent = 'Create folder';
+      }
+    }
+
+    async function openDropVaultTab() {
+      await refreshDropVaultUI();
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          await window.__TAURI__.core.invoke('start_vault_watcher');
+        }
+      } catch (_) {}
+    }
+
+    async function closeDropVaultTab() {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          await window.__TAURI__.core.invoke('stop_vault_watcher');
+        }
+      } catch (_) {}
+    }
+
+    function handleDropVaultKeydown(e) {
+      const cards = Array.from(document.querySelectorAll('#dropvault-grid .dropvault-card'));
+      if (cards.length === 0) return false;
+      const curIdx = cards.indexOf(document.activeElement);
+      if (curIdx === -1) return false;
+
+      let nextIdx = curIdx;
+      if (e.key === 'ArrowRight') {
+        nextIdx = (curIdx + 1) % cards.length;
+      } else if (e.key === 'ArrowLeft') {
+        nextIdx = (curIdx - 1 + cards.length) % cards.length;
+      } else if (e.key === 'ArrowDown') {
+        nextIdx = Math.min(cards.length - 1, curIdx + 3);
+      } else if (e.key === 'ArrowUp') {
+        nextIdx = Math.max(0, curIdx - 3);
+      } else {
+        return false;
+      }
+
+      e.preventDefault();
+      e.stopPropagation();
+      cards[nextIdx].focus();
+      return true;
+    }
+
+    // DropVault static event listeners
+    const dropvaultFolderBtn = document.getElementById('dropvault-folder-btn');
+    if (dropvaultFolderBtn) {
+      dropvaultFolderBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleOpenVaultFolder();
+      });
+    }
+
+    const dropvaultCreateBtn = document.getElementById('dropvault-create-btn');
+    if (dropvaultCreateBtn) {
+      dropvaultCreateBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleCreateVault();
+      });
+    }
+
+    if (window.__TAURI__?.event?.listen) {
+      window.__TAURI__.event.listen('vault-changed', () => {
+        if (currentTab === 'dropvault' && isPanelOpen()) {
+          refreshDropVaultUI();
+        }
+      });
+    }
+
+
+    // Dev-only Key "F" automated audit & file-drop simulation
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) {
+      window.addEventListener('keydown', async (e) => {
+        if (e.key === 'f' || e.key === 'F') {
+          if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) {
+            return;
+          }
+          await runFileDropDebugAudit();
+        }
+
+        if (e.key === 'v' || e.key === 'V') {
+          if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) {
+            return;
+          }
+          await runDropVaultDebugAudit();
+        }
+
+      });
+
+      async function runFileDropDebugAudit() {
+        const auditResults = [];
+        const pill = document.querySelector('.widget');
+        const folder = document.getElementById('drop-folder-container');
+        const initialPillRect = pill.getBoundingClientRect();
+        const initialStyles = {
+          width: initialPillRect.width,
+          height: initialPillRect.height,
+          backgroundColor: window.getComputedStyle(pill).backgroundColor
+        };
+
+        // 1. Enter simulation (over)
+        enterFileDropState();
+        await new Promise(r => setTimeout(r, 250));
+
+        // a) Pill fully hidden
+        const pillBg = window.getComputedStyle(pill).backgroundColor;
+        const pillBgHidden = pillBg === 'rgba(0, 0, 0, 0)' || pill.classList.contains('file-drop-active');
+        const mascotWrap = document.querySelector('.mascot-wrapper');
+        const mascotHidden = mascotWrap ? (window.getComputedStyle(mascotWrap).opacity === '0' || mascotWrap.hasAttribute('inert')) : true;
+        auditResults.push({
+          name: 'Pill and mascot fully hidden during file-drop',
+          pass: pillBgHidden && mascotHidden,
+          actual: `pillBg=${pillBg}, mascotHidden=${mascotHidden}`
+        });
+
+        // b) Folder artwork styling
+        const folderStyle = window.getComputedStyle(folder);
+        const noBg = folderStyle.backgroundColor === 'rgba(0, 0, 0, 0)' || folderStyle.backgroundColor === 'transparent';
+        const noShadow = folderStyle.boxShadow === 'none';
+        const noBorder = folderStyle.borderWidth === '0px' || folderStyle.borderStyle === 'none';
+        const noFilter = folderStyle.filter === 'none';
+        const stylingPass = noBg && noShadow && noBorder && noFilter;
+        auditResults.push({
+          name: 'Folder artwork has no bg, shadow, border, filter',
+          pass: stylingPass,
+          actual: `bg=${folderStyle.backgroundColor}, shadow=${folderStyle.boxShadow}, border=${folderStyle.borderWidth}, filter=${folderStyle.filter}`
+        });
+
+        // c) Folder size: width 180px, height ~118px
+        const fRect = folder.getBoundingClientRect();
+        const sizePass = Math.abs(fRect.width - 180) <= 1 && Math.abs(fRect.height - 118) <= 2;
+        auditResults.push({
+          name: 'Folder size: width=180px, height=~118px',
+          pass: sizePass,
+          actual: `w=${fRect.width.toFixed(1)}, h=${fRect.height.toFixed(1)}`
+        });
+
+        // d) Folder position in every Position setting
+        let allPosInside = true;
+        for (const posMode of ['Top-left', 'Top-center', 'Top-right']) {
+          if (typeof applyPositionSetting === 'function') {
+            await applyPositionSetting(posMode, 0, 0);
+          }
+          updateDropFolderPosition();
+          const curRect = folder.getBoundingClientRect();
+          const insideWin = curRect.left >= 0 && curRect.right <= 640 && curRect.top >= 0 && curRect.bottom <= 420;
+          if (!insideWin) allPosInside = false;
+        }
+        if (typeof applyPositionSetting === 'function' && typeof lastAppliedPosSettings !== 'undefined') {
+          await applyPositionSetting(lastAppliedPosSettings.position, lastAppliedPosSettings.customX, lastAppliedPosSettings.customY);
+        }
+        updateDropFolderPosition();
+        auditResults.push({
+          name: 'Folder clamped inside window for all Position settings',
+          pass: allPosInside,
+          actual: `allPosInside=${allPosInside}`
+        });
+
+        // Hold 1.5s
+        await new Promise(r => setTimeout(r, 1500));
+
+        // 2. Dropped simulation
+        onFileDropDropped();
+        await new Promise(r => setTimeout(r, 200));
+
+        // Verify that dropped state with drop-folder-dropped.webp is active
+        const isDroppedStateActive = folder.classList.contains('state-dropped');
+        auditResults.push({
+          name: 'drop-folder-dropped.webp is active and visible during drop hold',
+          pass: isDroppedStateActive,
+          actual: `state-dropped=${isDroppedStateActive}`
+        });
+
+        // Send mock result
+        onFileDropResult({
+          state: 'result',
+          count: 1,
+          accepted: 1,
+          rejected: [],
+          attachments: [{
+            id: 'mock_test_1',
+            name: 'sample_audit.ts',
+            mime: 'text/plain',
+            size: 1024,
+            kind: 'text'
+          }]
+        });
+
+        // Wait for exit animation (900ms hold + 200ms exit)
+        await new Promise(r => setTimeout(r, 1200));
+
+        // 3. Restoration of pill rect
+        const afterPillRect = pill.getBoundingClientRect();
+        const rectPass = Math.abs(afterPillRect.width - initialStyles.width) <= 0.5 &&
+                         Math.abs(afterPillRect.height - initialStyles.height) <= 0.5;
+        auditResults.push({
+          name: 'Exact restoration of pill rect (within 0.5px)',
+          pass: rectPass,
+          actual: `before=(${initialStyles.width.toFixed(1)}, ${initialStyles.height.toFixed(1)}), after=(${afterPillRect.width.toFixed(1)}, ${afterPillRect.height.toFixed(1)})`
+        });
+
+        // 4. Hit-test at hidden folder controls
+        const folderAfterStyle = window.getComputedStyle(folder);
+        const folderHidden = folderAfterStyle.display === 'none' || folder.hasAttribute('inert');
+        auditResults.push({
+          name: 'Folder removed from hit-testing after exit',
+          pass: folderHidden,
+          actual: `display=${folderAfterStyle.display}, inert=${folder.hasAttribute('inert')}`
+        });
+
+        console.group('=== FILE DROP AUDIT REPORT (KEY F) ===');
+        let allOk = true;
+        for (const r of auditResults) {
+          if (!r.pass) allOk = false;
+          console.log(`[${r.pass ? 'PASS' : 'FAIL'}] ${r.name}: ${r.actual}`);
+        }
+        console.log(`OVERALL: ${allOk ? 'ALL CHECKS PASSED' : 'AUDIT FAILURES DETECTED'}`);
+        console.groupEnd();
+
+        if (typeof showCcToast === 'function') {
+          showCcToast(allOk ? 'File Drop Audit: ALL PASS' : 'File Drop Audit: FAILED');
+        }
+      }
+    }
+
+    // Dev-only Key "L" automated audit & mock diff
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) {
+      let devKeyLStep = 0;
+      window.addEventListener('keydown', async (e) => {
+        if (e.key === 'l' || e.key === 'L') {
+          if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) {
+            return;
+          }
+          devKeyLStep = (devKeyLStep % 2) + 1;
+
+          if (devKeyLStep === 1) {
+            // Press 1: sample diff reproducing Figma mockup exactly
+            dismissEmptyState();
+            if (typeof switchTab === 'function') switchTab('agents');
+            const mockDiff = {
+              fileName: 'settings.html',
+              iconKind: 'file',
+              status: 'working',
+              stats: { add: 1, del: 1 },
+              rows: [
+                { type: 'context', num: 10, marker: '', code: "import { Item } from './types'" },
+                { type: 'context', num: 11, marker: '', code: "" },
+                { type: 'removed', num: 12, marker: '-', code: "const TVA = 0.196" },
+                { type: 'added',   num: 12, marker: '+', code: "const TVA " },
+                { type: 'context', num: 13, marker: '', code: "" },
+                { type: 'context', num: 14, marker: '', code: "export function total(items: Item[]) {" },
+                { type: 'context', num: 15, marker: '', code: "  const sum = items.reduce((s, i) => s + i.price, 0)" },
+                { type: 'context', num: 16, marker: '', code: "  return sum * (1 + TVA)" },
+                { type: 'context', num: 17, marker: '', code: "}" }
+              ]
+            };
+            window.AgentCodeViewer.render(mockDiff);
+            if (typeof showCcToast === 'function') showCcToast('Loaded Figma Mockup Diff');
+          } else if (devKeyLStep === 2) {
+            // Press 2: 300-row long diff with 300-char lines + automated audit
+            dismissEmptyState();
+            if (typeof switchTab === 'function') switchTab('agents');
+            const longRows = [];
+            for (let i = 1; i <= 300; i++) {
+              const rType = (i % 15 === 0) ? 'removed' : ((i % 15 === 1) ? 'added' : 'context');
+              const rMarker = rType === 'removed' ? '-' : (rType === 'added' ? '+' : '');
+              const pad = `// Row ${i} test line content `.padEnd(280, '-');
+              longRows.push({
+                type: rType,
+                num: i,
+                marker: rMarker,
+                code: `const testItem_${i} = "${pad}";`
+              });
+            }
+            window.AgentCodeViewer.render({
+              fileName: 'large_data_table.ts',
+              iconKind: 'file',
+              status: 'working',
+              stats: { add: 20, del: 20 },
+              rows: longRows
+            });
+
+            setTimeout(async () => {
+              await __runAgentsPanelAudit();
+            }, 100);
+          }
+        }
+      });
+
+      async function __runAgentsPanelAudit() {
+        const results = [];
+        const pill = document.querySelector('.widget');
+        const pillRect = pill ? pill.getBoundingClientRect() : { width: 0, height: 0 };
+
+        // 1. Pill width = 560
+        const wPass = Math.abs(pillRect.width - 560) <= 1;
+        results.push({ name: 'Pill width = 560 (±1px)', pass: wPass, actual: `${pillRect.width.toFixed(1)}px` });
+
+        // 2. Pill height = 271
+        const hPass = Math.abs(pillRect.height - 271) <= 1;
+        results.push({ name: 'Pill height = 271 (±1px)', pass: hPass, actual: `${pillRect.height.toFixed(1)}px` });
+
+        // 3. Code box insets: left 109px, top 29px, width 411px, height 159px, right margin 10px
+        const dp = document.querySelector('.agents-dark-panel');
+        const cb = document.getElementById('agent-code-box');
+        const cbRect = cb ? cb.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0, right: 0 };
+        const dpRect = dp ? dp.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0, right: 0 };
+        const leftInset = Math.round(cbRect.left - dpRect.left);
+        const topInset = Math.round(cbRect.top - dpRect.top);
+        const cbWidth = Math.round(cbRect.width);
+        const cbHeight = Math.round(cbRect.height);
+        const rightMargin = Math.round(dpRect.right - cbRect.right);
+        const insetsPass = Math.abs(leftInset - 109) <= 1 &&
+                           Math.abs(topInset - 29) <= 1 &&
+                           Math.abs(cbWidth - 411) <= 1 &&
+                           Math.abs(cbHeight - 159) <= 1 &&
+                           Math.abs(rightMargin - 10) <= 1;
+        results.push({
+          name: 'Code box insets (left 109, top 29, w 411, h 159, right 10)',
+          pass: insetsPass,
+          actual: `left=${leftInset}, top=${topInset}, w=${cbWidth}, h=${cbHeight}, right=${rightMargin}`
+        });
+
+        // 4. Sticky gutter during horizontal scroll (scrollLeft = 120 -> gutter pinned to left: 0)
+        if (cb) cb.scrollLeft = 120;
+        await new Promise(r => requestAnimationFrame(r));
+        const gutter = cb ? cb.querySelector('.agent-diff-gutter') : null;
+        const gRect = gutter ? gutter.getBoundingClientRect() : { left: 0 };
+        const gutterOffset = Math.round(gRect.left - cbRect.left);
+        const gutterPass = Math.abs(gutterOffset) <= 1;
+        results.push({
+          name: 'Sticky gutter pinned to left: 0 after scrollLeft = 120',
+          pass: gutterPass,
+          actual: `offset=${gutterOffset}px`
+        });
+
+        // 5. Full-width row backgrounds (extends to scrollWidth)
+        const firstRow = cb ? cb.querySelector('.agent-diff-row') : null;
+        const rowWidth = firstRow ? firstRow.clientWidth : 0;
+        const scrollW = cb ? cb.scrollWidth : 0;
+        const bgFullWidthPass = Math.abs(rowWidth - scrollW) <= 2;
+        results.push({
+          name: 'Full-width row backgrounds extend to scrollWidth',
+          pass: bgFullWidthPass,
+          actual: `row=${rowWidth}px, scrollWidth=${scrollW}px`
+        });
+
+        // 6. No visible scrollbar (scrollbar-width === none)
+        const cbStyle = cb ? window.getComputedStyle(cb) : {};
+        const noScrollbarPass = cbStyle.scrollbarWidth === 'none' || (cb.offsetWidth - cb.clientWidth <= 1);
+        results.push({
+          name: 'No visible scrollbar (scrollbar-width === none)',
+          pass: noScrollbarPass,
+          actual: `scrollbarWidth=${cbStyle.scrollbarWidth}`
+        });
+
+        // 7. Hit-testing: floating button / empty overlay do not block clicks when hidden
+        const latestBtn = document.getElementById('agent-latest-btn');
+        const overlay = document.getElementById('agent-empty-overlay');
+        const btnHidden = !latestBtn.classList.contains('visible') && (latestBtn.hasAttribute('inert') || window.getComputedStyle(latestBtn).display === 'none');
+        const overlayHidden = overlay.classList.contains('hidden') || overlay.hasAttribute('inert') || window.getComputedStyle(overlay).display === 'none';
+        const hitPass = btnHidden && overlayHidden;
+        results.push({
+          name: 'Hit-testing: hidden controls are inert / non-interactive',
+          pass: hitPass,
+          actual: `btnHidden=${btnHidden}, overlayHidden=${overlayHidden}`
+        });
+
+        // 8. Top-bar icons unchanged from other tabs (hamburger 22, chat 24, sliders 26 within 0.5px)
+        const hamburger = document.getElementById('hamburger-btn');
+        const chatBtn = document.getElementById('tab-btn-chat');
+        const controlsBtn = document.getElementById('tab-btn-controls');
+        const hW = hamburger ? hamburger.getBoundingClientRect().width : 22;
+        const cW = chatBtn ? chatBtn.getBoundingClientRect().width : 24;
+        const sW = controlsBtn ? controlsBtn.getBoundingClientRect().width : 26;
+        const iconsPass = Math.abs(hW - 22) <= 1.5 && Math.abs(cW - 24) <= 1.5 && Math.abs(sW - 26) <= 1.5;
+        results.push({
+          name: 'Top-bar icons unchanged within 0.5px (hamburger 22, chat 24, sliders 26)',
+          pass: iconsPass,
+          actual: `h=${hW.toFixed(1)}, c=${cW.toFixed(1)}, s=${sW.toFixed(1)}`
+        });
+
+        console.group('=== AGENTS PANEL AUDIT (KEY L) ===');
+        let allOk = true;
+        for (const r of results) {
+          if (!r.pass) allOk = false;
+          console.log(`[${r.pass ? 'PASS' : 'FAIL'}] ${r.name}: ${r.actual}`);
+        }
+        console.log(`OVERALL: ${allOk ? 'ALL 8 CHECKS PASSED' : 'FAILURES DETECTED'}`);
+        console.groupEnd();
+
+        if (typeof showCcToast === 'function') {
+          showCcToast(allOk ? 'Audit: ALL 8 PASS' : 'Audit: FAILED');
+        }
+      }
+    }
+
+
+      let dropVaultDebugStep = 0;
+
+      async function runDropVaultDebugAudit() {
+        // If not in dropvault tab, open it first
+        if (currentTab !== 'dropvault') {
+          await switchTab('dropvault');
+          await new Promise(r => setTimeout(r, 150));
+        }
+
+        const step = dropVaultDebugStep;
+        dropVaultDebugStep = (dropVaultDebugStep + 1) % 6;
+
+        const sampleCards5 = [
+          { id: 'sample-1', name: 'drop-folder-dropped.png', extension: 'png', size: 1024, color_index: 0 },
+          { id: 'sample-2', name: 'drop-file-dropped.png', extension: 'png', size: 2048, color_index: 1 },
+          { id: 'sample-3', name: 'Desktop - 57', extension: '', size: 512, color_index: 2 },
+          { id: 'sample-4', name: 'Lavender AI Sidebar with Mascot', extension: '', size: 4096, color_index: 3 },
+          { id: 'sample-5', name: 'Very Long Project Documentation And Requirements File Name.pdf', extension: 'pdf', size: 8192, color_index: 0 }
+        ];
+
+        const sampleCards6 = [
+          ...sampleCards5,
+          { id: 'sample-6', name: 'Quarterly Report Final Approved Version 2026.docx', extension: 'docx', size: 16384, color_index: 1 }
+        ];
+
+        let stepName = '';
+        if (step === 0) {
+          stepName = '1/6: Not Created';
+          await refreshDropVaultUI(null, { state: 'not_created', display: 'Documents\\DropVault' });
+        } else if (step === 1) {
+          stepName = '2/6: Missing Folder';
+          await refreshDropVaultUI(null, { state: 'missing', display: 'Documents\\DropVault' });
+        } else if (step === 2) {
+          stepName = '3/6: Empty State';
+          await refreshDropVaultUI([], { state: 'ready', display: 'Documents\\DropVault' });
+        } else if (step === 3) {
+          stepName = '4/6: 5 Sample Cards (Figma Image 1)';
+          await refreshDropVaultUI(sampleCards5, { state: 'ready', display: 'Documents\\DropVault' });
+        } else if (step === 4) {
+          stepName = '5/6: 6 Sample Cards (Full Grid)';
+          await refreshDropVaultUI(sampleCards6, { state: 'ready', display: 'Documents\\DropVault' });
+        } else {
+          stepName = '6/6: Live Vault (Reset)';
+          await refreshDropVaultUI();
+        }
+
+        console.group(`=== DROPVAULT AUDIT (KEY V) - ${stepName} ===`);
+        const results = [];
+        const pill = document.querySelector('.widget');
+
+        // 1. Pill size measurement (359 x 317)
+        const pillRect = pill.getBoundingClientRect();
+        const pillPass = Math.abs(pillRect.width - 359) <= 2 && Math.abs(pillRect.height - 317) <= 2;
+        results.push({
+          name: 'Pill size 359 x 317 px within 2px',
+          pass: pillPass,
+          actual: `w=${pillRect.width.toFixed(1)}, h=${pillRect.height.toFixed(1)}`
+        });
+
+        // 2. Vertical rule: 8px gap below top-bar icons (icon bottom ~38.5, header row top 47 -> gap 8.5)
+        const headerRow = document.getElementById('dropvault-header-row');
+        const topBarHamburger = document.getElementById('top-bar-agents-btn');
+        let iconBottom = 38.5;
+        if (topBarHamburger) {
+          const hRect = topBarHamburger.getBoundingClientRect();
+          iconBottom = hRect.bottom - pillRect.top;
+        }
+        let rowTop = 47;
+        if (headerRow) {
+          const rRect = headerRow.getBoundingClientRect();
+          rowTop = rRect.top - pillRect.top;
+        }
+        const gap = rowTop - iconBottom;
+        const gapPass = gap >= 7.5;
+        results.push({
+          name: 'Vertical rule: gap below icons >= 8px',
+          pass: gapPass,
+          actual: `gap=${gap.toFixed(1)}px (iconBottom=${iconBottom.toFixed(1)}, rowTop=${rowTop.toFixed(1)})`
+        });
+
+        // 3. "Recent" chip (66 x 21, radius 11, background #3B9BFF)
+        const chip = document.getElementById('dropvault-recent-chip');
+        if (chip && headerRow && headerRow.style.display !== 'none') {
+          const cRect = chip.getBoundingClientRect();
+          const relLeft = cRect.left - pillRect.left;
+          const chipPass = Math.abs(cRect.width - 66) <= 2 && Math.abs(cRect.height - 21) <= 2 && Math.abs(relLeft - 12) <= 2;
+          results.push({
+            name: 'Recent chip size 66x21 and left 12px within 2px',
+            pass: chipPass,
+            actual: `w=${cRect.width.toFixed(1)}, h=${cRect.height.toFixed(1)}, left=${relLeft.toFixed(1)}`
+          });
+        }
+
+        // 4. Folder button (28 x 28 hit area, left 88px)
+        const folderBtn = document.getElementById('dropvault-folder-btn');
+        if (folderBtn && headerRow && headerRow.style.display !== 'none') {
+          const fRect = folderBtn.getBoundingClientRect();
+          const relLeft = fRect.left - pillRect.left;
+          const folderPass = Math.abs(fRect.width - 28) <= 2 && Math.abs(fRect.height - 28) <= 2 && Math.abs(relLeft - 88) <= 2;
+          results.push({
+            name: 'Folder button hit area 28x28 and left 88px within 2px',
+            pass: folderPass,
+            actual: `w=${fRect.width.toFixed(1)}, h=${fRect.height.toFixed(1)}, left=${relLeft.toFixed(1)}`
+          });
+        }
+
+        // 5. Cards geometry: 78 x 100, radius 9, col pitch 115.5, row pitch 115
+        const cards = Array.from(document.querySelectorAll('#dropvault-grid .dropvault-card'));
+        if (cards.length >= 4) {
+          const c0 = cards[0].getBoundingClientRect();
+          const c1 = cards[1].getBoundingClientRect();
+          const colPitch = (c1.left - c0.left);
+          const c0Left = c0.left - pillRect.left;
+          const c0Top = c0.top - pillRect.top;
+          let rowPitch = 115;
+          if (cards.length >= 4) {
+            const c3 = cards[3].getBoundingClientRect();
+            rowPitch = (c3.top - c0.top);
+          }
+          const sizeOk = Math.abs(c0.width - 78) <= 2 && Math.abs(c0.height - 100) <= 2;
+          const posOk = Math.abs(c0Left - 23) <= 2 && Math.abs(c0Top - 80) <= 2;
+          const pitchOk = Math.abs(colPitch - 115.5) <= 2 && Math.abs(rowPitch - 115) <= 2;
+          results.push({
+            name: 'Cards geometry: 78x100, colPitch=115.5, rowPitch=115 within 2px',
+            pass: sizeOk && posOk && pitchOk,
+            actual: `size=${c0.width.toFixed(1)}x${c0.height.toFixed(1)}, c0=(${c0Left.toFixed(1)}, ${c0Top.toFixed(1)}), colPitch=${colPitch.toFixed(1)}, rowPitch=${rowPitch.toFixed(1)}`
+          });
+        }
+
+        // 6. Hub card 2 geometry check in DOM
+        const hubCard2 = document.getElementById('hub-card-2');
+        const hubDot2 = document.getElementById('hub-dot-2');
+        if (hubCard2 && hubDot2) {
+          const dotAriaOk = hubDot2.getAttribute('aria-label') === 'DropVault';
+          const cardLabel = hubCard2.querySelector('.hub-card-label');
+          const cardLabelOk = cardLabel && cardLabel.textContent.trim() === 'DropVault';
+          results.push({
+            name: 'Hub card and dot 2 configured for DropVault',
+            pass: dotAriaOk && cardLabelOk,
+            actual: `label="${cardLabel ? cardLabel.textContent : ''}", dotAria="${hubDot2.getAttribute('aria-label')}"`
+          });
+        }
+
+        // 7. Horizontal overflow check
+        const noHOverflow = pill.scrollWidth <= pill.clientWidth + 1;
+        results.push({
+          name: 'No horizontal overflow in DropVault panel',
+          pass: noHOverflow,
+          actual: `scrollWidth=${pill.scrollWidth}, clientWidth=${pill.clientWidth}`
+        });
+
+        // 8. Hit-testing at inactive state screens
+        const setupScreen = document.getElementById('dropvault-state-setup');
+        const emptyScreen = document.getElementById('dropvault-state-empty');
+        let hiddenPass = true;
+        if (step >= 2 && setupScreen) {
+          hiddenPass = hiddenPass && (setupScreen.style.display === 'none' || setupScreen.hasAttribute('inert'));
+        }
+        if (step >= 3 && emptyScreen) {
+          hiddenPass = hiddenPass && (emptyScreen.style.display === 'none' || emptyScreen.hasAttribute('inert'));
+        }
+        results.push({
+          name: 'Hit-testing: inactive state screens are hidden/inert',
+          pass: hiddenPass,
+          actual: `setupDisplay=${setupScreen ? setupScreen.style.display : 'none'}, emptyDisplay=${emptyScreen ? emptyScreen.style.display : 'none'}`
+        });
+
+        let allPass = true;
+        for (const r of results) {
+          if (!r.pass) allPass = false;
+          console.log(`[${r.pass ? 'PASS' : 'FAIL'}] ${r.name}: ${r.actual}`);
+        }
+        console.log(`OVERALL: ${allPass ? 'ALL CHECKS PASSED' : 'FAILURES DETECTED'}`);
+        console.groupEnd();
+
+        if (typeof showCcToast === 'function') {
+          showCcToast(`DropVault: ${stepName}`);
+        }
+      }
+
     function renderActiveConversationUI() {
       if (!activeAgentConversationId) return;
       const conv = agentConversations.get(activeAgentConversationId);
@@ -9839,7 +12269,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       setAgentStepStates(conv.categories);
 
       if (conv.codeContent && window.AgentCodeViewer?.render) {
-        window.AgentCodeViewer.render(conv.codeContent);
+        window.AgentCodeViewer.render({ ...conv.codeContent, status: conv.status });
       }
     }
 
@@ -10164,6 +12594,8 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         setAgentStepStates({ read: 'pending', edit: 'pending', bash: 'pending', done: 'pending' });
       }
 
+      overlay.removeAttribute('inert');
+      overlay.removeAttribute('aria-hidden');
       overlay.classList.remove('hidden');
       void overlay.offsetWidth;
       overlay.classList.remove('fade-out');
@@ -10175,6 +12607,8 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       overlay.classList.add('fade-out');
       setTimeout(() => {
         overlay.classList.add('hidden');
+        overlay.setAttribute('inert', '');
+        overlay.setAttribute('aria-hidden', 'true');
       }, 150);
     }
 
@@ -12608,13 +15042,19 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         }
       }
 
+      if (currentTab === 'dropvault' && isPanelOpen()) {
+        if (handleDropVaultKeydown(e)) {
+          return;
+        }
+      }
+
       if (e.key === 'Escape') {
         if (currentTab === 'chat' || widget.classList.contains('tab-chat') || widget.classList.contains('chat-open')) {
           if (handleChatEscapeKey(e)) {
             return;
           }
         }
-        if ((currentTab === 'agents' || currentTab === 'clipboard') && isPanelOpen()) {
+        if ((currentTab === 'agents' || currentTab === 'clipboard' || currentTab === 'dropvault') && isPanelOpen()) {
           e.preventDefault();
           switchTab('hub');
           return;
@@ -12827,6 +15267,24 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       if (e.defaultPrevented) return;
       if (e.key === 'Escape') {
         if (handleChatEscapeKey(e)) {
+          return;
+        }
+        if (currentTab === 'dropvault' && isPanelOpen()) {
+          e.preventDefault();
+          lastActiveHubCardIndex = 2;
+          switchTab('hub');
+          return;
+        }
+        if (currentTab === 'clipboard' && isPanelOpen()) {
+          e.preventDefault();
+          lastActiveHubCardIndex = 0;
+          switchTab('hub');
+          return;
+        }
+        if (currentTab === 'agents' && isPanelOpen()) {
+          e.preventDefault();
+          lastActiveHubCardIndex = 1;
+          switchTab('hub');
           return;
         }
         if (widget.classList.contains('chat-open') || widget.classList.contains('chat-closing')) {
@@ -13191,7 +15649,70 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               pos.y <= pillScreenBottom
             );
 
-            if (ENABLE_FILE_DROP && isFileDropHovering) {
+            let isInsideDropRect = false;
+            if (ENABLE_FILE_DROP) {
+              let drLeft = widgetRect.left - 12;
+              let drRight = widgetRect.right + 12;
+              let drTop = widgetRect.top - 12;
+              let drBottom = widgetRect.bottom + 12;
+
+              if (isFileDropActive) {
+                const folderEl = document.getElementById('drop-folder-container');
+                if (folderEl) {
+                  const fRect = folderEl.getBoundingClientRect();
+                  drLeft = Math.min(drLeft, fRect.left);
+                  drRight = Math.max(drRight, fRect.right);
+                  drTop = Math.min(drTop, fRect.top);
+                  drBottom = Math.max(drBottom, fRect.bottom);
+                }
+              }
+
+              const drScreenLeft = winPos.x + drLeft * dpr;
+              const drScreenRight = winPos.x + drRight * dpr;
+              const drScreenTop = winPos.y + drTop * dpr;
+              const drScreenBottom = winPos.y + drBottom * dpr;
+
+              isInsideDropRect = (
+                pos.x >= drScreenLeft &&
+                pos.x <= drScreenRight &&
+                pos.y >= drScreenTop &&
+                pos.y <= drScreenBottom
+              );
+            }
+
+            let lButtonDown = false;
+            if (ENABLE_FILE_DROP && window.__TAURI__?.core?.invoke) {
+              try {
+                lButtonDown = await window.__TAURI__.core.invoke('is_lbutton_down');
+              } catch (_) {}
+            }
+
+            if (ENABLE_FILE_DROP && lButtonDown && isInsideDropRect && !widget.classList.contains('approval-state')) {
+              if (dropRectLeaveTimer) {
+                clearTimeout(dropRectLeaveTimer);
+                dropRectLeaveTimer = null;
+              }
+              isDragLButtonActive = true;
+              isOverPill = true;
+            } else if (isDragLButtonActive) {
+              if (!lButtonDown) {
+                isDragLButtonActive = false;
+                if (dropRectLeaveTimer) {
+                  clearTimeout(dropRectLeaveTimer);
+                  dropRectLeaveTimer = null;
+                }
+              } else if (!isInsideDropRect) {
+                if (!dropRectLeaveTimer) {
+                  dropRectLeaveTimer = setTimeout(() => {
+                    isDragLButtonActive = false;
+                    dropRectLeaveTimer = null;
+                  }, 150);
+                }
+                isOverPill = true;
+              }
+            }
+
+            if (isFileDropActive) {
               isOverPill = true;
             }
 

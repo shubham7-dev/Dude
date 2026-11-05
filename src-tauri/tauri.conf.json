@@ -25,7 +25,8 @@
         "alwaysOnTop": true,
         "skipTaskbar": true,
         "resizable": false,
-        "shadow": false
+        "shadow": false,
+        "dragDropEnabled": true
       },
       {
         "label": "context-menu",

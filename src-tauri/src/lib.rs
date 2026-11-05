@@ -9,6 +9,7 @@ pub mod tray;
 pub mod sound;
 pub mod clipboard_history;
 pub mod audio_visualizer;
+pub mod dropvault;
 
 const KEYRING_SERVICE: &str = "Dude";
 const KEYRING_USER: &str = "GeminiAPIKey";
@@ -2945,6 +2946,148 @@ fn chat_pop_last_turn() -> Result<(), String> {
     Ok(())
 }
 
+static IS_FILE_DRAG_ACTIVE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+static IS_PROCESSING_DROP: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+static DRAG_FILE_COUNT: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+
+#[allow(dead_code)]
+#[derive(serde::Serialize, Clone)]
+pub struct FileDropResult {
+    pub count: usize,
+    pub accepted: usize,
+    pub rejected: Vec<String>,
+    pub attachments: Vec<AttachmentMeta>,
+}
+
+#[allow(dead_code)]
+fn process_dropped_files_for_pipeline(paths: &[std::path::PathBuf]) -> FileDropResult {
+    with_attachment_store(|store| {
+        let mut added = Vec::new();
+        let mut rejected = Vec::new();
+        let mut staged_bytes: usize = store.values().map(|a| a.bytes.len()).sum();
+        let mut count = store.len();
+
+        for path in paths {
+            if path.is_dir() {
+                rejected.push("folder".to_string());
+                continue;
+            }
+            if count >= 4 {
+                rejected.push("too-many".to_string());
+                continue;
+            }
+            let file_name = match path.file_name().and_then(|n| n.to_str()) {
+                Some(n) => n.to_string(),
+                None => {
+                    rejected.push("unsupported".to_string());
+                    continue;
+                }
+            };
+            if is_sensitive_filename(&file_name) {
+                rejected.push("sensitive".to_string());
+                continue;
+            }
+            let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("").to_lowercase();
+            let (kind, mime) = match get_file_info(&ext) {
+                Some(km) => km,
+                None => {
+                    rejected.push("unsupported".to_string());
+                    continue;
+                }
+            };
+            let bytes = match std::fs::read(path) {
+                Ok(b) => b,
+                Err(_) => {
+                    rejected.push("unsupported".to_string());
+                    continue;
+                }
+            };
+            let size = bytes.len();
+            let id = format!(
+                "att_{}_{}",
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_millis(),
+                ATTACHMENT_ID_COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+            );
+
+            if kind == "text" {
+                if size > 200 * 1024 || (staged_bytes + size > 15 * 1024 * 1024) {
+                    rejected.push("too-large".to_string());
+                    continue;
+                }
+                let text = match String::from_utf8(bytes.clone()) {
+                    Ok(t) => t,
+                    Err(_) => {
+                        rejected.push("unsupported".to_string());
+                        continue;
+                    }
+                };
+                if scan_for_secrets(&text) {
+                    rejected.push("needs-check".to_string());
+                    continue;
+                }
+                count += 1;
+                staged_bytes += size;
+                let meta = AttachmentMeta {
+                    id: id.clone(),
+                    name: file_name,
+                    mime: mime.to_string(),
+                    size,
+                    kind: kind.to_string(),
+                    has_secret: false,
+                    preview: None,
+                };
+                added.push(meta.clone());
+                store.insert(id, StoredAttachment {
+                    meta,
+                    bytes,
+                    text_content: Some(text),
+                });
+            } else {
+                if size > 10 * 1024 * 1024 || (staged_bytes + size > 15 * 1024 * 1024) {
+                    rejected.push("too-large".to_string());
+                    continue;
+                }
+                count += 1;
+                staged_bytes += size;
+                let meta = AttachmentMeta {
+                    id: id.clone(),
+                    name: file_name,
+                    mime: mime.to_string(),
+                    size,
+                    kind: kind.to_string(),
+                    has_secret: false,
+                    preview: None,
+                };
+                added.push(meta.clone());
+                store.insert(id, StoredAttachment {
+                    meta,
+                    bytes,
+                    text_content: None,
+                });
+            }
+        }
+
+        FileDropResult {
+            count: paths.len(),
+            accepted: added.len(),
+            rejected,
+            attachments: added,
+        }
+    })
+}
+
+#[tauri::command]
+fn is_lbutton_down() -> bool {
+    extern "system" {
+        fn GetAsyncKeyState(vKey: i32) -> i16;
+    }
+    unsafe { (GetAsyncKeyState(0x01) as u16 & 0x8000) != 0 }
+}
+
+#[allow(dead_code)]
 fn process_dropped_file_paths(paths: Vec<std::path::PathBuf>) -> AttachmentBatchResult {
     with_attachment_store(|store| {
         let mut added = Vec::new();
@@ -4117,8 +4260,8 @@ fn read_agent_file(
 
     let start = start_line.unwrap_or(1).max(1);
     let start_idx = start.saturating_sub(1);
-    let default_end = start + 11;
-    let end = end_line.unwrap_or(default_end).min(start + 11);
+    let default_end = start + 599;
+    let end = end_line.unwrap_or(default_end).min(start + 599);
     let end_idx = end.min(all_lines.len());
 
     let slice = if start_idx < all_lines.len() {
@@ -4274,7 +4417,16 @@ pub fn run() {
             clipboard_history::set_clipboard_enabled,
             clipboard_history::toggle_clipboard_debug_preview,
             audio_visualizer::start_audio_visualizer,
-            audio_visualizer::stop_audio_visualizer
+            audio_visualizer::stop_audio_visualizer,
+            is_lbutton_down,
+            dropvault::vault_status,
+            dropvault::create_vault,
+            dropvault::vault_recent,
+            dropvault::vault_open,
+            dropvault::vault_show,
+            dropvault::open_vault_folder,
+            dropvault::start_vault_watcher,
+            dropvault::stop_vault_watcher
         ])
         .setup(|app| {
             // Procedurally generate sound buffers in memory at startup
@@ -4356,23 +4508,110 @@ pub fn run() {
                     let _ = window.hide();
                 }
                 tauri::WindowEvent::DragDrop(drag_event) => {
+                    if window.label() != "main" || !window.is_visible().unwrap_or(false) {
+                        return;
+                    }
                     match drag_event {
-                        tauri::DragDropEvent::Enter { .. } | tauri::DragDropEvent::Over { .. } => {
-                            let _ = window.emit("file-drop-hover", serde_json::json!({ "hovering": true }));
-                        }
-                        tauri::DragDropEvent::Leave => {
-                            let _ = window.emit("file-drop-hover", serde_json::json!({ "hovering": false }));
-                        }
-                        tauri::DragDropEvent::Drop { paths, .. } => {
-                            let _ = window.emit("file-drop-hover", serde_json::json!({ "hovering": false }));
-                            let batch = process_dropped_file_paths(paths.clone());
+                        tauri::DragDropEvent::Enter { paths, .. } => {
+                            if paths.is_empty() {
+                                return;
+                            }
+                            if IS_PROCESSING_DROP.load(Ordering::SeqCst) {
+                                return;
+                            }
+                            IS_FILE_DRAG_ACTIVE.store(true, Ordering::SeqCst);
+                            DRAG_FILE_COUNT.store(paths.len(), Ordering::SeqCst);
                             let _ = window.emit(
-                                "files-dropped",
+                                "file-drop",
                                 serde_json::json!({
-                                    "attachments": batch.attachments,
-                                    "error": batch.error
+                                    "state": "enter",
+                                    "count": paths.len(),
+                                    "accepted": 0,
+                                    "rejected": []
                                 }),
                             );
+                        }
+                        tauri::DragDropEvent::Over { .. } => {
+                            if IS_FILE_DRAG_ACTIVE.load(Ordering::SeqCst) {
+                                let _ = window.emit(
+                                    "file-drop",
+                                    serde_json::json!({
+                                        "state": "over",
+                                        "count": DRAG_FILE_COUNT.load(Ordering::SeqCst),
+                                        "accepted": 0,
+                                        "rejected": []
+                                    }),
+                                );
+                            }
+                        }
+                        tauri::DragDropEvent::Leave => {
+                            if IS_FILE_DRAG_ACTIVE.swap(false, Ordering::SeqCst) {
+                                let _ = window.emit(
+                                    "file-drop",
+                                    serde_json::json!({
+                                        "state": "leave",
+                                        "count": 0,
+                                        "accepted": 0,
+                                        "rejected": []
+                                    }),
+                                );
+                            }
+                        }
+                        tauri::DragDropEvent::Drop { paths, .. } => {
+                            if paths.is_empty() {
+                                if IS_FILE_DRAG_ACTIVE.swap(false, Ordering::SeqCst) {
+                                    let _ = window.emit(
+                                        "file-drop",
+                                        serde_json::json!({
+                                            "state": "leave",
+                                            "count": 0,
+                                            "accepted": 0,
+                                            "rejected": []
+                                        }),
+                                    );
+                                }
+                                return;
+                            }
+                            if IS_PROCESSING_DROP.swap(true, Ordering::SeqCst) {
+                                return;
+                            }
+                            IS_FILE_DRAG_ACTIVE.store(false, Ordering::SeqCst);
+
+                            let _ = window.emit(
+                                "file-drop",
+                                serde_json::json!({
+                                    "state": "dropped",
+                                    "count": paths.len(),
+                                    "accepted": 0,
+                                    "rejected": []
+                                }),
+                            );
+
+                            let app_clone = window.app_handle().clone();
+                            let win_clone = window.clone();
+                            let paths_clone = paths.clone();
+                            tauri::async_runtime::spawn_blocking(move || {
+                                let res = dropvault::save_to_vault_internal(&app_clone, &paths_clone);
+                                let is_error = res.saved == 0 && !res.rejected.is_empty();
+                                let _ = win_clone.emit(
+                                    "vault-save",
+                                    serde_json::json!({
+                                        "state": if is_error { "error" } else { "done" },
+                                        "saved": res.saved,
+                                        "rejected": res.rejected
+                                    }),
+                                );
+                                let _ = win_clone.emit(
+                                    "file-drop",
+                                    serde_json::json!({
+                                        "state": "result",
+                                        "count": res.count,
+                                        "accepted": res.saved,
+                                        "rejected": res.rejected
+                                    }),
+                                );
+                                IS_PROCESSING_DROP.store(false, Ordering::SeqCst);
+                            });
                         }
                         _ => {}
                     }

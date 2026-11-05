@@ -56,6 +56,10 @@ Switch between three views from the top pill:
 - Connect to Google's Gemini models using your own API key.
 - Conversation memory and context trimming.
 - Custom personality instructions.
+### DropVault & File Drop
+
+- DropVault: drop files on the island and keep them in one folder.
+- Recent files grid in the hub with one-click access and safe executable inspection.
 - Configure the provider, model, API key, and persona in Settings.
 
 ### Laptop control center
@@ -232,6 +236,10 @@ npm run build
 ```
 
 Dude also has a GitHub Actions workflow that runs the frontend build check on pushes and pull requests targeting `main`.
+
+## Privacy
+
+Files you drop on the island are copied into the DropVault folder on your PC (Documents\DropVault). Nothing is uploaded. A file goes to the chat only when you attach it yourself with the + button.
 
 ## Documentation & Contributing
 

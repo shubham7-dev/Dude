@@ -43,6 +43,10 @@ None of these system metrics or status queries ever leave your machine.
 
 Clipboard history is off by default. When you turn it on, text you copy is kept in memory only until you quit Dude; copies from password managers and text that looks like a secret are skipped; nothing is sent anywhere.
 
+### 5. DropVault & File Drop
+
+Files you drop on the island are copied into the DropVault folder on your PC (Documents\DropVault). Nothing is uploaded. A file goes to the chat only when you attach it yourself with the + button.
+
 ---
 
 ## Network Activity
