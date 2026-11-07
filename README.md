@@ -38,6 +38,12 @@
 
 Engineered with **Tauri 2, Rust, TypeScript, and Vite**, Dude operates with near-zero idle resource consumption while maintaining native OS responsiveness.
 
+<p align="center">
+  <img src="assets/screenshot-desktop-idle.jpg" alt="Dude Floating Island on Windows 11 Desktop" width="900">
+  <br>
+  <em>Dude resting discreetly at the top-center edge of Windows 11 — an expressive floating island companion that smoothly expands on hover or click.</em>
+</p>
+
 ---
 
 ## Visual Showcase
