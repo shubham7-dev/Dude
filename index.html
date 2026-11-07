@@ -3788,6 +3788,93 @@
       }
     }
 
+    /* ============================================================
+       AGENT COMPLETED STATE FOR COLLAPSED PILL
+       Shown upon agent completion (Antigravity Stop event)
+       Matches user specification (170px x 42px with centered green circle-check)
+       ============================================================ */
+
+    .widget.agent-completed:not(.expanded):not(.panel-open) {
+      width: 170px !important;
+      height: 42px !important;
+      will-change: auto !important;
+      border-radius: var(--pill-radius, 8px);
+      background-color: #000000;
+    }
+
+    .widget.agent-completed:not(.expanded):not(.panel-open) .shared-top-bar {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    .widget.agent-completed:not(.expanded):not(.panel-open) .mascot-wrapper {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      transition: opacity 150ms ease;
+    }
+
+    .widget.agent-completed:not(.expanded):not(.panel-open) .now-playing-container {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    .widget.agent-completed:not(.expanded):not(.panel-open) .collapsed-agent-dot {
+      display: none !important;
+    }
+
+    .agent-completed-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 200ms ease, visibility 0s linear 200ms;
+      z-index: 25;
+      overflow: hidden;
+    }
+
+    .widget.agent-completed:not(.expanded):not(.panel-open) .agent-completed-container {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition: opacity 200ms ease, visibility 0s linear 0s;
+    }
+
+    .agent-completed-check-icon {
+      width: 22px;
+      height: 22px;
+      display: block;
+      color: #4CD800;
+      filter: drop-shadow(0 0 5px rgba(76, 216, 0, 0.45));
+      animation: completeCheckEntrance 350ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    @keyframes completeCheckEntrance {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      75% {
+        transform: scale(1.12);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.0);
+        opacity: 1;
+      }
+    }
 
     /* ============================================================
        CHAT TAB: Pill 542 x 223 px
@@ -5944,6 +6031,13 @@
         </div>
       </div>
     </div>
+    <!-- Agent Completed Centered Checkmark State for Collapsed Pill -->
+    <div class="agent-completed-container" id="agent-completed-container" aria-label="Task Completed">
+      <svg class="agent-completed-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="10" cy="10" r="8" />
+        <path d="M6.5 10.2 L8.8 12.5 L13.5 7.5" />
+      </svg>
+    </div>
     <div class="mascot-wrapper" id="mascot-wrapper">
       <!-- Mascot Agent reaction badge -->
       <div class="mascot-agent-badge" id="mascot-agent-badge" role="img" aria-label="Agent status">
@@ -7028,19 +7122,78 @@
       updateEyeTracking();
     }
 
+    // --- Agent Completed Pill State (for Collapsed Pill) ---
+    let agentCompletedTimer = null;
+    let pendingAgentCompletedOnCollapse = false;
+
+    function enterAgentCompletedState(durationMs = 8000) {
+      if (!widget) return;
+
+      // If panel is currently open, remember that a task completed so when
+      // the panel closes, the closed pill will show the checkmark.
+      if (isPanelOpen() || widget.classList.contains('expanded')) {
+        pendingAgentCompletedOnCollapse = true;
+        return;
+      }
+
+      pendingAgentCompletedOnCollapse = false;
+
+      if (typeof exitNowPlayingState === 'function') {
+        exitNowPlayingState(true);
+      }
+
+      widget.classList.add('agent-completed');
+
+      if (agentCompletedTimer) {
+        clearTimeout(agentCompletedTimer);
+        agentCompletedTimer = null;
+      }
+
+      agentCompletedTimer = setTimeout(() => {
+        exitAgentCompletedState();
+      }, durationMs);
+
+      recordActivity();
+      updateEyeTracking();
+      monitorTransitionClickThrough();
+    }
+    window.enterAgentCompletedState = enterAgentCompletedState;
+
+    function exitAgentCompletedState() {
+      if (agentCompletedTimer) {
+        clearTimeout(agentCompletedTimer);
+        agentCompletedTimer = null;
+      }
+      pendingAgentCompletedOnCollapse = false;
+      if (!widget) return;
+      if (!widget.classList.contains('agent-completed')) return;
+      widget.classList.remove('agent-completed');
+      if (isPlainCollapsed() && typeof onPillReturnedToCollapsed === 'function') {
+        onPillReturnedToCollapsed();
+      }
+      updateEyeTracking();
+      monitorTransitionClickThrough();
+    }
+    window.exitAgentCompletedState = exitAgentCompletedState;
+
     function onPillReturnedToCollapsed() {
       lastActiveHubCardIndex = 1;
       if (playingStatusTimer) {
         clearTimeout(playingStatusTimer);
         playingStatusTimer = null;
       }
-      if (!isPlainCollapsed() || !isMascotWindowVisible() || behavior.nowPlayingPill === false) {
+      if (pendingAgentCompletedOnCollapse) {
+        pendingAgentCompletedOnCollapse = false;
+        enterAgentCompletedState(8000);
+        return;
+      }
+      if (!isPlainCollapsed() || !isMascotWindowVisible() || behavior.nowPlayingPill === false || widget.classList.contains('agent-completed')) {
         return;
       }
       if (currentMediaSession.status === 'playing') {
         playingStatusTimer = setTimeout(() => {
           playingStatusTimer = null;
-          if (isPlainCollapsed() && isMascotWindowVisible() && behavior.nowPlayingPill !== false && currentMediaSession.status === 'playing') {
+          if (isPlainCollapsed() && isMascotWindowVisible() && behavior.nowPlayingPill !== false && currentMediaSession.status === 'playing' && !widget.classList.contains('agent-completed')) {
             enterNowPlayingState();
           }
         }, 1500);
@@ -14633,6 +14786,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
         // 1. SessionStart / PreInvocation (New Turn)
         if (eventName === 'SessionStart' || (eventName === 'PreInvocation' && (conv.status === 'idle' || conv.status === 'done'))) {
+          exitAgentCompletedState();
           conv.categories = { read: 'pending', edit: 'pending', bash: 'pending', done: 'pending' };
           conv.runningCategory = null;
           conv.status = 'thinking';
@@ -14648,6 +14802,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         }
         // 2. PreToolUse
         else if (eventName === 'PreToolUse') {
+          exitAgentCompletedState();
           const toolCall = payload.toolCall || {};
           const toolName = (toolCall.name || payload.tool_name || payload.tool || '').trim();
 
@@ -14702,6 +14857,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           agentsTabOpenedSinceNotification = false;
           triggerHappyReply();
           playSound('agent-complete');
+          enterAgentCompletedState(8000);
         }
 
         // Active conversation switching rule:
@@ -14947,6 +15103,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             agentDemoTimer = setTimeout(() => {
               setAgentStepStates({ read: 'done', edit: 'done', bash: 'done', done: 'done' });
               playSound('agent-complete');
+              enterAgentCompletedState(5000);
 
               // After 1.2s: Reset back to initial placeholder state
               agentDemoTimer = setTimeout(() => {
@@ -17194,6 +17351,12 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         return;
       }
 
+      if (widget.classList.contains('agent-completed')) {
+        exitAgentCompletedState();
+        switchTab('hub');
+        return;
+      }
+
       // Collapsed <-> Expanded toggle (INSTANT, no delay)
       const isExpanded = widget.classList.contains('expanded') || isPanelOpen();
       if (isExpanded) {
@@ -17201,6 +17364,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       } else {
         if (typeof exitNowPlayingState === 'function') {
           exitNowPlayingState(true);
+        }
+        if (typeof exitAgentCompletedState === 'function') {
+          exitAgentCompletedState();
         }
         switchTab('hub');
       }
