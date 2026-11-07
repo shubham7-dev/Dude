@@ -72,6 +72,18 @@ Engineered with **Tauri 2, Rust, TypeScript, and Vite**, Dude operates with near
 <img src="assets/screenshot-settings-ai.jpg" alt="Dude Gemini AI Settings and Encrypted Key Storage" width="800">
 <p><em>Instant connectivity to Google AI Studio with custom persona prompts, model selection (gemini-3.5-flash-lite), and encrypted Windows Credential Manager storage for your personal API key.</em></p>
 
+<br>
+
+### 6. 📁 DropVault File Staging & OS Drag-Out
+<img src="assets/screenshot-dropvault-recent.jpg" alt="Dude DropVault Recent Files Shelf" width="800">
+<p><em>Desktop drop target with organized pastel card shelves. Single-click opens or reveals files in Explorer, while drag gesture triggers native Windows OLE drag-and-drop into external apps.</em></p>
+
+<br>
+
+### 7. 🛡️ Interactive Agent Tool & Command Approval
+<img src="assets/screenshot-tool-approval.jpg" alt="Dude Interactive Agent Command Approval Card" width="800">
+<p><em>Human-in-the-loop security guard: when an agent attempts to execute bash or PowerShell terminal commands, Dude presents a floating approval pill with command inspection, Allow (Y), and Deny (N) controls.</em></p>
+
 </div>
 
 ---
@@ -109,6 +121,10 @@ Engineered with **Tauri 2, Rust, TypeScript, and Vite**, Dude operates with near
   - Pinning support with 10-second inspection hold and an instant **"Latest"** auto-follow jump button.
 - **Interactive Tool Approval**: Review, inspect, and approve/deny agent commands (`run_command`, terminal tasks) directly from the floating widget.
 
+<p align="center">
+  <img src="assets/screenshot-tool-approval.jpg" alt="Interactive Agent Tool Approval" width="550">
+</p>
+
 ---
 
 ### 📁 DropVault with Native OS Drag-Out
@@ -119,6 +135,10 @@ Engineered with **Tauri 2, Rust, TypeScript, and Vite**, Dude operates with near
   - Drag (> 6px movement) -> initiates Win32 OLE `DoDragDrop` (`CF_HDROP`) without accidental opening.
 - **Safe Inspection**: Executable files are blocked from direct accidental launch and revealed in Explorer instead.
 - **One-Click Cleanup**: Move files older than your chosen threshold directly to Windows Recycle Bin.
+
+<p align="center">
+  <img src="assets/screenshot-dropvault-recent.jpg" alt="DropVault Recent Files Shelf" width="550">
+</p>
 
 ---
 
