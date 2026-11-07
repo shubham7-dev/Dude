@@ -17341,13 +17341,12 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       }
 
       // Inside a tab (Agents, Chat or Controls) or during compact approval, a single click on the pill's empty area or on the mascot
-      // must NOT collapse the pill (to avoid accidents while typing or dragging sliders); it only plays the mascot's click reaction.
+      // must NOT collapse the pill (to avoid accidents while typing or dragging sliders); it only plays the mascot's visual reaction.
       if (isPanelOpen() || widget.classList.contains('chat-closing') || widget.classList.contains('approval-compact')) {
         triggerFurWiggle();
         recordActivity();
         setTimeout(() => triggerBlink(), 100);
         updateEyeTracking();
-        playSound('poke');
         return;
       }
 
