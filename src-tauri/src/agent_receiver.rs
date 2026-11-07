@@ -493,6 +493,7 @@ pub async fn start_agent_pipe_server(app: AppHandle) {
                             if let Some(conv_id) = val.get("conversationId").and_then(|c| c.as_str()) {
                                 dismiss_pending_approvals_for_conversation(conv_id);
                             }
+                            crate::sound::play_sound_internal(&app_clone, "agent-complete");
                         }
 
                         // Keep last event in memory
@@ -516,6 +517,9 @@ pub async fn start_agent_pipe_server(app: AppHandle) {
                 // Legacy Claude Code hook mapping (kept unused)
                 if let Ok(raw) = serde_json::from_value::<RawClaudeHookEvent>(val) {
                     let event = normalize_payload(raw);
+                    if event.kind == "done" {
+                        crate::sound::play_sound_internal(&app_clone, "agent-complete");
+                    }
                     let _ = app_clone.emit("agent-event", event);
                 }
             });

@@ -6829,13 +6829,12 @@
     const behavior = { ...BEHAVIOR_DEFAULTS };
 
     function playSound(id) {
-      if (id === 'copy') {
-        try {
-          if (window.__TAURI__?.core?.invoke) {
-            window.__TAURI__.core.invoke('play_sound', { id: 'copy' }).catch(() => { });
-          }
-        } catch (_) { }
-      }
+      if (!id) return;
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          window.__TAURI__.core.invoke('play_sound', { id }).catch(() => { });
+        }
+      } catch (_) { }
     }
 
     const chatAnswerBox = document.getElementById('chat-answer-box');
@@ -14702,6 +14701,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           conv.status = 'done';
           agentsTabOpenedSinceNotification = false;
           triggerHappyReply();
+          playSound('agent-complete');
         }
 
         // Active conversation switching rule:
@@ -14946,6 +14946,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             // After 1.2s: Done is done (checked)
             agentDemoTimer = setTimeout(() => {
               setAgentStepStates({ read: 'done', edit: 'done', bash: 'done', done: 'done' });
+              playSound('agent-complete');
 
               // After 1.2s: Reset back to initial placeholder state
               agentDemoTimer = setTimeout(() => {
