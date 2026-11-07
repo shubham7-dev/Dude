@@ -698,6 +698,11 @@ pub fn play_sound_internal(app: &tauri::AppHandle, sound_id: &str) {
         return;
     }
 
+    // Touch and interaction sounds (poke, tab, collapse, expand) disabled per user request
+    if sound_id == "poke" || sound_id == "tab" || sound_id == "collapse" || sound_id == "expand" {
+        return;
+    }
+
     if !is_sound_effects_enabled(app) {
         return;
     }

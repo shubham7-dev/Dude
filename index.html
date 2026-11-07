@@ -6924,6 +6924,8 @@
 
     function playSound(id) {
       if (!id) return;
+      // Touch and interaction sounds disabled per user request
+      if (id === 'poke' || id === 'tab' || id === 'collapse' || id === 'expand') return;
       try {
         if (window.__TAURI__?.core?.invoke) {
           window.__TAURI__.core.invoke('play_sound', { id }).catch(() => { });
