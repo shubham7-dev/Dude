@@ -3079,12 +3079,12 @@
       pointer-events: auto;
     }
 
-    /* Approval box: relative to panel's top-left: left 110px, top 10px, 329 x 179px, background #000000, radius 6px, border 1.5px solid #2AA5E0 */
+    /* Approval box: relative to panel's top-left: left 109px, top 10px, 411 x 179px, background #000000, radius 6px, border 1.5px solid #2AA5E0 */
     .agent-approval-box {
       position: absolute;
-      left: 110px;
+      left: 109px;
       top: 10px;
-      width: 329px;
+      width: 411px;
       height: 179px;
       background-color: #000000;
       border-radius: 6px;
@@ -3095,12 +3095,12 @@
       z-index: 2;
     }
 
-    /* Title row: Inter bold 12px, white at left 24px, vertically centered about 15px from box top */
+    /* Title row: Inter bold 12px, white at left 12px, vertically centered about 15px from box top */
     .agent-approval-header {
       position: absolute;
-      left: 24px;
+      left: 12px;
       right: 12px;
-      top: 6px;
+      top: 8px;
       height: 18px;
       display: flex;
       align-items: center;
@@ -3141,16 +3141,17 @@
       display: inline;
     }
 
-    /* Command block: left 6px, top 26px inside box, 270px wide, up to 42px tall, bg #373764, radius 5px, padding 6px 8px, text white 11px monospace */
+    /* Command block: left 10px, right 10px, top 30px inside box, max-height 42px, bg #373764, radius 5px, padding 6px 10px, text white 11px monospace */
     .agent-approval-command {
       position: absolute;
-      left: 6px;
-      top: 26px;
-      width: 270px;
+      left: 10px;
+      right: 10px;
+      top: 30px;
+      width: calc(100% - 20px);
       max-height: 42px;
       background-color: #373764;
       border-radius: 5px;
-      padding: 6px 8px;
+      padding: 6px 10px;
       box-sizing: border-box;
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
@@ -3184,14 +3185,15 @@
       height: 0;
     }
 
-    /* Options list: left 9px, top 70px, 311px wide, down to box bottom; scrollable */
+    /* Options list: left 10px, right 10px, top 76px, width calc(100% - 20px), height 96px; scrollable */
     .agent-approval-options {
       position: absolute;
-      left: 9px;
-      top: 70px;
-      width: 311px;
-      height: 106px;
-      max-height: 106px;
+      left: 10px;
+      right: 10px;
+      top: 76px;
+      width: calc(100% - 20px);
+      height: 96px;
+      max-height: 96px;
       min-height: 0;
       overflow-y: auto;
       overflow-x: hidden;
@@ -3242,13 +3244,13 @@
       background-color: #666666;
     }
 
-    /* Submit button: left 375px, top 197px inside panel, 62 x 21px, bg #0A78D6, radius 4px, text "Submit" bold white 11px + small enter-arrow icon */
+    /* Submit button: left 458px, top 196px inside panel, 62 x 22px, bg #0A78D6, radius 4px, text "Submit" bold white 11px + small enter-arrow icon */
     .agent-approval-submit-btn {
       position: absolute;
-      left: 375px;
-      top: 197px;
+      left: 458px;
+      top: 196px;
       width: 62px;
-      height: 21px;
+      height: 22px;
       background-color: #0A78D6;
       border-radius: 4px;
       border: none;
@@ -10471,7 +10473,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
     }
 
     function closePanel(animate = true) {
-      if (!isPanelOpen() && !widget.classList.contains('chat-open') && !widget.classList.contains('control-center-open')) return;
+      if (!isPanelOpen() && !widget.classList.contains('chat-open') && !widget.classList.contains('control-center-open') && !widget.classList.contains('expanded')) return;
 
       if (typeof isChatMaximized !== 'undefined' && isChatMaximized) {
         setChatMaximized(false);
@@ -10537,9 +10539,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       if (isChatMaximized) {
         setChatMaximized(false);
       }
-      widget.classList.remove('panel-open', 'tab-agents', 'tab-chat', 'tab-controls', 'tab-hub', 'tab-clipboard', 'tab-dropvault', 'chat-open', 'control-center-open', 'approval-compact', 'chat-max');
+      widget.classList.remove('panel-open', 'tab-agents', 'tab-chat', 'tab-controls', 'tab-hub', 'tab-clipboard', 'tab-dropvault', 'chat-open', 'control-center-open', 'approval-compact', 'chat-max', 'expanded');
 
-      if (animate && widget.classList.contains('expanded')) {
+      if (animate) {
         widget.classList.add('chat-closing');
         monitorTransitionClickThrough();
         const mult = getSpeedMultiplier();
@@ -10549,7 +10551,14 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           chatClosingTimeout = null;
           updateEyeTracking();
           resetAutoCollapseTimer();
+          if (typeof onPillReturnedToCollapsed === 'function') {
+            onPillReturnedToCollapsed();
+          }
         }, closingDuration);
+      } else {
+        if (typeof onPillReturnedToCollapsed === 'function') {
+          onPillReturnedToCollapsed();
+        }
       }
 
       recordActivity();
@@ -15345,19 +15354,15 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       previousPillState = null;
 
       if (saved) {
-        if (saved.wasCollapsed) {
+        if (saved.wasCollapsed || saved.wasPlainExpanded) {
           closePanel(true);
-          widget.classList.remove('expanded');
-          triggerFurWiggle();
-          if (typeof onPillReturnedToCollapsed === 'function') {
-            onPillReturnedToCollapsed();
-          }
-        } else if (saved.wasPlainExpanded) {
-          closePanel(true);
-          widget.classList.add('expanded');
-        } else if (saved.wasPanelOpen && saved.prevTab && saved.prevTab !== 'agents') {
+        } else if (saved.wasPanelOpen && saved.prevTab) {
           switchTab(saved.prevTab);
+        } else {
+          closePanel(true);
         }
+      } else {
+        closePanel(true);
       }
 
       recordActivity();
@@ -17189,19 +17194,14 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       }
 
       // Collapsed <-> Expanded toggle (INSTANT, no delay)
-      const isExpanded = widget.classList.contains('expanded');
+      const isExpanded = widget.classList.contains('expanded') || isPanelOpen();
       if (isExpanded) {
-        widget.classList.remove('expanded');
-        playSound('collapse');
-        if (typeof onPillReturnedToCollapsed === 'function') {
-          onPillReturnedToCollapsed();
-        }
+        closePanel(true);
       } else {
         if (typeof exitNowPlayingState === 'function') {
           exitNowPlayingState(true);
         }
-        widget.classList.add('expanded');
-        playSound('expand');
+        switchTab('hub');
       }
 
       triggerFurWiggle();
