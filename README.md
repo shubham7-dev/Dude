@@ -42,17 +42,55 @@ Engineered with **Tauri 2, Rust, TypeScript, and Vite**, Dude operates with near
 
 ## Visual Showcase
 
-<p align="center">
-  <img src="assets/appearance-banner-both.png" alt="Dude Customization and Appearance" width="850">
-</p>
+<div align="center">
 
-<p align="center">
-  <img src="assets/agents-banner-dark.webp" alt="Agents Multi-Tab Diff Viewer" width="850">
-</p>
+### 1. 🛠️ Live Coding Agents & Real-Time Diff Viewer
+<img src="assets/screenshot-agents-diff.jpg" alt="Dude Agents Real-Time Diff Viewer" width="800">
+<p><em>Real-time visualization of agent turn progress (Read, Edit, Bash, Done) with inline line-numbered color-coded code diff streaming for Antigravity, Claude Code, and Cursor.</em></p>
 
-<p align="center">
-  <img src="assets/ai-banner-both.png" alt="Gemini AI Chat Assistant" width="850">
-</p>
+<br>
+
+### 2. ⚡ Quick Laptop Controls & Media Center
+<img src="assets/screenshot-controls-media.jpg" alt="Dude Laptop Hardware Controls & Media Center" width="800">
+<p><em>Integrated media player with live track info and album art alongside instant toggles for Wi-Fi, Bluetooth, Airplane Mode, Mobile Hotspot, Brightness, Volume, and real-time battery status.</em></p>
+
+<br>
+
+### 3. 🎵 Compact Now-Playing Pill & Audio Visualizer
+<img src="assets/screenshot-now-playing-pill.jpg" alt="Dude Compact Now-Playing Audio Visualizer Pill" width="600">
+<p><em>Minimal floating pill featuring track name, artist, album art, and an animated real-time audio spectrum frequency equalizer powered by native Rust WASAPI loopback capture and FFT analysis.</em></p>
+
+<br>
+
+### 4. 🎯 Hub Carousel & IDE Switcher
+<img src="assets/screenshot-hub-carousel.jpg" alt="Dude Hub Navigation Carousel & Quick Launchers" width="800">
+<p><em>Swipeable 3D card carousel navigating between Clipboard History, Agents Code Diff, and DropVault, with one-click direct launchers for Antigravity, VS Code, and Cursor.</em></p>
+
+<br>
+
+### 5. 🎨 Appearance & Island Customization
+<img src="assets/screenshot-settings-appearance.jpg" alt="Dude Appearance & Island Customization" width="800">
+<p><em>Full aesthetic control: 4 collectible mascot colorways (Pink, Blue, Cream, Black), pill color palettes, corner roundness sliders, window opacity, and multi-monitor screen position presets.</em></p>
+
+<br>
+
+### 6. 🤖 Gemini AI Assistant & Credential Setup
+<img src="assets/screenshot-settings-ai.jpg" alt="Dude Gemini AI Settings and Encrypted Key Storage" width="800">
+<p><em>Instant connectivity to Google AI Studio with custom persona prompts, model selection (gemini-3.5-flash-lite), and encrypted Windows Credential Manager storage for your personal API key.</em></p>
+
+<br>
+
+### 7. 📁 DropVault File Staging & OS Drag-Out
+<img src="assets/screenshot-dropvault-recent.jpg" alt="Dude DropVault Recent Files Shelf" width="800">
+<p><em>Desktop drop target with organized pastel card shelves. Single-click opens or reveals files in Explorer, while drag gesture triggers native Windows OLE drag-and-drop into external apps.</em></p>
+
+<br>
+
+### 8. 🛡️ Interactive Agent Tool & Command Approval
+<img src="assets/screenshot-tool-approval.jpg" alt="Dude Interactive Agent Command Approval Card" width="800">
+<p><em>Human-in-the-loop security guard: when an agent attempts to execute bash or PowerShell terminal commands, Dude presents a floating approval pill with command inspection, Allow (Y), and Deny (N) controls.</em></p>
+
+</div>
 
 ---
 
@@ -63,10 +101,6 @@ Engineered with **Tauri 2, Rust, TypeScript, and Vite**, Dude operates with near
 - **Color Personalities**: Four collectible body themes — **Cream (Classic)**, **Blush Pink**, **Sky Blue**, and **Midnight Black**.
 - **Adaptive Floating Pill**: Smoothly expands on hover or click; customizable roundness, background opacity, blur, and placement presets (Top Center, Top Left, Top Right, or custom X/Y coordinates).
 - **Audio Expressions**: Procedural, ultra-low-latency chimes and ambient reaction audio powered by a native Rust audio engine.
-
-<p align="center">
-  <img src="assets/behavior-banner-dark.png" alt="Mascot Behavior" width="850">
-</p>
 
 ---
 
@@ -94,7 +128,7 @@ Engineered with **Tauri 2, Rust, TypeScript, and Vite**, Dude operates with near
 - **Interactive Tool Approval**: Review, inspect, and approve/deny agent commands (`run_command`, terminal tasks) directly from the floating widget.
 
 <p align="center">
-  <img src="assets/agents-hooks-dark.webp" alt="Agent Hooks" width="850">
+  <img src="assets/screenshot-tool-approval.jpg" alt="Interactive Agent Tool Approval" width="550">
 </p>
 
 ---
@@ -109,7 +143,7 @@ Engineered with **Tauri 2, Rust, TypeScript, and Vite**, Dude operates with near
 - **One-Click Cleanup**: Move files older than your chosen threshold directly to Windows Recycle Bin.
 
 <p align="center">
-  <img src="assets/drop-folder-dropped.webp" alt="DropVault" width="400">
+  <img src="assets/screenshot-dropvault-recent.jpg" alt="DropVault Recent Files Shelf" width="550">
 </p>
 
 ---
@@ -121,6 +155,10 @@ Engineered with **Tauri 2, Rust, TypeScript, and Vite**, Dude operates with near
 - **Battery Hub**: Real-time battery percentage, AC power connection status, and Windows Battery Saver toggle.
 - **Connectivity Radios**: Instant toggles for Wi-Fi (with current SSID), Bluetooth, Airplane Mode, and Mobile Hotspot.
 - **Quick System Actions**: Lock Workstation, Sleep, launch Windows Snipping Tool (`ms-screenclip:`), and toggle Windows Dark/Light theme.
+
+<p align="center">
+  <img src="assets/screenshot-now-playing-pill.jpg" alt="Compact Now-Playing Audio Visualizer Pill" width="500">
+</p>
 
 ---
 
