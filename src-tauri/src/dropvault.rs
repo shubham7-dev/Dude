@@ -358,6 +358,40 @@ pub fn get_configured_vault_path(app: &AppHandle) -> Option<PathBuf> {
     None
 }
 
+/// Checks if a given path resides inside the vault directory (case-insensitive on Windows)
+pub fn is_path_in_vault(path: &Path, vault_path: &Path) -> bool {
+    // 1. Check canonicalized paths
+    if let (Ok(canon_p), Ok(canon_v)) = (path.canonicalize(), vault_path.canonicalize()) {
+        if canon_p.starts_with(&canon_v) {
+            return true;
+        }
+        #[cfg(windows)]
+        {
+            let p_lower = PathBuf::from(canon_p.to_string_lossy().to_lowercase());
+            let v_lower = PathBuf::from(canon_v.to_string_lossy().to_lowercase());
+            if p_lower.starts_with(&v_lower) {
+                return true;
+            }
+        }
+    }
+
+    // 2. Fallback without canonicalize (handles non-existent files or uncanonicalized strings)
+    let p_norm = path.to_string_lossy().replace('/', "\\");
+    let v_norm = vault_path.to_string_lossy().replace('/', "\\");
+    let p_clean = p_norm.trim_start_matches(r"\\?\");
+    let v_clean = v_norm.trim_start_matches(r"\\?\");
+
+    #[cfg(windows)]
+    let (p_cmp, v_cmp) = (p_clean.to_lowercase(), v_clean.to_lowercase());
+    #[cfg(not(windows))]
+    let (p_cmp, v_cmp) = (p_clean.to_string(), v_clean.to_string());
+
+    let p_path = Path::new(&p_cmp);
+    let v_path = Path::new(&v_cmp);
+
+    p_path.starts_with(v_path)
+}
+
 /// Saves vault path to app store
 fn save_configured_vault_path(app: &AppHandle, path: &Path) -> Result<(), String> {
     let key = get_store_key();
@@ -810,6 +844,11 @@ pub fn save_to_vault_internal(app: &AppHandle, paths: &[PathBuf]) -> VaultSaveRe
     for (i, p) in paths.iter().enumerate() {
         if i >= MAX_DROP_FILES {
             rejected.push("too-many".to_string());
+            continue;
+        }
+
+        // Prevent self-dropping / duplication of files already inside DropVault
+        if is_path_in_vault(p, &vault_path) {
             continue;
         }
 
@@ -2091,6 +2130,45 @@ mod tests {
         for safe in &["png", "jpg", "pdf", "docx", "txt", "zip", "md"] {
             assert!(!EXECUTABLE_EXTS.contains(safe), "{} should be safe", safe);
         }
+    }
+
+    #[test]
+    fn test_is_path_in_vault_and_self_drop_prevention() {
+        let temp_dir = std::env::temp_dir().join("dude_dropvault_test_selfdrop");
+        let _ = std::fs::create_dir_all(&temp_dir);
+
+        let vault_file = temp_dir.join("existing_file.png");
+        let _ = std::fs::File::create(&vault_file);
+
+        let outside_dir = std::env::temp_dir().join("dude_dropvault_test_outside");
+        let _ = std::fs::create_dir_all(&outside_dir);
+        let outside_file = outside_dir.join("outside.png");
+        let _ = std::fs::File::create(&outside_file);
+
+        // Path inside vault
+        assert!(is_path_in_vault(&vault_file, &temp_dir));
+
+        // Subdirectory file inside vault
+        let sub_dir = temp_dir.join("subfolder");
+        let _ = std::fs::create_dir_all(&sub_dir);
+        let sub_file = sub_dir.join("nested.png");
+        let _ = std::fs::File::create(&sub_file);
+        assert!(is_path_in_vault(&sub_file, &temp_dir));
+
+        // Outside file
+        assert!(!is_path_in_vault(&outside_file, &temp_dir));
+
+        // Sibling folder with prefix match (should NOT match)
+        let sibling_dir = std::env::temp_dir().join("dude_dropvault_test_selfdrop_other");
+        let _ = std::fs::create_dir_all(&sibling_dir);
+        let sibling_file = sibling_dir.join("file.png");
+        let _ = std::fs::File::create(&sibling_file);
+        assert!(!is_path_in_vault(&sibling_file, &temp_dir));
+
+        // Cleanup
+        let _ = std::fs::remove_dir_all(&temp_dir);
+        let _ = std::fs::remove_dir_all(&outside_dir);
+        let _ = std::fs::remove_dir_all(&sibling_dir);
     }
 
     #[test]

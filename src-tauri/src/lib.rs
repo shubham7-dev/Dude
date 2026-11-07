@@ -4554,9 +4554,25 @@ pub fn run() {
                     if window.label() != "main" || !window.is_visible().unwrap_or(false) {
                         return;
                     }
+                    let vault_opt = dropvault::get_configured_vault_path(window.app_handle())
+                        .or_else(|| {
+                            let def = dropvault::get_default_vault_path();
+                            if def.is_dir() { Some(def) } else { None }
+                        });
+                    let are_all_in_vault = |paths: &[std::path::PathBuf]| -> bool {
+                        if paths.is_empty() {
+                            return false;
+                        }
+                        if let Some(ref vp) = vault_opt {
+                            paths.iter().all(|p| dropvault::is_path_in_vault(p, vp))
+                        } else {
+                            false
+                        }
+                    };
+
                     match drag_event {
                         tauri::DragDropEvent::Enter { paths, .. } => {
-                            if paths.is_empty() {
+                            if paths.is_empty() || are_all_in_vault(paths) {
                                 return;
                             }
                             if IS_PROCESSING_DROP.load(Ordering::SeqCst) {
@@ -4601,7 +4617,7 @@ pub fn run() {
                             }
                         }
                         tauri::DragDropEvent::Drop { paths, .. } => {
-                            if paths.is_empty() {
+                            if paths.is_empty() || are_all_in_vault(paths) {
                                 if IS_FILE_DRAG_ACTIVE.swap(false, Ordering::SeqCst) {
                                     let _ = window.emit(
                                         "file-drop",

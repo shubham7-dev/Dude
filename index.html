@@ -10039,7 +10039,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       if (accepted > 0) {
         const msg = accepted === 1 ? 'Saved to DropVault' : `${accepted} files saved`;
         showDropPillMessage(msg, false);
-      } else {
+      } else if (Array.isArray(rejected) && rejected.length > 0) {
         let msg = "Couldn't save the file.";
         if (Array.isArray(rejected)) {
           if (rejected.includes('busy')) {
@@ -10085,6 +10085,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
     if (window.__TAURI__?.event?.listen) {
       window.__TAURI__.event.listen('file-drop', (event) => {
         if (!ENABLE_FILE_DROP) return;
+        if (isGlobalVaultDragging) return;
         const payload = event.payload || {};
         const state = payload.state;
         if (state === 'enter' || state === 'over') {
@@ -13185,10 +13186,14 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         }
 
         let onEventChannel = null;
+        const onDragEnd = () => {
+          isGlobalVaultDragging = false;
+        };
         if (window.__TAURI__?.core?.Channel) {
           onEventChannel = new window.__TAURI__.core.Channel();
+          onEventChannel.onmessage = onDragEnd;
         } else if (window.__TAURI_INTERNALS__?.transformCallback) {
-          const cbId = window.__TAURI_INTERNALS__.transformCallback(() => {});
+          const cbId = window.__TAURI_INTERNALS__.transformCallback(onDragEnd);
           onEventChannel = {
             __TAURI_CHANNEL_MARKER__: true,
             id: cbId,
@@ -13246,12 +13251,18 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           }
           const filePath = cardEl.getAttribute('data-path');
           if (filePath) {
-            await startDropVaultNativeDrag(filePath);
-          }
-          setTimeout(() => {
+            try {
+              await startDropVaultNativeDrag(filePath);
+            } finally {
+              setTimeout(() => {
+                isGlobalVaultDragging = false;
+                didDrag = false;
+              }, 400);
+            }
+          } else {
             isGlobalVaultDragging = false;
             didDrag = false;
-          }, 300);
+          }
         }
       });
 
