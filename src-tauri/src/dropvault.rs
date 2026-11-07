@@ -99,6 +99,7 @@ pub struct VaultFileItem {
     pub ext: String,
     pub size: u64,
     pub color_index: u8,
+    pub path: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -588,7 +589,10 @@ pub fn vault_recent(app: AppHandle) -> Result<Vec<VaultFileItem>, String> {
             canon.to_string_lossy().hash(&mut hasher);
             hasher.finish()
         });
-        map.insert(id.clone(), canon);
+        map.insert(id.clone(), canon.clone());
+
+        let canon_str = canon.to_string_lossy().to_string();
+        let clean_path = canon_str.strip_prefix(r"\\?\").unwrap_or(&canon_str).to_string();
 
         items.push(VaultFileItem {
             id,
@@ -596,6 +600,7 @@ pub fn vault_recent(app: AppHandle) -> Result<Vec<VaultFileItem>, String> {
             ext: c.ext,
             size: c.size,
             color_index: c.color_index,
+            path: clean_path,
         });
     }
 

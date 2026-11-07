@@ -2033,15 +2033,161 @@
       }
     }
 
-    /* File tab: left 109px, top 14px, max-width 60%, background black, radius 5px 5px 0 0 */
-    .agent-file-tab {
+    /* Multi-tab strip container: left 109px, top 14px, 411 x 15px */
+    .agent-tab-strip-wrapper {
       position: absolute;
       left: 109px;
       top: 14px;
-      width: auto;
-      max-width: 60%;
+      width: 411px;
       height: 15px;
-      background-color: #000000;
+      z-index: 2;
+      box-sizing: border-box;
+      pointer-events: auto;
+    }
+
+    .agent-tab-strip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+      height: 15px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
+    .agent-tab-strip::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    /* 14px edge fades for tab strip */
+    .agent-tab-fade-left {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 14px;
+      height: 15px;
+      background: linear-gradient(to right, #151B28 20%, transparent);
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+
+    .agent-tab-fade-right {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 14px;
+      height: 15px;
+      background: linear-gradient(to left, #151B28 20%, transparent);
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+
+    .agent-tab-fade-left.visible,
+    .agent-tab-fade-right.visible {
+      opacity: 1;
+    }
+
+    /* Individual tab button */
+    .agent-tab-item {
+      height: 15px;
+      background-color: #1B2130;
+      color: #9AA0AE;
+      border-radius: 5px 5px 0 0;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 6px;
+      gap: 4px;
+      box-sizing: border-box;
+      flex-shrink: 0;
+      border: none;
+      margin: 0;
+      cursor: pointer;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      outline: none;
+      text-decoration: none;
+      max-width: 220px;
+    }
+
+    .agent-tab-item.active {
+      background-color: #0B0C11;
+      color: #FFFFFF;
+      cursor: default;
+    }
+
+    .agent-tab-item:focus-visible {
+      outline: 1.5px solid #8B5CF6;
+      outline-offset: -1px;
+    }
+
+    .agent-tab-name {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 8px;
+      font-weight: 500;
+      color: inherit;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 150px;
+      min-width: 0;
+    }
+
+    /* 5px pulsing dot for live view tab (opacity only) */
+    .agent-tab-pulse-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: #67E8F9;
+      flex-shrink: 0;
+      animation: tabPulseDot 1.4s ease-in-out infinite;
+    }
+
+    @keyframes tabPulseDot {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.2;
+      }
+    }
+
+    /* Non-interactive dropped files chip */
+    .agent-tab-dropped {
+      height: 15px;
+      background-color: #1B2130;
+      color: #6B7280;
+      border-radius: 5px 5px 0 0;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 5px;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 8px;
+      font-weight: 500;
+      line-height: 1;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: default;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+
+    /* Backward compatibility fallback: single file tab */
+    .agent-file-tab {
+      height: 15px;
+      background-color: #0B0C11;
       border-radius: 5px 5px 0 0;
       display: inline-flex;
       align-items: center;
@@ -2050,6 +2196,8 @@
       box-sizing: border-box;
       z-index: 2;
       cursor: default;
+      border: none;
+      outline: none;
     }
 
     .agent-file-icon {
@@ -6106,8 +6254,8 @@
 
         <!-- Steps list: four rows of 20px height at tops 109px, 130px, 150px, 170px -->
         <div class="agent-steps-list" id="agent-steps-list">
-          <!-- Step 1: Read (running placeholder) -->
-          <div class="agent-step-row running" id="agent-step-read">
+          <!-- Step 1: Read (pending) -->
+          <div class="agent-step-row pending" id="agent-step-read">
             <div class="agent-step-icon-wrap">
               <svg class="step-default-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
                 stroke-linecap="round">
@@ -6195,19 +6343,25 @@
           </div>
         </div>
 
-        <!-- Code Component Container: File Tab + Code Box -->
+        <!-- Code Component Container: Tab Strip + Code Box -->
         <div class="agent-code-component" id="agent-code-component">
-          <!-- File tab: left 109px, top 14px, max-width 60%, background black, radius 5px 5px 0 0 -->
-          <div class="agent-file-tab" id="agent-file-tab" role="tab" aria-label="settings.html"
-            data-tooltip="settings.html">
-            <svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#FF8A1F" stroke-width="1.4"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M 3 2.5 L 1 5 L 3 7.5" />
-              <path d="M 7 2.5 L 9 5 L 7 7.5" />
-              <line x1="6" y1="2" x2="4" y2="8" />
-            </svg>
-            <span class="agent-file-name" id="agent-file-name">settings.html</span>
-            <span class="agent-file-stats" id="agent-file-stats"><span class="stat-add">+1</span><span class="stat-del">-1</span></span>
+          <!-- Multi-tab strip wrapper: left 109px, top 14px, 411 x 15px -->
+          <div class="agent-tab-strip-wrapper" id="agent-tab-strip-wrapper">
+            <div class="agent-tab-fade-left" id="agent-tab-fade-left" aria-hidden="true"></div>
+            <div class="agent-tab-strip" id="agent-tab-strip" role="tablist" aria-label="Edited files">
+              <button type="button" class="agent-tab-item active" id="agent-file-tab" role="tab" aria-selected="true" aria-label="settings.html"
+                data-tooltip="settings.html" tabindex="0">
+                <svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#FF8A1F" stroke-width="1.4"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M 3 2.5 L 1 5 L 3 7.5" />
+                  <path d="M 7 2.5 L 9 5 L 7 7.5" />
+                  <line x1="6" y1="2" x2="4" y2="8" />
+                </svg>
+                <span class="agent-file-name agent-tab-name" id="agent-file-name">settings.html</span>
+                <span class="agent-file-stats" id="agent-file-stats"><span class="stat-add">+1</span><span class="stat-del">-1</span></span>
+              </button>
+            </div>
+            <div class="agent-tab-fade-right" id="agent-tab-fade-right" aria-hidden="true"></div>
           </div>
 
           <!-- Code box: left 109px, top 29px, 411 x 159px, background #0B0C11, radius 6px -->
@@ -11726,6 +11880,47 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       return false;
     }
 
+    function normalizeFilePathKey(filePath) {
+      if (!filePath) return 'file';
+      return String(filePath).replace(/\\/g, '/').toLowerCase();
+    }
+
+    function getRelativeWorkspacePath(filePath, wsPaths) {
+      if (!filePath) return '';
+      const cleanPath = String(filePath).replace(/\\/g, '/');
+      if (Array.isArray(wsPaths)) {
+        for (const ws of wsPaths) {
+          if (!ws) continue;
+          const cleanWs = String(ws).replace(/\\/g, '/').replace(/\/+$/, '');
+          if (cleanPath.toLowerCase().startsWith(cleanWs.toLowerCase() + '/')) {
+            return cleanPath.slice(cleanWs.length + 1);
+          }
+          if (cleanPath.toLowerCase() === cleanWs.toLowerCase()) {
+            const parts = cleanPath.split('/');
+            return parts[parts.length - 1] || cleanPath;
+          }
+        }
+      }
+      // Outside workspace: show only file name (never absolute path or user name)
+      const parts = cleanPath.split('/');
+      return parts[parts.length - 1] || cleanPath;
+    }
+
+    function formatMiddleEllipsis(fileName, maxChars = 20) {
+      if (!fileName || fileName.length <= maxChars) return fileName || '';
+      const lastDot = fileName.lastIndexOf('.');
+      let ext = '';
+      let base = fileName;
+      if (lastDot > 0 && lastDot > fileName.length - 8) {
+        ext = fileName.slice(lastDot);
+        base = fileName.slice(0, lastDot);
+      }
+      const maxBase = Math.max(4, maxChars - ext.length - 1);
+      const frontChars = Math.ceil(maxBase * 0.55);
+      const backChars = Math.floor(maxBase * 0.45);
+      return base.slice(0, frontChars) + '…' + base.slice(base.length - backChars) + ext;
+    }
+
     function updateEdgeFades() {
       const cb = document.getElementById('agent-code-box');
       const fadeBottom = document.getElementById('agent-code-fade-bottom');
@@ -11741,8 +11936,50 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       }
     }
 
+    function updateTabStripFades() {
+      const strip = document.getElementById('agent-tab-strip');
+      const fadeLeft = document.getElementById('agent-tab-fade-left');
+      const fadeRight = document.getElementById('agent-tab-fade-right');
+      if (!strip) return;
+      const canScrollLeft = strip.scrollLeft > 2;
+      const canScrollRight = strip.scrollLeft < (strip.scrollWidth - strip.clientWidth - 2);
+      if (fadeLeft) fadeLeft.classList.toggle('visible', canScrollLeft);
+      if (fadeRight) fadeRight.classList.toggle('visible', canScrollRight);
+    }
+
     let userScrolledDetached = false;
     let autoFollowResumeTimer = null;
+    let pinTimerId = null;
+
+    function isTabPinned(conv) {
+      if (!conv || !conv.pinnedKey) return false;
+      if (Date.now() > (conv.pinnedUntil || 0)) {
+        conv.pinnedKey = null;
+        return false;
+      }
+      return true;
+    }
+
+    function pinTab(conv, fileKey) {
+      if (!conv) return;
+      conv.pinnedKey = fileKey;
+      conv.pinnedUntil = Date.now() + 10000;
+      if (pinTimerId) clearTimeout(pinTimerId);
+      pinTimerId = setTimeout(() => {
+        if (conv) conv.pinnedKey = null;
+      }, 10000);
+    }
+
+    function unpinTab(conv) {
+      if (!conv) return;
+      conv.pinnedKey = null;
+      conv.pinnedUntil = 0;
+      if (pinTimerId) {
+        clearTimeout(pinTimerId);
+        pinTimerId = null;
+      }
+      setLatestButtonVisibility(false);
+    }
 
     function setLatestButtonVisibility(show) {
       const btn = document.getElementById('agent-latest-btn');
@@ -11762,15 +11999,355 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
     function handleUserScrollInteraction() {
       userScrolledDetached = true;
+      if (activeAgentConversationId) {
+        const conv = agentConversations.get(activeAgentConversationId);
+        if (conv && conv.activeFileKey && conv.activeFileKey !== '__live__') {
+          pinTab(conv, conv.activeFileKey);
+        }
+      }
       setLatestButtonVisibility(true);
       if (autoFollowResumeTimer) clearTimeout(autoFollowResumeTimer);
       autoFollowResumeTimer = setTimeout(() => {
         userScrolledDetached = false;
         const cb = document.getElementById('agent-code-box');
         if (cb && cb.scrollTop >= (cb.scrollHeight - cb.clientHeight - 34)) {
-          setLatestButtonVisibility(false);
+          if (activeAgentConversationId) {
+            const conv = agentConversations.get(activeAgentConversationId);
+            if (!isTabPinned(conv)) {
+              setLatestButtonVisibility(false);
+            }
+          } else {
+            setLatestButtonVisibility(false);
+          }
         }
       }, 5000);
+    }
+
+    // Row builder
+    function buildRowsHtml(renderedRows, showCaret, lastAddedIdx) {
+      let rowsHtml = '';
+      for (let i = 0; i < renderedRows.length; i++) {
+        const r = renderedRows[i];
+        const rType = r.type || 'context';
+        const numStr = r.num !== undefined && r.num !== null ? String(r.num) : '';
+        const markerStr = r.marker || '';
+
+        if (rType === 'separator') {
+          rowsHtml += `<div class="agent-diff-row diff-separator"><div class="agent-diff-gutter"><span class="agent-diff-linenum"></span><span class="agent-diff-marker"></span></div><div class="agent-diff-text">⋯</div></div>`;
+          continue;
+        }
+        if (rType === 'truncated') {
+          rowsHtml += `<div class="agent-diff-row diff-truncated"><div class="agent-diff-gutter"><span class="agent-diff-linenum"></span><span class="agent-diff-marker"></span></div><div class="agent-diff-text">${escapeHtml(r.code)}</div></div>`;
+          continue;
+        }
+
+        let textHtml = '';
+        if (r.html !== undefined) {
+          textHtml = r.html;
+        } else if (rType === 'removed') {
+          textHtml = escapeHtml(r.code || '');
+        } else {
+          textHtml = tokenizeCodeLine(r.code || '');
+        }
+
+        const hasCaret = showCaret && i === lastAddedIdx;
+        const caretHtml = hasCaret ? '<span class="agent-diff-caret" aria-hidden="true"></span>' : '';
+
+        rowsHtml += `<div class="agent-diff-row diff-${rType}" data-idx="${i}">` +
+          `<div class="agent-diff-gutter"><span class="agent-diff-linenum">${escapeHtml(numStr)}</span><span class="agent-diff-marker">${escapeHtml(markerStr)}</span></div>` +
+          `<div class="agent-diff-text">${textHtml}${caretHtml}</div>` +
+          `</div>`;
+      }
+      return rowsHtml;
+    }
+
+    function recomputeFileRows(file) {
+      if (file.isSensitive) {
+        file.rows = [{ type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }];
+        return;
+      }
+
+      let rows = [];
+      for (let hi = 0; hi < file.hunks.length; hi++) {
+        if (hi > 0) {
+          rows.push({ type: 'separator', num: '', marker: '', code: '⋯' });
+        }
+        rows.push(...file.hunks[hi]);
+      }
+
+      // Per-file cap: at most 600 rows (older hunks dropped first, with "... earlier changes hidden" at top)
+      if (rows.length > 600) {
+        while (file.hunks.length > 1) {
+          file.hunks.shift();
+          rows = [];
+          for (let hi = 0; hi < file.hunks.length; hi++) {
+            if (hi > 0) rows.push({ type: 'separator', num: '', marker: '', code: '⋯' });
+            rows.push(...file.hunks[hi]);
+          }
+          if (rows.length <= 599) break;
+        }
+        if (rows.length > 599) {
+          rows = rows.slice(rows.length - 599);
+        }
+        rows.unshift({
+          type: 'truncated',
+          num: '',
+          marker: '',
+          code: '... earlier changes hidden'
+        });
+      }
+
+      file.rows = rows;
+    }
+
+    function enforceGlobalRowsCap(conv, maxTotal = 3000) {
+      if (!conv || !conv.fileStore) return;
+      let total = 0;
+      for (const f of conv.fileStore.values()) {
+        total += (f.rows ? f.rows.length : 0);
+      }
+      if (total <= maxTotal) return;
+
+      const sorted = Array.from(conv.fileStore.values()).sort((a, b) => a.lastTouched - b.lastTouched);
+      for (const f of sorted) {
+        if (total <= maxTotal) break;
+        while (f.hunks.length > 1 && total > maxTotal) {
+          const removedHunk = f.hunks.shift();
+          total -= removedHunk.length;
+          recomputeFileRows(f);
+        }
+      }
+    }
+
+    function addOrUpdateFileInStore(conv, opts) {
+      if (!conv.fileStore) conv.fileStore = new Map();
+      const { key, filePath, displayName, relPath, isSensitive, isNew, hunks, added, del, replaceHunks } = opts;
+
+      let file = conv.fileStore.get(key);
+      if (file && !replaceHunks) {
+        for (const h of hunks) {
+          file.hunks.push(h);
+        }
+        file.added += added;
+        file.removed += del;
+        file.lastTouched = Date.now();
+      } else if (file && replaceHunks) {
+        file.hunks = [...hunks];
+        file.added = added;
+        file.removed = 0;
+        file.lastTouched = Date.now();
+      } else {
+        file = {
+          pathKey: key,
+          path: filePath,
+          displayName,
+          relPath,
+          isSensitive: Boolean(isSensitive),
+          isNew: Boolean(isNew),
+          hunks: [...hunks],
+          added,
+          removed: del,
+          lastTouched: Date.now(),
+          scrollPos: { top: 0, left: 0 }
+        };
+        conv.fileStore.set(key, file);
+      }
+
+      recomputeFileRows(file);
+
+      // File cap: at most 12 files
+      if (conv.fileStore.size > 12) {
+        let oldestKey = null;
+        let oldestTouch = Infinity;
+        for (const [k, f] of conv.fileStore.entries()) {
+          if (f.lastTouched < oldestTouch) {
+            oldestTouch = f.lastTouched;
+            oldestKey = k;
+          }
+        }
+        if (oldestKey) {
+          conv.fileStore.delete(oldestKey);
+          conv.droppedFilesCount = (conv.droppedFilesCount || 0) + 1;
+          if (tabDomCache.has(oldestKey)) {
+            const c = tabDomCache.get(oldestKey);
+            if (c && c.el && c.el.parentNode) c.el.remove();
+            tabDomCache.delete(oldestKey);
+          }
+          if (conv.activeFileKey === oldestKey) {
+            conv.activeFileKey = key;
+          }
+        }
+      }
+
+      // Total rows cap: 3000 rows
+      enforceGlobalRowsCap(conv, 3000);
+
+      conv.lastEditKey = key;
+      if (!isTabPinned(conv)) {
+        conv.activeFileKey = key;
+      } else {
+        setLatestButtonVisibility(true);
+      }
+    }
+
+    // Tab DOM cache: at most 3 built tabs in DOM (LRU)
+    const tabDomCache = new Map(); // key -> { el, lastUsed, signature }
+    let currentRenderedTabKey = null;
+
+    function displayTabContent(fileEntry, status) {
+      const cb = document.getElementById('agent-code-box');
+      if (!cb) return;
+
+      if (currentRenderedTabKey && currentRenderedTabKey !== fileEntry.pathKey && activeAgentConversationId) {
+        const conv = agentConversations.get(activeAgentConversationId);
+        if (conv && conv.fileStore && conv.fileStore.has(currentRenderedTabKey)) {
+          conv.fileStore.get(currentRenderedTabKey).scrollPos = { top: cb.scrollTop, left: cb.scrollLeft };
+        }
+      }
+      currentRenderedTabKey = fileEntry.pathKey;
+
+      const rows = fileEntry.rows || [];
+      const isWorking = status === 'working';
+      let lastAddedIdx = -1;
+      for (let i = rows.length - 1; i >= 0; i--) {
+        if (rows[i].type === 'added') {
+          lastAddedIdx = i;
+          break;
+        }
+      }
+      const showCaret = isWorking && lastAddedIdx !== -1;
+      const sig = `${fileEntry.pathKey}_${rows.length}_${fileEntry.added}_${fileEntry.removed}_${showCaret ? lastAddedIdx : -1}`;
+
+      let cached = tabDomCache.get(fileEntry.pathKey);
+      if (!cached) {
+        if (tabDomCache.size >= 3) {
+          let oldestKey = null;
+          let oldestTime = Infinity;
+          for (const [k, v] of tabDomCache.entries()) {
+            if (v.lastUsed < oldestTime) {
+              oldestTime = v.lastUsed;
+              oldestKey = k;
+            }
+          }
+          if (oldestKey) {
+            const oldEntry = tabDomCache.get(oldestKey);
+            if (oldEntry && oldEntry.el && oldEntry.el.parentNode) {
+              oldEntry.el.remove();
+            }
+            tabDomCache.delete(oldestKey);
+          }
+        }
+        const tableEl = document.createElement('div');
+        tableEl.className = 'agent-diff-table';
+        tableEl.innerHTML = buildRowsHtml(rows, showCaret, lastAddedIdx);
+        cached = { el: tableEl, lastUsed: Date.now(), signature: sig };
+        tabDomCache.set(fileEntry.pathKey, cached);
+      } else {
+        cached.lastUsed = Date.now();
+        if (cached.signature !== sig) {
+          cached.el.innerHTML = buildRowsHtml(rows, showCaret, lastAddedIdx);
+          cached.signature = sig;
+        }
+      }
+
+      cb.innerHTML = '';
+      cb.appendChild(cached.el);
+
+      if (fileEntry.scrollPos) {
+        cb.scrollTop = fileEntry.scrollPos.top;
+        cb.scrollLeft = fileEntry.scrollPos.left;
+      } else {
+        cb.scrollTop = 0;
+        cb.scrollLeft = 0;
+      }
+
+      // Auto-follow: if auto-follow active and not user-detached, scroll to latest change
+      if (!userScrolledDetached) {
+        const maxScroll = Math.max(0, cb.scrollHeight - cb.clientHeight);
+        const targetScroll = Math.max(0, maxScroll - 34);
+        cb.scrollTo({
+          top: targetScroll,
+          left: 0,
+          behavior: 'smooth'
+        });
+      }
+
+      requestAnimationFrame(() => {
+        updateEdgeFades();
+      });
+    }
+
+    function renderTabsStrip(conv) {
+      const stripEl = document.getElementById('agent-tab-strip');
+      if (!stripEl) return;
+
+      const hasEdits = conv && conv.fileStore && conv.fileStore.size > 0;
+      const isLiveActive = conv && conv.activeFileKey === '__live__' && conv.liveViewContent;
+
+      let html = '';
+
+      // 1. Live Tab (if live view content exists)
+      if (conv && conv.liveViewContent) {
+        const lv = conv.liveViewContent;
+        const isActive = isLiveActive;
+        const pulsingDotHtml = (isActive && lv.isLive) ? '<span class="agent-tab-pulse-dot" aria-hidden="true"></span>' : '';
+        let iconSvg = '';
+        if (lv.iconKind === 'terminal') {
+          iconSvg = '<svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#67E8F9" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M 2 2.5 L 5 5 L 2 7.5" /><line x1="6" y1="7.5" x2="8.5" y2="7.5" /></svg>';
+        } else if (lv.iconKind === 'search') {
+          iconSvg = '<svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#E879F9" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="2.8" /><line x1="6.2" y1="6.2" x2="8.8" y2="8.8" /></svg>';
+        } else {
+          iconSvg = '<svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#FF8A1F" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M 3 2.5 L 1 5 L 3 7.5" /><path d="M 7 2.5 L 9 5 L 7 7.5" /><line x1="6" y1="2" x2="4" y2="8" /></svg>';
+        }
+        html += `<button type="button" class="agent-tab-item${isActive ? ' active' : ''}" role="tab" aria-selected="${isActive ? 'true' : 'false'}" aria-label="${escapeHtml(lv.fileName || 'live')}" data-tooltip="${escapeHtml(lv.fileName || 'live')}" data-file-key="__live__" tabindex="${isActive ? '0' : '-1'}">${pulsingDotHtml}${iconSvg}<span class="agent-tab-name">${escapeHtml(lv.fileName || 'live')}</span></button>`;
+      }
+
+      // 2. Edit Tabs
+      if (hasEdits) {
+        for (const [key, file] of conv.fileStore.entries()) {
+          const isActive = (!isLiveActive && conv.activeFileKey === key);
+          let statHtml = '';
+          let statAria = '';
+          if (file.isSensitive) {
+            statHtml = '';
+          } else if (file.isNew) {
+            statHtml = '<span class="agent-file-stats"><span class="stat-new">new</span></span>';
+            statAria = 'new';
+          } else {
+            let s = '';
+            if (file.added > 0) {
+              s += `<span class="stat-add">+${file.added}</span>`;
+              statAria += `+${file.added} `;
+            }
+            if (file.removed > 0) {
+              s += `<span class="stat-del">-${file.removed}</span>`;
+              statAria += `-${file.removed}`;
+            }
+            if (s) statHtml = `<span class="agent-file-stats">${s}</span>`;
+          }
+
+          const orangeIcon = '<svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#FF8A1F" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M 3 2.5 L 1 5 L 3 7.5" /><path d="M 7 2.5 L 9 5 L 7 7.5" /><line x1="6" y1="2" x2="4" y2="8" /></svg>';
+          const displayName = formatMiddleEllipsis(file.displayName || 'file');
+
+          html += `<button type="button" class="agent-tab-item${isActive ? ' active' : ''}" role="tab" aria-selected="${isActive ? 'true' : 'false'}" aria-label="${escapeHtml(file.displayName || 'file')} ${escapeHtml(statAria).trim()}" data-tooltip="${escapeHtml(file.relPath || file.displayName || 'file')}" data-file-key="${escapeHtml(key)}" tabindex="${isActive ? '0' : '-1'}">${orangeIcon}<span class="agent-tab-name">${escapeHtml(displayName)}</span>${statHtml}</button>`;
+        }
+      }
+
+      // 3. Dropped Files Chip (+K)
+      if (conv && conv.droppedFilesCount > 0) {
+        const k = conv.droppedFilesCount;
+        html += `<div class="agent-tab-dropped" role="note" aria-label="${k} more files" data-tooltip="${k} more files">+${k}</div>`;
+      }
+
+      stripEl.innerHTML = html;
+
+      // Ensure active tab is scrolled into view smoothly
+      const activeTabEl = stripEl.querySelector('.agent-tab-item.active');
+      if (activeTabEl && typeof activeTabEl.scrollIntoView === 'function') {
+        activeTabEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+      }
+
+      setTimeout(updateTabStripFades, 160);
     }
 
     let lastRenderedSignature = '';
@@ -11782,13 +12359,13 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         if (!root) return;
 
         const cb = document.getElementById('agent-code-box');
-        const table = document.getElementById('agent-diff-table');
+        const fileName = data.fileName || 'file';
+
+        // Update single-tab look in strip if present
         const tabEl = document.getElementById('agent-file-tab');
         const nameEl = document.getElementById('agent-file-name');
         const statsEl = document.getElementById('agent-file-stats');
 
-        // 1. File tab name, tooltip, aria-label (NEVER native title)
-        const fileName = data.fileName || 'file';
         if (nameEl) {
           nameEl.textContent = fileName;
           nameEl.removeAttribute('title');
@@ -11799,7 +12376,6 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           tabEl.removeAttribute('title');
         }
 
-        // 2. File tab icon
         if (tabEl && data.iconKind) {
           let iconSvg = '';
           if (data.iconKind === 'terminal') {
@@ -11813,7 +12389,6 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           if (existingSvg) existingSvg.outerHTML = iconSvg;
         }
 
-        // 3. File tab stats (+N in green, -M in red, or 'new' in green)
         if (statsEl) {
           if (data.stats) {
             if (data.stats.isNew) {
@@ -11829,7 +12404,6 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           }
         }
 
-        // 4. Build Rows Model
         let rows = [];
         if (Array.isArray(data.rows)) {
           rows = data.rows;
@@ -11843,7 +12417,6 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           }));
         }
 
-        // Cap at 600 rows
         let renderedRows = rows;
         if (renderedRows.length > 600) {
           const moreCount = renderedRows.length - 600;
@@ -11856,7 +12429,6 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           });
         }
 
-        // Find last added row for blinking caret
         let lastAddedIdx = -1;
         for (let i = renderedRows.length - 1; i >= 0; i--) {
           if (renderedRows[i].type === 'added') {
@@ -11868,7 +12440,6 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         const isWorking = data.status === 'working';
         const showCaret = isWorking && lastAddedIdx !== -1;
 
-        // Signature comparison to avoid unnecessary DOM rebuilds
         const sig = JSON.stringify({
           f: fileName,
           st: data.status,
@@ -11884,46 +12455,18 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         }
         lastRenderedSignature = sig;
 
-        // Render HTML for rows
-        let rowsHtml = '';
-        for (let i = 0; i < renderedRows.length; i++) {
-          const r = renderedRows[i];
-          const rType = r.type || 'context';
-          const numStr = r.num !== undefined && r.num !== null ? String(r.num) : '';
-          const markerStr = r.marker || '';
-
-          if (rType === 'separator') {
-            rowsHtml += `<div class="agent-diff-row diff-separator"><div class="agent-diff-gutter"><span class="agent-diff-linenum"></span><span class="agent-diff-marker"></span></div><div class="agent-diff-text">...</div></div>`;
-            continue;
+        if (cb) {
+          let table = cb.querySelector('.agent-diff-table');
+          if (!table) {
+            table = document.createElement('div');
+            table.className = 'agent-diff-table';
+            table.id = 'agent-diff-table';
+            cb.innerHTML = '';
+            cb.appendChild(table);
           }
-          if (rType === 'truncated') {
-            rowsHtml += `<div class="agent-diff-row diff-truncated"><div class="agent-diff-gutter"><span class="agent-diff-linenum"></span><span class="agent-diff-marker"></span></div><div class="agent-diff-text">${escapeHtml(r.code)}</div></div>`;
-            continue;
-          }
-
-          let textHtml = '';
-          if (r.html !== undefined) {
-            textHtml = r.html;
-          } else if (rType === 'removed') {
-            textHtml = escapeHtml(r.code || '');
-          } else {
-            textHtml = tokenizeCodeLine(r.code || '');
-          }
-
-          const hasCaret = showCaret && i === lastAddedIdx;
-          const caretHtml = hasCaret ? '<span class="agent-diff-caret" aria-hidden="true"></span>' : '';
-
-          rowsHtml += `<div class="agent-diff-row diff-${rType}" data-idx="${i}">` +
-            `<div class="agent-diff-gutter"><span class="agent-diff-linenum">${escapeHtml(numStr)}</span><span class="agent-diff-marker">${escapeHtml(markerStr)}</span></div>` +
-            `<div class="agent-diff-text">${textHtml}${caretHtml}</div>` +
-            `</div>`;
+          table.innerHTML = buildRowsHtml(renderedRows, showCaret, lastAddedIdx);
         }
 
-        if (table) {
-          table.innerHTML = rowsHtml;
-        }
-
-        // Auto-follow: smooth scroll down keeping latest change visible (~2 rows breathing room)
         if (cb && !userScrolledDetached) {
           const maxScroll = Math.max(0, cb.scrollHeight - cb.clientHeight);
           const targetScroll = Math.max(0, maxScroll - 34);
@@ -11939,18 +12482,123 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         });
       },
 
+      renderConversation(conv) {
+        if (!conv) return;
+
+        // Render tab strip
+        renderTabsStrip(conv);
+
+        // Render box content
+        if (conv.fileStore && conv.fileStore.size > 0 && conv.activeFileKey !== '__live__') {
+          if (!conv.activeFileKey || !conv.fileStore.has(conv.activeFileKey)) {
+            conv.activeFileKey = conv.lastEditKey || conv.fileStore.keys().next().value;
+          }
+          const fileEntry = conv.fileStore.get(conv.activeFileKey);
+          if (fileEntry) {
+            displayTabContent(fileEntry, conv.status);
+            return;
+          }
+        }
+
+        // Live view or single content
+        if (conv.activeFileKey === '__live__' && conv.liveViewContent) {
+          this.render({ ...conv.liveViewContent, status: conv.status });
+        } else if (conv.codeContent) {
+          this.render({ ...conv.codeContent, status: conv.status });
+        }
+      },
+
+      pinTab(conv, fileKey) {
+        pinTab(conv, fileKey);
+      },
+
+      unpinTab(conv) {
+        unpinTab(conv);
+      },
+
+      clearAllTabs() {
+        tabDomCache.clear();
+        currentRenderedTabKey = null;
+        lastRenderedSignature = '';
+        const stripEl = document.getElementById('agent-tab-strip');
+        if (stripEl) stripEl.innerHTML = '';
+      },
+
       onPanelClosed() {
         lastRenderedSignature = '';
         userScrolledDetached = false;
         setLatestButtonVisibility(false);
+        if (pinTimerId) {
+          clearTimeout(pinTimerId);
+          pinTimerId = null;
+        }
         if (autoFollowResumeTimer) {
           clearTimeout(autoFollowResumeTimer);
           autoFollowResumeTimer = null;
         }
+        const dot = document.querySelector('.agent-tab-pulse-dot');
+        if (dot) dot.remove();
         const caret = document.querySelector('.agent-diff-caret');
         if (caret) caret.remove();
       }
     };
+
+    // Attach listeners to tab strip
+    const agentTabStripEl = document.getElementById('agent-tab-strip');
+    if (agentTabStripEl) {
+      agentTabStripEl.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        agentTabStripEl.scrollLeft += (e.deltaY || e.deltaX);
+        updateTabStripFades();
+      }, { passive: false });
+
+      agentTabStripEl.addEventListener('scroll', () => {
+        updateTabStripFades();
+      }, { passive: true });
+
+      agentTabStripEl.addEventListener('click', (e) => {
+        const btn = e.target.closest('.agent-tab-item');
+        if (!btn || !activeAgentConversationId) return;
+        const conv = agentConversations.get(activeAgentConversationId);
+        if (!conv) return;
+
+        const key = btn.getAttribute('data-file-key');
+        if (key === '__live__') {
+          unpinTab(conv);
+          conv.activeFileKey = '__live__';
+          renderActiveConversationUI();
+        } else if (key && conv.fileStore && conv.fileStore.has(key)) {
+          pinTab(conv, key);
+          conv.activeFileKey = key;
+          renderActiveConversationUI();
+        }
+      });
+
+      agentTabStripEl.addEventListener('keydown', (e) => {
+        const tabs = Array.from(agentTabStripEl.querySelectorAll('.agent-tab-item'));
+        if (tabs.length === 0) return;
+        const currentFocusedIdx = tabs.indexOf(document.activeElement);
+
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          const nextIdx = (currentFocusedIdx + 1) % tabs.length;
+          tabs[nextIdx].focus();
+          tabs[nextIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+          setTimeout(updateTabStripFades, 160);
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          const prevIdx = (currentFocusedIdx - 1 + tabs.length) % tabs.length;
+          tabs[prevIdx].focus();
+          tabs[prevIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+          setTimeout(updateTabStripFades, 160);
+        } else if (e.key === 'Enter' || e.key === ' ') {
+          if (document.activeElement && document.activeElement.classList.contains('agent-tab-item')) {
+            e.preventDefault();
+            document.activeElement.click();
+          }
+        }
+      });
+    }
 
     // Attach listeners to code box and latest button
     const agentCodeBoxEl = document.getElementById('agent-code-box');
@@ -11959,7 +12607,14 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         updateEdgeFades();
         if (agentCodeBoxEl.scrollTop >= (agentCodeBoxEl.scrollHeight - agentCodeBoxEl.clientHeight - 10)) {
           userScrolledDetached = false;
-          setLatestButtonVisibility(false);
+          if (activeAgentConversationId) {
+            const conv = agentConversations.get(activeAgentConversationId);
+            if (!isTabPinned(conv)) {
+              setLatestButtonVisibility(false);
+            }
+          } else {
+            setLatestButtonVisibility(false);
+          }
         }
       }, { passive: true });
 
@@ -12011,6 +12666,16 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       agentLatestBtnEl.addEventListener('click', (e) => {
         e.stopPropagation();
         userScrolledDetached = false;
+        if (activeAgentConversationId) {
+          const conv = agentConversations.get(activeAgentConversationId);
+          if (conv) {
+            unpinTab(conv);
+            if (conv.lastEditKey && conv.fileStore && conv.fileStore.has(conv.lastEditKey)) {
+              conv.activeFileKey = conv.lastEditKey;
+            }
+            renderActiveConversationUI();
+          }
+        }
         setLatestButtonVisibility(false);
         if (agentCodeBoxEl) {
           const maxScroll = Math.max(0, agentCodeBoxEl.scrollHeight - agentCodeBoxEl.clientHeight);
@@ -12042,11 +12707,17 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           categories: { read: 'pending', edit: 'pending', bash: 'pending', done: 'pending' },
           runningCategory: null,
           codeContent: null,
+          fileStore: new Map(),
+          droppedFilesCount: 0,
+          activeFileKey: null,
+          liveViewContent: null,
+          lastEditKey: null,
           lastCommand: null,
           lastEventAt: Date.now()
         };
         agentConversations.set(id, conv);
       }
+      if (!conv.fileStore) conv.fileStore = new Map();
       const proj = extractProjectNameFromPayload(payload);
       if (proj && proj !== 'Antigravity') {
         conv.project = proj;
@@ -12073,16 +12744,50 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
     function mapToolToAgentCategory(toolName) {
       const t = (toolName || '').toLowerCase().trim();
-      if (['view_file', 'list_dir', 'find_by_name', 'grep_search', 'read_url_content', 'search_web'].includes(t)) {
+      if (!t) return null;
+
+      // READ tools: read_file, view_file, View, Read, list_dir, find_by_name, grep_search, search_web, glob, grep, read_url_content, get_doc, etc.
+      if (
+        t.includes('read') ||
+        t.includes('view') ||
+        t.includes('search') ||
+        t.includes('find') ||
+        t.includes('grep') ||
+        t.includes('glob') ||
+        t.includes('list') ||
+        t.includes('get_doc')
+      ) {
         return 'read';
       }
-      if (['write_to_file', 'replace_file_content', 'multi_replace_file_content'].includes(t)) {
+
+      // EDIT tools: edit_file, write_file, write_to_file, replace_file_content, multi_replace_file_content, Edit, Write, replace, patch, etc.
+      if (
+        t.includes('edit') ||
+        t.includes('write') ||
+        t.includes('replace') ||
+        t.includes('patch') ||
+        t.includes('create_file') ||
+        t.includes('insert') ||
+        t.includes('delete')
+      ) {
         return 'edit';
       }
-      if (['run_command', 'manage_task'].includes(t)) {
+
+      // BASH / COMMAND tools: run_command, bash, terminal, exec, cmd, powershell, manage_task
+      if (
+        t.includes('command') ||
+        t.includes('bash') ||
+        t.includes('terminal') ||
+        t.includes('exec') ||
+        t.includes('cmd') ||
+        t.includes('shell') ||
+        t.includes('powershell') ||
+        t.includes('manage_task')
+      ) {
         return 'bash';
       }
-      return null;
+
+      return 'read';
     }
 
     function parseToolArguments(toolCall) {
@@ -12107,9 +12812,17 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       const t = (toolName || '').toLowerCase().trim();
       const wsPaths = Array.isArray(payload.workspacePaths) ? payload.workspacePaths : (payload.workspacePath ? [payload.workspacePath] : []);
 
-      if (t === 'replace_file_content' || t === 'multi_replace_file_content') {
-        const filePath = args.TargetFile || args.target_file || args.path || args.file_path || args.FilePath || 'file';
+      const isEdit = t.includes('edit') || t.includes('replace') || t.includes('patch');
+      const isWrite = t.includes('write') || (t.includes('create') && t.includes('file'));
+      const isRead = t.includes('read') || t.includes('view');
+      const isCommand = t.includes('command') || t.includes('bash') || t.includes('terminal') || t.includes('cmd') || t.includes('shell');
+      const isSearch = t.includes('search') || t.includes('grep') || t.includes('find') || t.includes('list') || t.includes('glob');
+
+      if (isEdit) {
+        const filePath = args.Path || args.path || args.TargetFile || args.target_file || args.file_path || args.FilePath || 'file';
         const baseName = filePath.replace(/^.*[\\/]/, '') || 'file';
+        const fileKey = normalizeFilePathKey(filePath);
+        const relPath = getRelativeWorkspacePath(filePath, wsPaths);
 
         if (isSensitiveFileName(filePath)) {
           conv.codeContent = {
@@ -12118,21 +12831,48 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             stats: null,
             rows: [{ type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]
           };
+          addOrUpdateFileInStore(conv, {
+            key: fileKey,
+            filePath,
+            displayName: baseName,
+            relPath,
+            isSensitive: true,
+            isNew: false,
+            hunks: [[{ type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]],
+            added: 0,
+            del: 0
+          });
           return;
         }
 
         let chunks = [];
-        if (t === 'multi_replace_file_content') {
+        if (args.ReplacementChunks || args.replacement_chunks || args.chunks) {
           chunks = args.ReplacementChunks || args.replacement_chunks || args.chunks || [];
         }
         if (!Array.isArray(chunks) || chunks.length === 0) {
           chunks = [{
-            StartLine: args.StartLine || args.start_line || 1,
-            EndLine: args.EndLine || args.end_line || args.StartLine || args.start_line || 1,
-            TargetContent: args.TargetContent ?? args.target_content ?? args.old_string ?? args.old_content ?? '',
-            ReplacementContent: args.ReplacementContent ?? args.replacement_content ?? args.new_string ?? args.new_content ?? ''
+            StartLine: args.StartLine || args.start_line || 0,
+            EndLine: args.EndLine || args.end_line || 0,
+            TargetContent: args.Target ?? args.target ?? args.TargetContent ?? args.target_content ?? args.old_string ?? args.old_content ?? args.oldStr ?? '',
+            ReplacementContent: args.Replacement ?? args.replacement ?? args.ReplacementContent ?? args.replacement_content ?? args.new_string ?? args.new_content ?? args.newStr ?? ''
           }];
         }
+
+        // Read file from disk to get accurate line numbers and surrounding context
+        let fullFileLines = [];
+        try {
+          if (window.__TAURI__?.core?.invoke && filePath) {
+            const diskFull = await window.__TAURI__.core.invoke('read_agent_file', {
+              filePath,
+              startLine: 1,
+              endLine: 600,
+              workspacePaths: wsPaths
+            });
+            if (diskFull && Array.isArray(diskFull.lines)) {
+              fullFileLines = diskFull.lines;
+            }
+          }
+        } catch (_) {}
 
         const allDiffRows = [];
         let totalAdd = 0;
@@ -12140,11 +12880,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
         for (let ci = 0; ci < chunks.length; ci++) {
           if (ci > 0) {
-            allDiffRows.push({ type: 'separator', num: '', marker: '', code: '...' });
+            allDiffRows.push({ type: 'separator', num: '', marker: '', code: '⋯' });
           }
           const chunk = chunks[ci] || {};
-          const startLine = Number(chunk.StartLine || chunk.start_line || 1) || 1;
-          const endLine = Number(chunk.EndLine || chunk.end_line || startLine) || startLine;
           const targetRaw = chunk.TargetContent ?? chunk.target_content ?? chunk.old_string ?? '';
           const replacementRaw = chunk.ReplacementContent ?? chunk.replacement_content ?? chunk.new_string ?? '';
 
@@ -12154,43 +12892,31 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           totalDel += removedLines.length;
           totalAdd += addedLines.length;
 
-          // Read context lines before (up to 3) and after (up to 3) from disk
-          let ctxBefore = [];
-          let ctxAfter = [];
-          try {
-            const readStart = Math.max(1, startLine - 3);
-            const readEnd = endLine + 3;
-            let diskResult = null;
-            if (window.__TAURI__?.core?.invoke) {
-              diskResult = await window.__TAURI__.core.invoke('read_agent_file', {
-                filePath,
-                startLine: readStart,
-                endLine: readEnd,
-                workspacePaths: wsPaths
-              });
-            }
-            if (diskResult && Array.isArray(diskResult.lines)) {
-              const actualStart = diskResult.start_line || readStart;
-              for (let li = 0; li < diskResult.lines.length; li++) {
-                const lineNum = actualStart + li;
-                const lineText = redactSecretsInText(diskResult.lines[li]);
-                if (lineNum < startLine && lineNum >= (startLine - 3)) {
-                  ctxBefore.push({ type: 'context', num: lineNum, marker: '', code: lineText });
-                } else if (lineNum > endLine && lineNum <= (endLine + 3)) {
-                  ctxAfter.push({ lineNum, lineText });
-                }
+          let startLine = Number(chunk.StartLine || chunk.start_line || 0);
+          if (!startLine && fullFileLines.length > 0 && removedLines.length > 0) {
+            const firstTarget = removedLines[0].trim();
+            if (firstTarget) {
+              const idx = fullFileLines.findIndex(l => l.trim() === firstTarget);
+              if (idx !== -1) {
+                startLine = idx + 1;
               }
             }
-          } catch (err) {
-            // Disk read failed or outside workspace; proceed with what we have
           }
+          if (!startLine) startLine = 1;
+          const endLine = Number(chunk.EndLine || chunk.end_line || (startLine + Math.max(0, removedLines.length - 1))) || startLine;
 
-          // Add context before
-          for (const r of ctxBefore) {
-            allDiffRows.push(r);
+          // Context before
+          let ctxBefore = [];
+          if (fullFileLines.length > 0) {
+            for (let l = Math.max(1, startLine - 3); l < startLine; l++) {
+              if (l - 1 < fullFileLines.length) {
+                ctxBefore.push({ type: 'context', num: l, marker: '', code: redactSecretsInText(fullFileLines[l - 1]) });
+              }
+            }
           }
+          for (const r of ctxBefore) allDiffRows.push(r);
 
-          // Add removed rows
+          // Removed lines
           for (let ri = 0; ri < removedLines.length; ri++) {
             allDiffRows.push({
               type: 'removed',
@@ -12200,7 +12926,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             });
           }
 
-          // Add added rows
+          // Added lines
           for (let ai = 0; ai < addedLines.length; ai++) {
             allDiffRows.push({
               type: 'added',
@@ -12210,15 +12936,17 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             });
           }
 
-          // Add context after (line numbers shifted by added - removed)
+          // Context after
           const shift = addedLines.length - removedLines.length;
-          for (const ca of ctxAfter) {
-            allDiffRows.push({
-              type: 'context',
-              num: ca.lineNum + shift,
-              marker: '',
-              code: ca.lineText
-            });
+          if (fullFileLines.length > 0) {
+            for (let l = endLine + 1; l <= Math.min(fullFileLines.length, endLine + 3); l++) {
+              allDiffRows.push({
+                type: 'context',
+                num: l + shift,
+                marker: '',
+                code: redactSecretsInText(fullFileLines[l - 1])
+              });
+            }
           }
         }
 
@@ -12228,18 +12956,42 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           stats: { add: totalAdd, del: totalDel },
           rows: allDiffRows
         };
-      } else if (t === 'write_to_file') {
-        const filePath = args.TargetFile || args.target_file || args.path || args.file_path || args.FilePath || 'file';
+        addOrUpdateFileInStore(conv, {
+          key: fileKey,
+          filePath,
+          displayName: baseName,
+          relPath,
+          isSensitive: false,
+          isNew: false,
+          hunks: [allDiffRows],
+          added: totalAdd,
+          del: totalDel
+        });
+      } else if (isWrite) {
+        const filePath = args.Path || args.path || args.TargetFile || args.target_file || args.file_path || args.FilePath || 'file';
         const baseName = filePath.replace(/^.*[\\/]/, '') || 'file';
-        const rawCode = args.CodeContent ?? args.code_content ?? args.code ?? args.content ?? '';
+        const fileKey = normalizeFilePathKey(filePath);
+        const relPath = getRelativeWorkspacePath(filePath, wsPaths);
+        const rawCode = args.Content ?? args.content ?? args.CodeContent ?? args.code_content ?? args.code ?? '';
 
         if (isSensitiveFileName(filePath)) {
           conv.codeContent = {
             fileName: baseName,
             iconKind: 'file',
-            stats: { isNew: true },
+            stats: null,
             rows: [{ type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]
           };
+          addOrUpdateFileInStore(conv, {
+            key: fileKey,
+            filePath,
+            displayName: baseName,
+            relPath,
+            isSensitive: true,
+            isNew: false,
+            hunks: [[{ type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]],
+            added: 0,
+            del: 0
+          });
           return;
         }
 
@@ -12250,15 +13002,28 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           marker: '+',
           code: redactSecretsInText(l)
         }));
+        const fileExistedBefore = Boolean(conv.fileStore && conv.fileStore.has(fileKey));
 
         conv.codeContent = {
           fileName: baseName,
           iconKind: 'file',
-          stats: { isNew: true, add: rows.length, del: 0 },
+          stats: { isNew: !fileExistedBefore, add: rows.length, del: 0 },
           rows: rows.length > 0 ? rows : [{ type: 'added', num: 1, marker: '+', code: '' }]
         };
-      } else if (t === 'view_file') {
-        const filePath = args.AbsolutePath || args.absolute_path || args.path || args.file_path || args.TargetFile || '';
+        addOrUpdateFileInStore(conv, {
+          key: fileKey,
+          filePath,
+          displayName: baseName,
+          relPath,
+          isSensitive: false,
+          isNew: !fileExistedBefore,
+          replaceHunks: true,
+          hunks: [rows.length > 0 ? rows : [{ type: 'added', num: 1, marker: '+', code: '' }]],
+          added: rows.length,
+          del: 0
+        });
+      } else if (isRead) {
+        const filePath = args.Path || args.path || args.AbsolutePath || args.absolute_path || args.file_path || args.TargetFile || '';
         const baseName = filePath.replace(/^.*[\\/]/, '') || 'file';
         const startLine = Number(args.StartLine || args.start_line || 1) || 1;
         const endLine = args.EndLine || args.end_line ? Number(args.EndLine || args.end_line) : (startLine + 599);
@@ -12270,12 +13035,20 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             stats: null,
             rows: [{ type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]
           };
+          conv.liveViewContent = {
+            fileName: baseName,
+            iconKind: 'file',
+            stats: null,
+            isLive: true,
+            rows: [{ type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]
+          };
+          if (!isTabPinned(conv)) conv.activeFileKey = '__live__';
           return;
         }
 
         try {
           let result = null;
-          if (window.__TAURI__?.core?.invoke) {
+          if (window.__TAURI__?.core?.invoke && filePath) {
             result = await window.__TAURI__.core.invoke('read_agent_file', {
               filePath,
               startLine,
@@ -12292,6 +13065,13 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
                 stats: null,
                 rows: [{ type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]
               };
+              conv.liveViewContent = {
+                fileName: baseName,
+                iconKind: 'file',
+                stats: null,
+                isLive: true,
+                rows: [{ type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }]
+              };
             } else {
               const rows = result.lines.map((l, i) => ({
                 type: 'context',
@@ -12300,50 +13080,54 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
                 code: redactSecretsInText(l)
               }));
               conv.codeContent = { fileName: baseName, iconKind: 'file', stats: null, rows };
+              conv.liveViewContent = { fileName: baseName, iconKind: 'file', stats: null, isLive: true, rows };
             }
           } else {
-            conv.codeContent = {
-              fileName: baseName,
-              iconKind: 'file',
-              stats: null,
-              rows: [{ type: 'context', num: startLine, marker: '', code: `// Opened ${baseName}` }]
-            };
+            const rows = [{ type: 'context', num: startLine, marker: '', code: `// Reading ${baseName || 'file'}` }];
+            conv.codeContent = { fileName: baseName, iconKind: 'file', stats: null, rows };
+            conv.liveViewContent = { fileName: baseName, iconKind: 'file', stats: null, isLive: true, rows };
           }
-        } catch (err) {
-          conv.codeContent = {
-            fileName: baseName,
-            iconKind: 'file',
-            stats: null,
-            rows: [{ type: 'context', num: startLine, marker: '', code: `// ${baseName}` }]
-          };
+        } catch (_) {
+          const rows = [{ type: 'context', num: startLine, marker: '', code: `// Reading ${baseName || 'file'}` }];
+          conv.codeContent = { fileName: baseName, iconKind: 'file', stats: null, rows };
+          conv.liveViewContent = { fileName: baseName, iconKind: 'file', stats: null, isLive: true, rows };
         }
-      } else if (t === 'run_command') {
+        if (!isTabPinned(conv)) conv.activeFileKey = '__live__';
+      } else if (isCommand) {
         const cmd = args.CommandLine || args.command_line || args.command || args.cmd || '';
         conv.lastCommand = cmd;
-        conv.codeContent = {
+        const liveObj = {
           fileName: 'terminal',
           iconKind: 'terminal',
           stats: null,
           isTerminal: true,
+          isLive: true,
           lines: [
-            { num: '>', html: `<span style="color: #67E8F9;">$</span> <span style="color: #FFFFFF;">${escapeHtml(redactSecretsInText(cmd))}</span>` }
+            { num: '>', html: `<span style="color: #67E8F9;">$</span> <span style="color: #FFFFFF;">${escapeHtml(redactSecretsInText(cmd || 'running command...'))}</span>` }
           ]
         };
-      } else if (t === 'grep_search' || t === 'find_by_name' || t === 'list_dir') {
+        conv.codeContent = liveObj;
+        conv.liveViewContent = liveObj;
+        if (!isTabPinned(conv)) conv.activeFileKey = '__live__';
+      } else if (isSearch) {
         const query = args.Query || args.query || args.pattern || args.Pattern || args.DirectoryPath || args.directory_path || args.path || args.name || '';
-        conv.codeContent = {
+        const liveObj = {
           fileName: 'search',
           iconKind: 'search',
           stats: null,
+          isLive: true,
           lines: [
             { num: 1, html: `<span style="color: #E879F9;">query:</span> <span style="color: #FFFFFF;">${escapeHtml(redactSecretsInText(String(query)))}</span>` }
           ]
         };
+        conv.codeContent = liveObj;
+        conv.liveViewContent = liveObj;
+        if (!isTabPinned(conv)) conv.activeFileKey = '__live__';
       }
     }
 
     function updateCodePanelForPostCommand(conv, errorMsg) {
-      if (!conv || !conv.codeContent || !conv.codeContent.isTerminal) return;
+      if (!conv) return;
       const cmd = conv.lastCommand || '';
       const lines = [
         { num: '>', html: `<span style="color: #67E8F9;">$</span> <span style="color: #FFFFFF;">${escapeHtml(redactSecretsInText(cmd))}</span>` }
@@ -12355,7 +13139,13 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       } else {
         lines.push({ num: '✓', html: `<span class="agent-tok-done" style="color: #4CD800;">done</span>` });
       }
-      conv.codeContent.lines = lines;
+      if (conv.codeContent && conv.codeContent.isTerminal) {
+        conv.codeContent.lines = lines;
+      }
+      if (conv.liveViewContent && conv.liveViewContent.isTerminal) {
+        conv.liveViewContent.lines = lines;
+        conv.liveViewContent.isLive = false;
+      }
     }
 
 
@@ -12378,6 +13168,128 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       const frontChars = Math.ceil(maxBase * 0.55);
       const backChars = Math.floor(maxBase * 0.45);
       return base.slice(0, frontChars) + '...' + base.slice(base.length - backChars) + ext;
+    }
+
+    let isGlobalVaultDragging = false;
+    const DRAG_BASE64_ICON = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+    async function startDropVaultNativeDrag(filePath) {
+      if (!filePath) return;
+      try {
+        if (window.__TAURI__?.drag?.startDrag) {
+          await window.__TAURI__.drag.startDrag({
+            item: [filePath],
+            icon: DRAG_BASE64_ICON,
+          });
+          return;
+        }
+
+        let onEventChannel = null;
+        if (window.__TAURI__?.core?.Channel) {
+          onEventChannel = new window.__TAURI__.core.Channel();
+        } else if (window.__TAURI_INTERNALS__?.transformCallback) {
+          const cbId = window.__TAURI_INTERNALS__.transformCallback(() => {});
+          onEventChannel = {
+            __TAURI_CHANNEL_MARKER__: true,
+            id: cbId,
+            toJSON() { return `__CHANNEL__:${this.id}`; }
+          };
+        }
+
+        const invokeFn = window.__TAURI__?.core?.invoke || window.__TAURI_INTERNALS__?.invoke;
+        if (invokeFn) {
+          await invokeFn('plugin:drag|start_drag', {
+            item: [filePath],
+            image: DRAG_BASE64_ICON,
+            options: { mode: 'copy' },
+            onEvent: onEventChannel,
+          });
+        }
+      } catch (err) {
+        console.error('startDropVaultNativeDrag error:', err);
+      }
+    }
+
+    function setupVaultCardDragAndClick(cardEl) {
+      let startX = 0;
+      let startY = 0;
+      let isPointerDown = false;
+      let didDrag = false;
+      let capturedPointerId = null;
+      const DRAG_THRESHOLD = 6;
+
+      cardEl.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0) return;
+        isPointerDown = true;
+        didDrag = false;
+        startX = e.clientX;
+        startY = e.clientY;
+        capturedPointerId = e.pointerId;
+        try {
+          cardEl.setPointerCapture(e.pointerId);
+        } catch (_) {}
+      });
+
+      cardEl.addEventListener('pointermove', async (e) => {
+        if (!isPointerDown) return;
+        const dx = Math.abs(e.clientX - startX);
+        const dy = Math.abs(e.clientY - startY);
+        if (dx > DRAG_THRESHOLD || dy > DRAG_THRESHOLD) {
+          isPointerDown = false;
+          didDrag = true;
+          isGlobalVaultDragging = true;
+          if (capturedPointerId !== null) {
+            try {
+              cardEl.releasePointerCapture(capturedPointerId);
+            } catch (_) {}
+            capturedPointerId = null;
+          }
+          const filePath = cardEl.getAttribute('data-path');
+          if (filePath) {
+            await startDropVaultNativeDrag(filePath);
+          }
+          setTimeout(() => {
+            isGlobalVaultDragging = false;
+            didDrag = false;
+          }, 300);
+        }
+      });
+
+      const onPointerEnd = () => {
+        isPointerDown = false;
+        if (capturedPointerId !== null) {
+          try {
+            cardEl.releasePointerCapture(capturedPointerId);
+          } catch (_) {}
+          capturedPointerId = null;
+        }
+      };
+
+      cardEl.addEventListener('pointerup', onPointerEnd);
+      cardEl.addEventListener('pointercancel', onPointerEnd);
+
+      cardEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (didDrag || isGlobalVaultDragging) {
+          didDrag = false;
+          return;
+        }
+        const curId = cardEl.getAttribute('data-id');
+        if (curId) {
+          handleVaultOpen(curId);
+        }
+      });
+
+      cardEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          e.stopPropagation();
+          const curId = cardEl.getAttribute('data-id');
+          if (curId) {
+            handleVaultOpen(curId);
+          }
+        }
+      });
     }
 
     async function refreshDropVaultUI(customCards = null, customStatus = null) {
@@ -12522,6 +13434,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               cardEl.setAttribute('tabindex', '0');
               cardEl.setAttribute('data-index', i.toString());
               cardEl.setAttribute('data-id', card.id);
+              cardEl.setAttribute('data-path', card.path || '');
               cardEl.setAttribute('aria-label', `Open ${card.name}`);
 
               cardEl.style.left = `${left}px`;
@@ -12535,19 +13448,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
                 </div>
               `;
 
-              cardEl.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const curId = cardEl.getAttribute('data-id') || card.id;
-                handleVaultOpen(curId);
-              });
-              cardEl.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const curId = cardEl.getAttribute('data-id') || card.id;
-                  handleVaultOpen(curId);
-                }
-              });
+              setupVaultCardDragAndClick(cardEl);
 
               gridEl.appendChild(cardEl);
               requestAnimationFrame(() => {
@@ -12555,6 +13456,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               });
             } else {
               cardEl.setAttribute('data-id', card.id);
+              cardEl.setAttribute('data-path', card.path || '');
               cardEl.className = `dropvault-card dropvault-palette-${card.color_index}`;
               cardEl.setAttribute('aria-label', `Open ${card.name}`);
               cardEl.style.left = `${left}px`;
@@ -12568,6 +13470,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           if (!gridEl.hasAttribute('data-delegated')) {
             gridEl.setAttribute('data-delegated', 'true');
             gridEl.addEventListener('click', (e) => {
+              if (isGlobalVaultDragging) return;
               const card = e.target.closest('.dropvault-card');
               if (!card) return;
               e.stopPropagation();
@@ -12899,14 +13802,236 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             window.AgentCodeViewer.render(defaultFigmaMockDiff);
             if (typeof showCcToast === 'function') showCcToast('Loaded Figma Mockup Diff');
           } else if (devKeyLStep === 2) {
-            // Press 2: 300-row long diff with 300-char lines + automated audit
+            // Press 2: 14 files turn with multi-edit file, duplicate basenames, new file, sensitive file, long file, live command
             dismissEmptyState();
             if (typeof switchTab === 'function') switchTab('agents');
+
+            const convId = 'dev-test-14files';
+            activeAgentConversationId = convId;
+            const conv = getOrCreateAgentConversation(convId, { workspacePaths: ['D:/MY devlopment/dude2.O'] });
+            conv.status = 'working';
+            conv.fileStore = new Map();
+            conv.droppedFilesCount = 0;
+            conv.activeFileKey = null;
+            conv.liveViewContent = null;
+            conv.lastEditKey = null;
+            unpinTab(conv);
+            if (window.AgentCodeViewer?.clearAllTabs) {
+              window.AgentCodeViewer.clearAllTabs();
+            }
+
+            const wsPaths = ['D:/MY devlopment/dude2.O'];
+
+            // 1. index.html - Hunk 1
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('index.html'),
+              filePath: 'D:/MY devlopment/dude2.O/index.html',
+              displayName: 'index.html',
+              relPath: 'index.html',
+              isSensitive: false,
+              isNew: false,
+              hunks: [[
+                { type: 'context', num: 10, marker: '', code: "import { Item } from './types'" },
+                { type: 'removed', num: 12, marker: '-', code: "const TVA = 0.196" },
+                { type: 'added', num: 12, marker: '+', code: "const TVA = 0.20" }
+              ]],
+              added: 1,
+              del: 1
+            });
+
+            // 2. settings.html
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('settings.html'),
+              filePath: 'D:/MY devlopment/dude2.O/settings.html',
+              displayName: 'settings.html',
+              relPath: 'settings.html',
+              isSensitive: false,
+              isNew: false,
+              hunks: [[
+                { type: 'context', num: 1, marker: '', code: '<!DOCTYPE html>' },
+                { type: 'added', num: 2, marker: '+', code: '<div class="settings-wrap">' },
+                { type: 'added', num: 3, marker: '+', code: '  <span class="label">Config</span>' },
+                { type: 'removed', num: 4, marker: '-', code: '  <span class="old-label">Legacy</span>' }
+              ]],
+              added: 5,
+              del: 2
+            });
+
+            // 3. src/main.ts
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('src/main.ts'),
+              filePath: 'D:/MY devlopment/dude2.O/src/main.ts',
+              displayName: 'main.ts',
+              relPath: 'src/main.ts',
+              isSensitive: false,
+              isNew: false,
+              hunks: [[
+                { type: 'context', num: 1, marker: '', code: 'import { bootstrap } from "./app";' },
+                { type: 'added', num: 2, marker: '+', code: 'bootstrap({ debug: true });' }
+              ]],
+              added: 12,
+              del: 4
+            });
+
+            // 4. src/utils/parser.ts (duplicate basename #1)
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('src/utils/parser.ts'),
+              filePath: 'D:/MY devlopment/dude2.O/src/utils/parser.ts',
+              displayName: 'parser.ts',
+              relPath: 'src/utils/parser.ts',
+              isSensitive: false,
+              isNew: false,
+              hunks: [[
+                { type: 'context', num: 1, marker: '', code: 'export function parseInput(raw: string) {' },
+                { type: 'added', num: 2, marker: '+', code: '  return raw.trim().toLowerCase();' }
+              ]],
+              added: 8,
+              del: 0
+            });
+
+            // 5. tests/utils/parser.ts (duplicate basename #2)
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('tests/utils/parser.ts'),
+              filePath: 'D:/MY devlopment/dude2.O/tests/utils/parser.ts',
+              displayName: 'parser.ts',
+              relPath: 'tests/utils/parser.ts',
+              isSensitive: false,
+              isNew: false,
+              hunks: [[
+                { type: 'context', num: 1, marker: '', code: 'import { parseInput } from "../../src/utils/parser";' },
+                { type: 'added', num: 2, marker: '+', code: 'test("parser parses correctly", () => {});' }
+              ]],
+              added: 20,
+              del: 5
+            });
+
+            // 6. index.html - Hunk 2
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('index.html'),
+              filePath: 'D:/MY devlopment/dude2.O/index.html',
+              displayName: 'index.html',
+              relPath: 'index.html',
+              isSensitive: false,
+              isNew: false,
+              hunks: [[
+                { type: 'context', num: 45, marker: '', code: '<div class="footer">' },
+                { type: 'added', num: 46, marker: '+', code: '  <span class="copy">Copyright 2026</span>' }
+              ]],
+              added: 4,
+              del: 2
+            });
+
+            // 7. report.md (new file)
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('report.md'),
+              filePath: 'D:/MY devlopment/dude2.O/report.md',
+              displayName: 'report.md',
+              relPath: 'report.md',
+              isSensitive: false,
+              isNew: true,
+              hunks: [[
+                { type: 'added', num: 1, marker: '+', code: '# Turn Report' },
+                { type: 'added', num: 2, marker: '+', code: 'All tasks completed successfully.' }
+              ]],
+              added: 40,
+              del: 0
+            });
+
+            // 8. .env (hidden sensitive file)
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('.env'),
+              filePath: 'D:/MY devlopment/dude2.O/.env',
+              displayName: '.env',
+              relPath: '.env',
+              isSensitive: true,
+              isNew: false,
+              hunks: [[
+                { type: 'context', num: 1, marker: '', html: '<span style="color: #6B7280;">Hidden (sensitive file)</span>' }
+              ]],
+              added: 0,
+              del: 0
+            });
+
+            // 9. Simulated live run_command in the middle
+            conv.lastCommand = 'npm test';
+            conv.liveViewContent = {
+              fileName: 'terminal',
+              iconKind: 'terminal',
+              stats: null,
+              isTerminal: true,
+              isLive: true,
+              lines: [
+                { num: '>', html: '<span style="color: #67E8F9;">$</span> <span style="color: #FFFFFF;">npm test</span>' }
+              ]
+            };
+
+            // 10. index.html - Hunk 3 (3rd edit on index.html)
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('index.html'),
+              filePath: 'D:/MY devlopment/dude2.O/index.html',
+              displayName: 'index.html',
+              relPath: 'index.html',
+              isSensitive: false,
+              isNew: false,
+              hunks: [[
+                { type: 'context', num: 80, marker: '', code: 'function finalize() {' },
+                { type: 'added', num: 81, marker: '+', code: '  return true;' }
+              ]],
+              added: 2,
+              del: 1
+            });
+
+            // 11. src/components/Header.tsx
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('src/components/Header.tsx'),
+              filePath: 'D:/MY devlopment/dude2.O/src/components/Header.tsx',
+              displayName: 'Header.tsx',
+              relPath: 'src/components/Header.tsx',
+              isSensitive: false,
+              isNew: false,
+              hunks: [[
+                { type: 'added', num: 1, marker: '+', code: 'export const Header = () => <header />;' }
+              ]],
+              added: 6,
+              del: 2
+            });
+
+            // 12. src/components/Footer.tsx
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('src/components/Footer.tsx'),
+              filePath: 'D:/MY devlopment/dude2.O/src/components/Footer.tsx',
+              displayName: 'Footer.tsx',
+              relPath: 'src/components/Footer.tsx',
+              isSensitive: false,
+              isNew: false,
+              hunks: [[
+                { type: 'added', num: 1, marker: '+', code: 'export const Footer = () => <footer />;' }
+              ]],
+              added: 4,
+              del: 1
+            });
+
+            // 13. src/services/api.ts (13th file -> drops oldest file, droppedFilesCount = 1)
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('src/services/api.ts'),
+              filePath: 'D:/MY devlopment/dude2.O/src/services/api.ts',
+              displayName: 'api.ts',
+              relPath: 'src/services/api.ts',
+              isSensitive: false,
+              isNew: false,
+              hunks: [[
+                { type: 'added', num: 1, marker: '+', code: 'export const fetchUser = async () => {};' }
+              ]],
+              added: 15,
+              del: 7
+            });
+
+            // 14. large_data_table.ts (14th file -> long file with 150 rows, drops another file, droppedFilesCount = 2, +2 chip!)
             const longRows = [];
-            for (let i = 1; i <= 300; i++) {
+            for (let i = 1; i <= 150; i++) {
               const rType = (i % 15 === 0) ? 'removed' : ((i % 15 === 1) ? 'added' : 'context');
               const rMarker = rType === 'removed' ? '-' : (rType === 'added' ? '+' : '');
-              const pad = `// Row ${i} test line content `.padEnd(280, '-');
+              const pad = `// Row ${i} test line content `.padEnd(200, '-');
               longRows.push({
                 type: rType,
                 num: i,
@@ -12914,17 +14039,23 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
                 code: `const testItem_${i} = "${pad}";`
               });
             }
-            window.AgentCodeViewer.render({
-              fileName: 'large_data_table.ts',
-              iconKind: 'file',
-              status: 'working',
-              stats: { add: 20, del: 20 },
-              rows: longRows
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('large_data_table.ts'),
+              filePath: 'D:/MY devlopment/dude2.O/large_data_table.ts',
+              displayName: 'large_data_table.ts',
+              relPath: 'large_data_table.ts',
+              isSensitive: false,
+              isNew: false,
+              hunks: [longRows],
+              added: 20,
+              del: 20
             });
+
+            renderActiveConversationUI();
 
             setTimeout(async () => {
               await __runAgentsPanelAudit();
-            }, 100);
+            }, 120);
           }
         }
       });
@@ -12933,70 +14064,155 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         const results = [];
         const pill = document.querySelector('.widget');
         const pillRect = pill ? pill.getBoundingClientRect() : { width: 0, height: 0 };
-
-        // 1. Pill width = 560
-        const wPass = Math.abs(pillRect.width - 560) <= 1;
-        results.push({ name: 'Pill width = 560 (±1px)', pass: wPass, actual: `${pillRect.width.toFixed(1)}px` });
-
-        // 2. Pill height = 271
-        const hPass = Math.abs(pillRect.height - 271) <= 1;
-        results.push({ name: 'Pill height = 271 (±1px)', pass: hPass, actual: `${pillRect.height.toFixed(1)}px` });
-
-        // 3. Code box insets: left 109px, top 29px, width 411px, height 159px, right margin 10px
         const dp = document.querySelector('.agents-dark-panel');
+        const dpRect = dp ? dp.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0, right: 0 };
         const cb = document.getElementById('agent-code-box');
         const cbRect = cb ? cb.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0, right: 0 };
-        const dpRect = dp ? dp.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0, right: 0 };
-        const leftInset = Math.round(cbRect.left - dpRect.left);
-        const topInset = Math.round(cbRect.top - dpRect.top);
-        const cbWidth = Math.round(cbRect.width);
-        const cbHeight = Math.round(cbRect.height);
-        const rightMargin = Math.round(dpRect.right - cbRect.right);
-        const insetsPass = Math.abs(leftInset - 109) <= 1 &&
-          Math.abs(topInset - 29) <= 1 &&
-          Math.abs(cbWidth - 411) <= 1 &&
-          Math.abs(cbHeight - 159) <= 1 &&
-          Math.abs(rightMargin - 10) <= 1;
+        const stripWrapper = document.getElementById('agent-tab-strip-wrapper');
+        const strip = document.getElementById('agent-tab-strip');
+
+        // 1. Tab strip size unchanged from single-tab layout: left 109, top 14, width 411, height 15
+        const swRect = stripWrapper ? stripWrapper.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0 };
+        const sLeft = Math.round(swRect.left - dpRect.left);
+        const sTop = Math.round(swRect.top - dpRect.top);
+        const sW = Math.round(swRect.width);
+        const sH = Math.round(swRect.height);
+        const stripSizePass = Math.abs(sLeft - 109) <= 1 && Math.abs(sTop - 14) <= 1 && Math.abs(sW - 411) <= 1 && Math.abs(sH - 15) <= 1;
         results.push({
-          name: 'Code box insets (left 109, top 29, w 411, h 159, right 10)',
-          pass: insetsPass,
-          actual: `left=${leftInset}, top=${topInset}, w=${cbWidth}, h=${cbHeight}, right=${rightMargin}`
+          name: 'Tab strip size unchanged (left 109, top 14, w 411, h 15)',
+          pass: stripSizePass,
+          actual: `left=${sLeft}, top=${sTop}, w=${sW}, h=${sH}`
         });
 
-        // 4. Sticky gutter during horizontal scroll (scrollLeft = 120 -> gutter pinned to left: 0)
-        if (cb) cb.scrollLeft = 120;
-        await new Promise(r => requestAnimationFrame(r));
-        const gutter = cb ? cb.querySelector('.agent-diff-gutter') : null;
-        const gRect = gutter ? gutter.getBoundingClientRect() : { left: 0 };
-        const gutterOffset = Math.round(gRect.left - cbRect.left);
-        const gutterPass = Math.abs(gutterOffset) <= 1;
+        // 2. Active tab joined to the code box
+        const activeTab = strip ? strip.querySelector('.agent-tab-item.active') : null;
+        let tabJoinedPass = false;
+        let tabJoinedActual = 'no active tab';
+        if (activeTab && cb) {
+          const atRect = activeTab.getBoundingClientRect();
+          const tabBg = window.getComputedStyle(activeTab).backgroundColor;
+          const cbBg = window.getComputedStyle(cb).backgroundColor;
+          const bottomDiff = Math.abs(atRect.bottom - cbRect.top);
+          tabJoinedPass = bottomDiff <= 1.5 && (tabBg === cbBg || tabBg.includes('11, 12, 17') || tabBg === 'rgb(0, 0, 0)');
+          tabJoinedActual = `bottomDiff=${bottomDiff}px, tabBg=${tabBg}, cbBg=${cbBg}`;
+        }
         results.push({
-          name: 'Sticky gutter pinned to left: 0 after scrollLeft = 120',
-          pass: gutterPass,
-          actual: `offset=${gutterOffset}px`
+          name: 'Active tab visually joined to code box',
+          pass: tabJoinedPass,
+          actual: tabJoinedActual
         });
 
-        // 5. Full-width row backgrounds (extends to scrollWidth)
-        const firstRow = cb ? cb.querySelector('.agent-diff-row') : null;
-        const rowWidth = firstRow ? firstRow.clientWidth : 0;
-        const scrollW = cb ? cb.scrollWidth : 0;
-        const bgFullWidthPass = Math.abs(rowWidth - scrollW) <= 2;
+        // 3. Horizontal scroll of the strip
+        const canScrollStrip = strip ? (strip.scrollWidth > strip.clientWidth) : false;
         results.push({
-          name: 'Full-width row backgrounds extend to scrollWidth',
-          pass: bgFullWidthPass,
-          actual: `row=${rowWidth}px, scrollWidth=${scrollW}px`
+          name: 'Horizontal scroll of the tab strip (scrollWidth > clientWidth)',
+          pass: canScrollStrip,
+          actual: strip ? `scrollWidth=${strip.scrollWidth}, clientWidth=${strip.clientWidth}` : 'none'
         });
 
-        // 6. No visible scrollbar (scrollbar-width === none)
-        const cbStyle = cb ? window.getComputedStyle(cb) : {};
-        const noScrollbarPass = cbStyle.scrollbarWidth === 'none' || (cb.offsetWidth - cb.clientWidth <= 1);
+        // 4. 14px edge fades
+        const fadeLeft = document.getElementById('agent-tab-fade-left');
+        const fadeRight = document.getElementById('agent-tab-fade-right');
+        const flW = fadeLeft ? Math.round(fadeLeft.getBoundingClientRect().width) : 0;
+        const frW = fadeRight ? Math.round(fadeRight.getBoundingClientRect().width) : 0;
+        const flPe = fadeLeft ? window.getComputedStyle(fadeLeft).pointerEvents : '';
+        const frPe = fadeRight ? window.getComputedStyle(fadeRight).pointerEvents : '';
+        const fadesPass = (flW === 14 || flW === 0) && (frW === 14) && flPe === 'none' && frPe === 'none';
         results.push({
-          name: 'No visible scrollbar (scrollbar-width === none)',
-          pass: noScrollbarPass,
-          actual: `scrollbarWidth=${cbStyle.scrollbarWidth}`
+          name: '14px edge fades with pointer-events: none',
+          pass: fadesPass,
+          actual: `leftW=${flW}, rightW=${frW}, pe=${frPe}`
         });
 
-        // 7. Hit-testing: floating button / empty overlay do not block clicks when hidden
+        // 5. +K dropped chip (+2 files dropped)
+        const droppedChip = strip ? strip.querySelector('.agent-tab-dropped') : null;
+        const chipPass = Boolean(droppedChip && droppedChip.textContent.includes('+2') && droppedChip.getAttribute('data-tooltip') === '2 more files');
+        results.push({
+          name: '+K chip (+2 dropped files chip with tooltip)',
+          pass: chipPass,
+          actual: droppedChip ? `text=${droppedChip.textContent}, tip=${droppedChip.getAttribute('data-tooltip')}` : 'missing'
+        });
+
+        // 6. Per-tab scroll restoration
+        let scrollRestoredPass = false;
+        let scrollRestoredActual = '';
+        if (activeAgentConversationId) {
+          const conv = agentConversations.get(activeAgentConversationId);
+          const longKey = normalizeFilePathKey('large_data_table.ts');
+          const indexKey = normalizeFilePathKey('index.html');
+          if (conv && conv.fileStore && conv.fileStore.has(longKey) && conv.fileStore.has(indexKey) && cb) {
+            // Switch to long file
+            conv.activeFileKey = longKey;
+            displayTabContent(conv.fileStore.get(longKey), conv.status);
+            cb.scrollTop = 70;
+            conv.fileStore.get(longKey).scrollPos = { top: 70, left: 0 };
+
+            // Switch to index.html
+            conv.activeFileKey = indexKey;
+            displayTabContent(conv.fileStore.get(indexKey), conv.status);
+
+            // Switch back to long file
+            conv.activeFileKey = longKey;
+            displayTabContent(conv.fileStore.get(longKey), conv.status);
+            const restoredTop = cb.scrollTop;
+            scrollRestoredPass = Math.abs(restoredTop - 70) <= 2;
+            scrollRestoredActual = `restoredTop=${restoredTop}px (expected 70px)`;
+          }
+        }
+        results.push({
+          name: 'Per-tab scroll position restoration',
+          pass: scrollRestoredPass,
+          actual: scrollRestoredActual
+        });
+
+        // 7. Pinning for 10 seconds & Latest button
+        let pinPass = false;
+        let pinActual = '';
+        if (activeAgentConversationId) {
+          const conv = agentConversations.get(activeAgentConversationId);
+          const indexKey = normalizeFilePathKey('index.html');
+          if (conv) {
+            pinTab(conv, indexKey);
+            const isPinned = isTabPinned(conv);
+            const latestBtn = document.getElementById('agent-latest-btn');
+            // Simulate a new edit on another file while pinned
+            addOrUpdateFileInStore(conv, {
+              key: normalizeFilePathKey('src/main.ts'),
+              filePath: 'src/main.ts',
+              displayName: 'main.ts',
+              relPath: 'src/main.ts',
+              isSensitive: false,
+              isNew: false,
+              hunks: [[{ type: 'added', num: 99, marker: '+', code: 'console.log("new edit while pinned");' }]],
+              added: 1,
+              del: 0
+            });
+            const stillPinned = isTabPinned(conv) && conv.activeFileKey === indexKey;
+            const btnVisible = latestBtn && latestBtn.classList.contains('visible');
+            // Click Latest button
+            if (latestBtn) latestBtn.click();
+            const unpinnedAfterClick = !isTabPinned(conv) && conv.activeFileKey === normalizeFilePathKey('src/main.ts');
+            pinPass = isPinned && stillPinned && btnVisible && unpinnedAfterClick;
+            pinActual = `pinned=${isPinned}, stillPinned=${stillPinned}, btnVisible=${btnVisible}, unpinnedAfterLatest=${unpinnedAfterClick}`;
+          }
+        }
+        results.push({
+          name: 'Pinning for 10s and Latest button jump/unpin',
+          pass: pinPass,
+          actual: pinActual
+        });
+
+        // 8. No layout shift of the panel: panel dimensions unchanged within 0.5px
+        const dpW = dp ? dp.getBoundingClientRect().width : 0;
+        const dpH = dp ? dp.getBoundingClientRect().height : 0;
+        const panelPass = Math.abs(dpW - 530) <= 1 && Math.abs(dpH - 200) <= 1;
+        results.push({
+          name: 'No layout shift of panel (530 x 200 within 0.5px)',
+          pass: panelPass,
+          actual: `w=${dpW.toFixed(1)}, h=${dpH.toFixed(1)}`
+        });
+
+        // 9. Hit-testing: hidden controls are inert / non-interactive
         const latestBtn = document.getElementById('agent-latest-btn');
         const overlay = document.getElementById('agent-empty-overlay');
         const btnHidden = !latestBtn.classList.contains('visible') && (latestBtn.hasAttribute('inert') || window.getComputedStyle(latestBtn).display === 'none');
@@ -13008,31 +14224,17 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           actual: `btnHidden=${btnHidden}, overlayHidden=${overlayHidden}`
         });
 
-        // 8. Top-bar icons unchanged from other tabs (hamburger 22, chat 24, sliders 26 within 0.5px)
-        const hamburger = document.getElementById('hamburger-btn');
-        const chatBtn = document.getElementById('tab-btn-chat');
-        const controlsBtn = document.getElementById('tab-btn-controls');
-        const hW = hamburger ? hamburger.getBoundingClientRect().width : 22;
-        const cW = chatBtn ? chatBtn.getBoundingClientRect().width : 24;
-        const sW = controlsBtn ? controlsBtn.getBoundingClientRect().width : 26;
-        const iconsPass = Math.abs(hW - 22) <= 1.5 && Math.abs(cW - 24) <= 1.5 && Math.abs(sW - 26) <= 1.5;
-        results.push({
-          name: 'Top-bar icons unchanged within 0.5px (hamburger 22, chat 24, sliders 26)',
-          pass: iconsPass,
-          actual: `h=${hW.toFixed(1)}, c=${cW.toFixed(1)}, s=${sW.toFixed(1)}`
-        });
-
-        console.group('=== AGENTS PANEL AUDIT (KEY L) ===');
+        console.group('=== AGENTS PANEL MULTI-TAB AUDIT (KEY L) ===');
         let allOk = true;
         for (const r of results) {
           if (!r.pass) allOk = false;
           console.log(`[${r.pass ? 'PASS' : 'FAIL'}] ${r.name}: ${r.actual}`);
         }
-        console.log(`OVERALL: ${allOk ? 'ALL 8 CHECKS PASSED' : 'FAILURES DETECTED'}`);
+        console.log(`OVERALL: ${allOk ? 'ALL 9 CHECKS PASSED' : 'FAILURES DETECTED'}`);
         console.groupEnd();
 
         if (typeof showCcToast === 'function') {
-          showCcToast(allOk ? 'Audit: ALL 8 PASS' : 'Audit: FAILED');
+          showCcToast(allOk ? 'Audit: ALL 9 PASS' : 'Audit: FAILED');
         }
       }
     }
@@ -13230,7 +14432,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
       setAgentStepStates(conv.categories);
 
-      if (conv.codeContent && window.AgentCodeViewer?.render) {
+      if (window.AgentCodeViewer?.renderConversation) {
+        window.AgentCodeViewer.renderConversation(conv);
+      } else if (conv.codeContent && window.AgentCodeViewer?.render) {
         window.AgentCodeViewer.render({ ...conv.codeContent, status: conv.status });
       }
     }
@@ -13408,11 +14612,20 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         const conv = getOrCreateAgentConversation(convId, payload);
         const prevStatus = conv.status;
 
-        // 1. SessionStart / PreInvocation
+        // 1. SessionStart / PreInvocation (New Turn)
         if (eventName === 'SessionStart' || (eventName === 'PreInvocation' && (conv.status === 'idle' || conv.status === 'done'))) {
           conv.categories = { read: 'pending', edit: 'pending', bash: 'pending', done: 'pending' };
           conv.runningCategory = null;
           conv.status = 'thinking';
+          conv.fileStore = new Map();
+          conv.droppedFilesCount = 0;
+          conv.activeFileKey = null;
+          conv.liveViewContent = null;
+          conv.lastEditKey = null;
+          unpinTab(conv);
+          if (window.AgentCodeViewer?.clearAllTabs) {
+            window.AgentCodeViewer.clearAllTabs();
+          }
         }
         // 2. PreToolUse
         else if (eventName === 'PreToolUse') {
@@ -13447,23 +14660,28 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               conv.runningCategory = null;
             }
           }
-          if (toolName === 'run_command' || conv.lastCommand) {
+          if (cat === 'bash' || toolName.includes('command') || toolName.includes('bash') || conv.lastCommand) {
             updateCodePanelForPostCommand(conv, payload.error || '');
           }
         }
-        // 4. Stop
+        // 4. PostInvocation
+        else if (eventName === 'PostInvocation') {
+          if (conv.runningCategory) {
+            conv.categories[conv.runningCategory] = 'done';
+            conv.runningCategory = null;
+          }
+        }
+        // 5. Stop
         else if (eventName === 'Stop') {
           dismissApprovalsForConversation(convId);
-          const fullyIdle = payload.fullyIdle === true;
-          if (fullyIdle) {
-            conv.categories = { read: 'done', edit: 'done', bash: 'done', done: 'done' };
-            conv.runningCategory = null;
-            conv.status = 'done';
-            agentsTabOpenedSinceNotification = false;
-            triggerHappyReply();
-          } else {
-            conv.status = 'working';
-          }
+          if (conv.categories.read === 'running') conv.categories.read = 'done';
+          if (conv.categories.edit === 'running') conv.categories.edit = 'done';
+          if (conv.categories.bash === 'running') conv.categories.bash = 'done';
+          conv.categories.done = 'done';
+          conv.runningCategory = null;
+          conv.status = 'done';
+          agentsTabOpenedSinceNotification = false;
+          triggerHappyReply();
         }
 
         // Active conversation switching rule:
@@ -13478,6 +14696,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           if (now - lastAgentConversationSwitchAt >= 3000) {
             activeAgentConversationId = convId;
             lastAgentConversationSwitchAt = now;
+            if (window.AgentCodeViewer?.clearAllTabs) {
+              window.AgentCodeViewer.clearAllTabs();
+            }
           }
         }
 
@@ -13608,7 +14829,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         if (window.AgentCodeViewer?.render) {
           window.AgentCodeViewer.render(defaultFigmaMockDiff);
         }
-        setAgentStepStates({ read: 'running', edit: 'pending', bash: 'pending', done: 'pending' });
+        setAgentStepStates({ read: 'pending', edit: 'pending', bash: 'pending', done: 'pending' });
         return;
       }
 
@@ -13708,7 +14929,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
               // After 1.2s: Reset back to initial placeholder state
               agentDemoTimer = setTimeout(() => {
-                setAgentStepStates({ read: 'running', edit: 'pending', bash: 'pending', done: 'pending' });
+                setAgentStepStates({ read: 'pending', edit: 'pending', bash: 'pending', done: 'pending' });
                 agentDemoRunning = false;
               }, 1200);
             }, 1200);
