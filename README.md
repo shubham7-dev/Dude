@@ -1,296 +1,297 @@
-
-
 <p align="center">
-  <img src="mascot.png" alt="Dude mascot" width="160">
+  <img src="mascot.png" alt="Dude Mascot" width="150">
 </p>
 
-<h1 align="center">Dude</h1>
+<h1 align="center">Dude 2.0</h1>
 
 <p align="center">
-  <strong>Your tiny AI companion for Windows.</strong>
+  <strong>Your intelligent, expressive desktop companion and coding copilot for Windows.</strong>
   <br>
-  An animated desktop mascot, Gemini AI assistant, laptop controls, and coding-agent activity in one compact interface.
+  An animated desktop mascot, Gemini AI assistant, laptop controls, DropVault, and real-time coding-agent activity in one sleek floating widget.
 </p>
 
 <p align="center">
-  <a href="https://github.com/shubham7-dev/Dude/releases/latest"><img src="https://img.shields.io/github/v/release/shubham7-dev/Dude?label=latest%20release" alt="Latest release"></a>
-  <a href="https://github.com/shubham7-dev/Dude/blob/main/LICENSE"><img src="https://img.shields.io/badge/source-MIT-blue.svg" alt="MIT License"></a>
-  <a href="https://github.com/shubham7-dev/Dude/actions/workflows/build.yml"><img src="https://github.com/shubham7-dev/Dude/actions/workflows/build.yml/badge.svg" alt="Build Check"></a>
-  <img src="https://img.shields.io/badge/platform-Windows%2011-0078D4" alt="Windows 11">
+  <a href="https://github.com/shubham7-dev/Dude/releases/latest"><img src="https://img.shields.io/github/v/release/shubham7-dev/Dude?label=latest%20release&color=8B5CF6" alt="Latest release"></a>
+  <a href="https://github.com/shubham7-dev/Dude/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
+  <a href="https://tauri.app/"><img src="https://img.shields.io/badge/built%20with-Tauri%202-FFC131?logo=tauri&logoColor=white" alt="Tauri 2"></a>
+  <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/backend-Rust-DEA584?logo=rust&logoColor=white" alt="Rust"></a>
+  <a href="https://deepmind.google/technologies/gemini/"><img src="https://img.shields.io/badge/AI-Google%20Gemini-4285F4?logo=google&logoColor=white" alt="Gemini AI"></a>
+  <img src="https://img.shields.io/badge/platform-Windows%2011-0078D4?logo=windows11&logoColor=white" alt="Windows 11">
 </p>
 
 <p align="center">
-  <a href="https://github.com/shubham7-dev/Dude/releases">Download</a> ·
-  <a href="#features">Features</a> ·
-  <a href="#installation">Installation</a> ·
-  <a href="#build-from-source">Build from source</a> ·
-  <a href="https://github.com/shubham7-dev/Dude/issues">Report a bug</a>
+  <a href="#download--releases"><strong>Download</strong></a> ·
+  <a href="#features-at-a-glance">Features</a> ·
+  <a href="#screenshots--walkthrough">Screenshots</a> ·
+  <a href="#installation--setup">Installation</a> ·
+  <a href="#keyboard-shortcuts">Shortcuts</a> ·
+  <a href="#privacy--security">Privacy</a> ·
+  <a href="#build-from-source">Build</a> ·
+  <a href="https://github.com/shubham7-dev/Dude/issues">Report Bug</a>
 </p>
 
 ---
 
 ## Overview
 
-Dude is a Windows desktop companion that combines an animated mascot, an AI chat assistant, quick laptop controls, and live coding-agent activity in a compact interface at the top of your screen.
+**Dude** is an ultra-compact, high-performance desktop companion built for Windows 11. Anchored gracefully at the top edge of your screen, Dude combines an interactive animated mascot with everyday productivity superpowers: instant conversational AI, one-click laptop hardware controls, seamless drag-and-drop file staging, and live streaming visualization of your coding agents (Antigravity, Claude Code, Cursor).
 
-Built with **Tauri 2, Rust, TypeScript, and Vite**, Dude is designed to make everyday laptop controls and AI assistance accessible without opening a full-sized application.
+Engineered with **Tauri 2, Rust, TypeScript, and Vite**, Dude operates with near-zero idle resource consumption while maintaining native OS responsiveness.
 
-## Features
+---
 
-### Animated desktop companion
+## Visual Showcase
 
-- Interactive mascot with idle, smiling, thinking, speaking, sleeping, blinking, and eye-tracking states.
-- Customizable mascot appearance and pill settings.
-- Compact interface designed to stay accessible while you work.
+<p align="center">
+  <img src="assets/appearance-banner-both.png" alt="Dude Customization and Appearance" width="850">
+</p>
 
-### Three quick-access views
+<p align="center">
+  <img src="assets/agents-banner-dark.webp" alt="Agents Multi-Tab Diff Viewer" width="850">
+</p>
 
-Switch between three views from the top pill:
+<p align="center">
+  <img src="assets/ai-banner-both.png" alt="Gemini AI Chat Assistant" width="850">
+</p>
 
-- **Chat** — talk to your AI assistant.
-- **Controls** — access common laptop controls.
-- **Agents** — view coding-agent activity.
+---
 
-### Gemini AI assistant
+## Features at a Glance
 
-- Connect to Google's Gemini models using your own API key.
-- Conversation memory and context trimming.
-- Custom personality instructions.
-### DropVault & File Drop
+### 🤖 Animated Desktop Companion
+- **Living Character Engine**: Expressive states including idle blinking, curious eye-tracking following your cursor, smiling, thinking, speaking, and sleeping.
+- **Color Personalities**: Four collectible body themes — **Cream (Classic)**, **Blush Pink**, **Sky Blue**, and **Midnight Black**.
+- **Adaptive Floating Pill**: Smoothly expands on hover or click; customizable roundness, background opacity, blur, and placement presets (Top Center, Top Left, Top Right, or custom X/Y coordinates).
+- **Audio Expressions**: Procedural, ultra-low-latency chimes and ambient reaction audio powered by a native Rust audio engine.
 
-- DropVault: drop files on the island and keep them in one folder.
-- Recent files grid in the hub with one-click access and safe executable inspection.
-- Configure the provider, model, API key, and persona in Settings.
+<p align="center">
+  <img src="assets/behavior-banner-dark.png" alt="Mascot Behavior" width="850">
+</p>
 
-### Laptop control center
+---
 
-- **Media:** track information, artist, album artwork, playback controls, and seek bar.
-- **Volume and brightness:** adjust volume, mute audio, and control display brightness.
-- **Power and battery:** battery percentage, AC charging status, and Battery Saver toggle.
-- **Quick radios:** Wi-Fi, Bluetooth, Airplane Mode, and Mobile Hotspot controls.
+### 💬 Intelligent Gemini AI Assistant
+- **Gemini 3.5 & Flash Models**: Directly connected to Google AI Studio with models optimized for instant chat responses (`gemini-3.5-flash`, `gemini-3.5-flash-lite`, `gemini-3-flash-preview`).
+- **Conversational Memory**: Multi-turn dialog context with token-efficient history pruning.
+- **Custom Personas**: Tailor Dude's personality, tone, and system prompt directly in Settings.
+- **Enterprise-Grade Key Safety**: Your personal Gemini API key is encrypted and stored exclusively in **Windows Credential Manager** — never in plain text, logs, or cloud servers.
 
-Hardware and Windows support can vary by device.
+---
 
-### Coding-agent integration
+### 🛠️ Live Coding Agents Integration
+- **Real-Time Agent Telemetry**: Seamless IPC listener via local Windows Named Pipe (`\\.\pipe\dude-agent-events`).
+- **Universal Agent Support**: Official zero-latency hook bridges for **Google Antigravity**, **Claude Code**, and **Cursor**.
+- **Dynamic Lifecycle Steps**: Real-time visual progress across every stage:
+  - 🟢 **Read**: Active during file reads, glob searches, codebase greps, and documentation queries.
+  - ✏️ **Edit**: Live diff streaming during file rewrites, insertions, and multi-line edits.
+  - 💻 **Bash**: Terminal command executions with live command-line display and exit code badges.
+  - ✅ **Done**: Turn completion status with celebration mascot feedback.
+- **Multi-Tab File Diff Viewer**:
+  - Independent tabs for every modified file during the current turn.
+  - Color-coded diff syntax highlighting (`+` additions in green, `-` deletions in red).
+  - Accurate line numbering grounded in disk content.
+  - Pinning support with 10-second inspection hold and an instant **"Latest"** auto-follow jump button.
+- **Interactive Tool Approval**: Review, inspect, and approve/deny agent commands (`run_command`, terminal tasks) directly from the floating widget.
 
-- Live visualization of Antigravity agent activity.
-- Track tool steps such as Read, Edit, Bash, and Done.
-- View active code snippets and events received through a local named pipe.
-- Manage Antigravity hook integration from Settings.
+<p align="center">
+  <img src="assets/agents-hooks-dark.webp" alt="Agent Hooks" width="850">
+</p>
 
-### Clipboard history
+---
 
-- Clipboard history, opt-in, in memory only.
+### 📁 DropVault with Native OS Drag-Out
+- **Desktop Drop Target**: Drop any file onto the floating island to safely store it in your local `Documents\DropVault` folder.
+- **True OS Drag-Out (`tauri-plugin-drag`)**: Drag any card from DropVault directly into **Windows Explorer**, **Desktop**, **VS Code**, **browser upload zones**, **Discord**, **Slack**, or Dude's Chat panel.
+- **Smart Click vs. Drag Gesture**:
+  - Single click -> opens/reveals the file in default Windows app or Explorer.
+  - Drag (> 6px movement) -> initiates Win32 OLE `DoDragDrop` (`CF_HDROP`) without accidental opening.
+- **Safe Inspection**: Executable files are blocked from direct accidental launch and revealed in Explorer instead.
+- **One-Click Cleanup**: Move files older than your chosen threshold directly to Windows Recycle Bin.
 
-### Customization and system integration
+<p align="center">
+  <img src="assets/drop-folder-dropped.webp" alt="DropVault" width="400">
+</p>
 
-- Cream, Pink, Blue, and Black mascot color options.
-- Adjust pill size, roundness, background opacity, and color swatches.
-- Configure eye tracking, blinking, hover blush, and auto-collapse behavior.
-- Configure Windows startup and launch visibility.
-- Windows system tray icon and context menu.
-- Global shortcuts:
-  - `Ctrl + Shift + M` — toggle the mascot.
-  - `Ctrl + Shift + Space` — open chat.
-- Dark and light themes in Settings.
+---
 
-## Screenshots and demo
+### ⚡ Quick Laptop Control Center
+- **Media Controller**: Live Windows System Media Transport Controls (SMTC) integration featuring track title, artist, album art, play/pause, seek slider, and skip track buttons.
+- **Display Brightness**: Smooth hardware display brightness slider via Windows WMI CIM.
+- **Audio & Mute**: High-precision master volume slider and one-click mute.
+- **Battery Hub**: Real-time battery percentage, AC power connection status, and Windows Battery Saver toggle.
+- **Connectivity Radios**: Instant toggles for Wi-Fi (with current SSID), Bluetooth, Airplane Mode, and Mobile Hotspot.
+- **Quick System Actions**: Lock Workstation, Sleep, launch Windows Snipping Tool (`ms-screenclip:`), and toggle Windows Dark/Light theme.
 
-Screenshots and a demo video will be added here in a future update.
+---
 
-## Installation
+### 📋 Private Clipboard History
+- **In-Memory Only**: Kept in volatile RAM and automatically cleared upon exiting Dude.
+- **Secret Redaction**: Passwords, API tokens, and entries originating from password managers (1Password, Bitwarden, KeePass) are automatically ignored.
 
-**Requirements:** Windows 11. The installer requires the Microsoft Edge WebView2 runtime, which is normally available on Windows 11.
+---
 
-1. Open the [Dude Releases page](https://github.com/shubham7-dev/Dude/releases).
-2. Select the release you want.
-3. Download the Windows installer:
-   - **NSIS installer:** `Dude_0.3.1_x64-setup.exe`
-   - **MSI package:** `Dude_0.3.1_x64_en-US.msi`
-4. Run the installer and follow the on-screen instructions.
+## Keyboard Shortcuts
 
-For the latest available version, use [Latest Release](https://github.com/shubham7-dev/Dude/releases/latest).
+| Shortcut | Action | Scope |
+| :--- | :--- | :--- |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd> | Toggle Mascot widget visibility | Global |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Space</kbd> | Open / Focus Gemini AI Chat drawer | Global |
+| <kbd>Esc</kbd> | Collapse active panel or dismiss drawer | In-App |
+| <kbd>Enter</kbd> | Open selected DropVault file / Send Chat prompt | In-App |
+| <kbd>D</kbd> | Cycle Agent Steps Demo (Debug builds) | Mascot Focus |
+| <kbd>L</kbd> | Run Multi-Tab Diff 14-File Self Audit (Debug builds) | Mascot Focus |
 
-### Windows SmartScreen
+---
 
-Windows SmartScreen may display a warning when you first run an installer that is not signed with a recognized code-signing certificate.
+## Download & Releases
 
-Only proceed if you obtained the installer from the official [Dude Releases page](https://github.com/shubham7-dev/Dude/releases) and trust the source. You can review the source code in this repository.
+Dude is distributed as both an automated NSIS installer and a standalone MSI package:
 
-### Verify installer checksums
+| Version | Release Date | Highlights | Download Link |
+| :--- | :--- | :--- | :--- |
+| **v0.3.2** (Latest) | *Current* | Per-file multi-tab diff view, real-time agent lifecycle steps (Read/Edit/Bash/Done), native OS drag-out for DropVault | [Release v0.3.2](https://github.com/shubham7-dev/Dude/releases/tag/v0.3.2) |
+| **v0.3.1** | 2026-10-25 | Gemini 3.5 Flash upgrade, high-res icon set, Claude Code v0.2 hook compatibility | [Release v0.3.1](https://github.com/shubham7-dev/Dude/releases/tag/v0.3.1) |
+| **v0.3.0** | 2026-10-21 | Compact approval cards, Claude Code / Gemini Code Assist integration | [Release v0.3.0](https://github.com/shubham7-dev/Dude/releases/tag/v0.3.0) |
+| **v0.2.0** | 2026-10-18 | Standalone `dude-hook.exe`, Named Pipe IPC, tool decision approvals | [Release v0.2.0](https://github.com/shubham7-dev/Dude/releases/tag/v0.2.0) |
+| **v0.1.0** | 2026-10-17 | Initial public release: animated mascot, Gemini chat, laptop controls | [Release v0.1.0](https://github.com/shubham7-dev/Dude/releases/tag/v0.1.0) |
 
-Each release provides cryptographic SHA-256 checksums to verify installer integrity:
+Full changelog history is maintained in [CHANGELOG.md](CHANGELOG.md).
 
-- **v0.3.1 Release Checksums**: [`release-0.3.1/SHA256SUMS`](release-0.3.1/SHA256SUMS)
-- **v0.3.0 Milestone Checksums**: [`SHA256SUMS`](SHA256SUMS)
+---
 
-In PowerShell, calculate the downloaded installer's hash with:
+## Installation & Setup
 
+### Requirements
+- **Operating System:** Windows 11 (64-bit).
+- **Runtime:** Microsoft Edge WebView2 (pre-installed by default on Windows 11).
+
+### Setup Instructions
+1. Download the latest installer from the [Releases page](https://github.com/shubham7-dev/Dude/releases/latest) (`Dude_0.3.2_x64-setup.exe`).
+2. Run the installer and launch Dude.
+3. **Configure AI Assistant**:
+   - Get a free API key at [Google AI Studio](https://aistudio.google.com/apikey).
+   - In Dude, click the settings icon or right-click the mascot -> **Settings → AI**.
+   - Paste your API key and click **Test & Save**.
+4. **Connect Coding Agents**:
+   - In **Settings → Agents**, click **Install** under Antigravity / Claude Code.
+   - Dude automatically configures the lifecycle hook into your agent's config with timestamped backups.
+
+### Cryptographic Checksum Verification
+To verify the integrity of your installer package:
 ```powershell
-Get-FileHash .\Dude_0.3.1_x64-setup.exe -Algorithm SHA256
+Get-FileHash .\Dude_0.3.2_x64-setup.exe -Algorithm SHA256
+```
+Compare the resulting hash with the corresponding entry in `SHA256SUMS`.
+
+> [!NOTE]
+> **Windows SmartScreen Note**: Because Dude is an independent open-source project without an enterprise EV code-signing certificate, Windows SmartScreen may display an initial prompt. Click *"More info"* -> *"Run anyway"* to proceed. The complete source code is public and fully auditable here.
+
+---
+
+## Privacy & Security
+
+Dude is engineered around a **strict local-first, zero-telemetry philosophy**:
+
+- 🔒 **Zero Telemetry**: No analytics, tracking pixels, or diagnostic reporting. Dude never phones home.
+- 🔑 **Encrypted Credentials**: Your Gemini API key is stored in the Windows Credential Manager (`wincred`), never on disk in plain text.
+- 💻 **Air-Gapped Controls**: Media, brightness, volume, and battery queries execute purely via local Win32 and WMI CIM APIs.
+- 📝 **Volatile Clipboard**: Clipboard history is kept in volatile RAM only and discarded upon exit; sensitive clipboard data (passwords, crypto keys) is automatically filtered out.
+- 📁 **Isolated Storage**: DropVault operates strictly inside `Documents\DropVault` (or your user-configured directory). Files are only sent to the AI when you explicitly attach them.
+
+Read our complete [Privacy Policy](docs/PRIVACY.md).
+
+---
+
+## Architecture
+
+```
+                  +-------------------------------------------------+
+                  |                   DUDE WIDGET                   |
+                  |  (Transparent, Always-On-Top, Floating Pill)   |
+                  +-------------------------------------------------+
+                                     |           |
+            +------------------------+           +----------------------+
+            |                                                           |
++-----------------------+                                   +-----------------------+
+|    FRONTEND (Vite)    |                                   |    RUST CORE (Tauri)  |
+|  - Animated Canvas    | <======== Tauri IPC Commands ===> |  - System Tray & Menu |
+|  - Chat Drawer (MD)   |                                   |  - Win32 Audio & SMTC |
+|  - Controls Panel     |                                   |  - WMI CIM Brightness |
+|  - Agents Multi-Tab   |                                   |  - Windows Credential |
+|  - DropVault Grid     |                                   |  - tauri-plugin-drag  |
++-----------------------+                                   +-----------------------+
+                                                                        ^
+                                                                        | Named Pipe IPC
+                                                                        v
+                                                            +-----------------------+
+                                                            |     dude-hook.exe     |
+                                                            | (Antigravity / Claude)|
+                                                            +-----------------------+
 ```
 
-Compare the resulting hash with the matching entry in `SHA256SUMS`.
+For a comprehensive technical breakdown, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## Initial setup
+---
 
-Dude uses the Google Gemini API for its AI assistant.
-
-1. Open [Google AI Studio](https://aistudio.google.com/apikey).
-2. Sign in and create an API key.
-3. Open Dude's welcome walkthrough or go to **Settings → AI**.
-4. Enter your API key and click **Test & Save**.
-
-According to the project configuration, the API key is stored in Windows Credential Manager.
-
-## Antigravity agent integration
-
-To connect Dude to your local development agent:
-
-1. Open **Settings → Agents**.
-2. Click **Install** under Antigravity.
-3. Dude creates a timestamped backup of `~/.gemini/config/hooks.json` and adds its hook entry.
-4. Restart Antigravity so it loads the updated hooks.
-5. Before uninstalling Dude, open **Settings → Agents** and click **Uninstall** to remove the hook configuration.
-
-Keep a backup of important configuration files before changing integrations.
-
-## Privacy
-
-Dude's project documentation describes the following privacy goals:
-
-- No telemetry or analytics.
-- No user account or registration required.
-- API keys stored in Windows Credential Manager.
-- Laptop controls and agent event data kept locally on your machine.
-- Clipboard history is off by default. When you turn it on, text you copy is kept in memory only until you quit Dude; copies from password managers and text that looks like a secret are skipped; nothing is sent anywhere.
-- Links in chat replies open in your default browser only when you click them. Dude does not load link previews or contact those sites itself.
-
-Read the [Privacy Policy](docs/PRIVACY.md) for more information.
-
-## Build from source
+## Build from Source
 
 ### Prerequisites
+- [Node.js](https://nodejs.org/) (v20+ recommended)
+- [Rust](https://www.rust-lang.org/tools/install) (stable toolchain)
+- Visual Studio Build Tools with **Desktop development with C++**
+- `x86_64-pc-windows-msvc` target
 
-- Node.js 20 or newer and npm.
-- Rust stable toolchain.
-- `x86_64-pc-windows-msvc` Rust target.
-- Visual Studio Build Tools with the **Desktop development with C++** workload.
-- Microsoft Edge WebView2 runtime.
+### Build Steps
 
-### Clone the repository
+1. **Clone the repository**:
+   ```powershell
+   git clone https://github.com/shubham7-dev/Dude.git
+   cd Dude
+   ```
 
-```powershell
-git clone https://github.com/shubham7-dev/Dude.git
-cd Dude
-```
+2. **Install frontend dependencies**:
+   ```powershell
+   npm install
+   ```
 
-### Install dependencies
+3. **Run in development mode**:
+   ```powershell
+   npm run tauri dev
+   ```
 
-```powershell
-npm install
-```
+4. **Compile production release bundle**:
+   ```powershell
+   npm run tauri build
+   ```
+   Installers will be generated under `src-tauri/target/release/bundle/`.
 
-If PowerShell blocks `npm.ps1`, use the Windows command wrapper:
+5. **Run tests**:
+   ```powershell
+   cargo test --manifest-path src-tauri/Cargo.toml -- --test-threads=1
+   ```
 
-```powershell
-npm.cmd install
-```
+---
 
-### Run in development mode
+## Documentation Links
 
-```powershell
-npm run tauri dev
-```
+- 📖 [Contributing Guidelines](CONTRIBUTING.md) — PR guide, coding style, and testing requirements.
+- 🏛️ [System Architecture](docs/ARCHITECTURE.md) — In-depth look at internal processes and Windows subsystems.
+- 📦 [Release Guide](docs/RELEASE_GUIDE.md) — Release engineering and deployment instructions.
+- 🔐 [Privacy Policy](docs/PRIVACY.md) — Comprehensive user privacy manifesto.
 
-Or, if required by your PowerShell setup:
+---
 
-```powershell
-npm.cmd run tauri dev
-```
+## Author & Credits
 
-### Build the application
-
-```powershell
-npm run tauri build
-```
-
-Or:
-
-```powershell
-npm.cmd run tauri build
-```
-
-Generated installer bundles are placed under:
-
-```text
-src-tauri/target/release/bundle/
-```
-
-### Frontend build check
-
-To run the frontend TypeScript and Vite production build:
-
-```powershell
-npm run build
-```
-
-Dude also has a GitHub Actions workflow that runs the frontend build check on pushes and pull requests targeting `main`.
-
-## Privacy
-
-Files you drop on the island are copied into the DropVault folder on your PC (Documents\DropVault). Nothing is uploaded. A file goes to the chat only when you attach it yourself with the + button.
-
-## Documentation & Contributing
-
-- [Contributing Guidelines](CONTRIBUTING.md) — development workflow, environment setup, and PR checklist.
-- [System Architecture](docs/ARCHITECTURE.md) — deep dive into multi-window layout, Windows API subsystems, and Agent Hook IPC.
-- [Release Guide](docs/RELEASE_GUIDE.md) — build, packaging, and checksum verification procedures.
-- [Privacy Policy](docs/PRIVACY.md) — data privacy principles and local-first architecture.
-- [Report a Bug](https://github.com/shubham7-dev/Dude/issues/new?template=bug_report.md)
-- [Request a Feature](https://github.com/shubham7-dev/Dude/issues/new?template=feature_request.md)
-
-## Project structure
-
-```text
-Dude/
-├── .github/          # Issue templates and GitHub Actions workflows
-├── assets/           # Project brand and UI assets
-├── docs/             # Technical architecture, privacy, and release guides
-├── scripts/          # Development and testing utilities
-├── src/              # TypeScript frontend source
-├── src-tauri/        # Rust backend and Tauri configuration
-├── index.html        # Floating pill widget & desktop companion
-├── menu.html         # Desktop context menu popover
-├── settings.html     # Comprehensive settings panel
-├── package.json      # Dependencies and scripts
-├── vite.config.ts    # Vite build configuration
-└── README.md
-```
-## Release history
- 
-Notes for every version are on its release page. The latest one is **0.3.1**.
- 
-| Version | Release notes |
-| --- | --- |
-| **0.3.1** (latest) | [v0.3.1](https://github.com/shubham7-dev/Dude/releases/tag/v0.3.1) |
-| 0.3.0 | [v0.3.0](https://github.com/shubham7-dev/Dude/releases/tag/v0.3.0) |
-| 0.2.0 | [v0.2.0](https://github.com/shubham7-dev/Dude/releases/tag/v0.2.0) |
-| 0.1.0 | [v0.1.0](https://github.com/shubham7-dev/Dude/releases/tag/v0.1.0) |
- 
-The full history is in [CHANGELOG.md](CHANGELOG.md).
-
-## Credits
-
-Made by **Shubham Kale**.
+Designed and developed with ❤️ by **[Shubham Kale](https://github.com/shubham7-dev)**.
 
 ## License
 
-- **Source code:** [MIT License](LICENSE).
-- **Brand and mascot artwork:** The app name "Dude", character illustrations, mascot renders, icons, and media files are Copyright (c) 2026 Shubham Kale. All Rights Reserved. These assets are not covered by the MIT license. See [LICENSE-ASSETS.md](LICENSE-ASSETS.md) for restrictions.
+- **Source Code**: Licensed under the [MIT License](LICENSE).
+- **Artwork & Mascot Branding**: The name "Dude", character illustrations, 3D mascot renders, sound assets, and branded iconography are Copyright &copy; 2026 Shubham Kale. All Rights Reserved. See [LICENSE-ASSETS.md](LICENSE-ASSETS.md).
 
 ---
 
 <p align="center">
-  Made with care for a more helpful Windows desktop.
+  <sub>Dude · Made with care for a more delightful, productive Windows desktop.</sub>
 </p>

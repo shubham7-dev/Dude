@@ -121,8 +121,19 @@ fn open_pipe_with_retry(
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    let agent = args.get(1).cloned().unwrap_or_else(|| "antigravity".to_string());
-    let event = args.get(2).cloned().unwrap_or_else(|| "unknown".to_string());
+    let (agent, event) = if args.len() >= 3 {
+        (args[1].clone(), args[2].clone())
+    } else if args.len() == 2 {
+        // If invoked with a single argument like "PreToolUse", default agent to "antigravity"
+        let arg1 = args[1].clone();
+        if arg1.eq_ignore_ascii_case("antigravity") || arg1.eq_ignore_ascii_case("claude") || arg1.eq_ignore_ascii_case("cursor") {
+            (arg1, "unknown".to_string())
+        } else {
+            ("antigravity".to_string(), arg1)
+        }
+    } else {
+        ("antigravity".to_string(), "unknown".to_string())
+    };
 
     #[cfg(all(debug_assertions, feature = "approvals"))]
     log_hook(&format!("INVOKED agent={} event={}", agent, event));
@@ -167,17 +178,28 @@ fn main() {
                 forwarded.insert("modelName".to_string(), json!(truncate_str(v, 4000)));
             }
 
-            if let Some(tc) = map.get("toolCall").and_then(|v| v.as_object()) {
+            let tool_call_obj = map.get("toolCall")
+                .or_else(|| map.get("tool_call"))
+                .and_then(|v| v.as_object());
+
+            if let Some(tc) = tool_call_obj {
                 let mut tc_map = Map::new();
-                if let Some(name) = tc.get("name").and_then(|s| s.as_str()) {
-                    tc_map.insert("name".to_string(), json!(truncate_str(name, 4000)));
+                let name = tc.get("name")
+                    .or_else(|| tc.get("tool_name"))
+                    .or_else(|| tc.get("tool"))
+                    .and_then(|s| s.as_str())
+                    .unwrap_or("");
+                tc_map.insert("name".to_string(), json!(name));
+
+                if let Some(args_val) = tc.get("args").or_else(|| tc.get("arguments")).or_else(|| tc.get("input")) {
+                    tc_map.insert("args".to_string(), args_val.clone());
                 }
-                if let Some(args_val) = tc.get("args") {
-                    if let Some(s) = args_val.as_str() {
-                        tc_map.insert("args".to_string(), json!(truncate_str(s, 4000)));
-                    } else if let Ok(s) = serde_json::to_string(args_val) {
-                        tc_map.insert("args".to_string(), json!(truncate_str(&s, 4000)));
-                    }
+                forwarded.insert("toolCall".to_string(), Value::Object(tc_map));
+            } else if let Some(tool_name) = map.get("tool_name").or_else(|| map.get("tool")).and_then(|v| v.as_str()) {
+                let mut tc_map = Map::new();
+                tc_map.insert("name".to_string(), json!(tool_name));
+                if let Some(args_val) = map.get("tool_input").or_else(|| map.get("input")).or_else(|| map.get("args")) {
+                    tc_map.insert("args".to_string(), args_val.clone());
                 }
                 forwarded.insert("toolCall".to_string(), Value::Object(tc_map));
             }
@@ -337,6 +359,7 @@ fn main() {
             let _ = tx_reply.send(res);
         });
 
+        let is_ag = agent.eq_ignore_ascii_case("antigravity");
         match rx_reply.recv_timeout(Duration::from_secs(47)) {
             Ok(Ok(line)) => {
                 let reply = line.trim();
@@ -365,11 +388,9 @@ fn main() {
                                 }
                             })
                         };
-                        if !trimmed.is_empty() {
+                        if !trimmed.is_empty() && !is_ag {
                             val["permissionOverrides"] = json!([format!("command({})", trimmed)]);
-                            if !is_ag {
-                                val["hookSpecificOutput"]["permissionOverrides"] = json!([format!("command({})", trimmed)]);
-                            }
+                            val["hookSpecificOutput"]["permissionOverrides"] = json!([format!("command({})", trimmed)]);
                         }
                         log_hook(&format!("OUTPUT_DECISION id={} decision=allow", req_id));
                         val
@@ -414,23 +435,33 @@ fn main() {
             }
             Ok(Err(_e)) => {
                 log_hook(&format!("PIPE_READ_ERROR id={}", req_id));
-                println!("{}", json!({
-                    "decision": "force_ask",
-                    "hookSpecificOutput": {
-                        "hookEventName": "PreToolUse",
-                        "permissionDecision": "ask"
-                    }
-                }));
+                let out = if is_ag {
+                    json!({ "decision": "force_ask" })
+                } else {
+                    json!({
+                        "decision": "force_ask",
+                        "hookSpecificOutput": {
+                            "hookEventName": "PreToolUse",
+                            "permissionDecision": "ask"
+                        }
+                    })
+                };
+                println!("{}", out);
             }
             Err(_e) => {
                 log_hook(&format!("TIMEOUT id={}", req_id));
-                println!("{}", json!({
-                    "decision": "force_ask",
-                    "hookSpecificOutput": {
-                        "hookEventName": "PreToolUse",
-                        "permissionDecision": "ask"
-                    }
-                }));
+                let out = if is_ag {
+                    json!({ "decision": "force_ask" })
+                } else {
+                    json!({
+                        "decision": "force_ask",
+                        "hookSpecificOutput": {
+                            "hookEventName": "PreToolUse",
+                            "permissionDecision": "ask"
+                        }
+                    })
+                };
+                println!("{}", out);
             }
         }
         std::process::exit(0);
@@ -461,7 +492,7 @@ fn main() {
     let pipe_payload = payload_str;
     std::thread::spawn(move || {
         if let Ok(mut pipe) = open_pipe_with_retry(false, true, 3, 20) {
-            let _ = pipe.write_all(pipe_payload.as_bytes());
+            let _ = pipe.write_all(format!("{}\n", pipe_payload).as_bytes());
             let _ = pipe.flush();
         }
         let _ = tx_pipe.send(());
