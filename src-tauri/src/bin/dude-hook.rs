@@ -121,8 +121,19 @@ fn open_pipe_with_retry(
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    let agent = args.get(1).cloned().unwrap_or_else(|| "antigravity".to_string());
-    let event = args.get(2).cloned().unwrap_or_else(|| "unknown".to_string());
+    let (agent, event) = if args.len() >= 3 {
+        (args[1].clone(), args[2].clone())
+    } else if args.len() == 2 {
+        // If invoked with a single argument like "PreToolUse", default agent to "antigravity"
+        let arg1 = args[1].clone();
+        if arg1.eq_ignore_ascii_case("antigravity") || arg1.eq_ignore_ascii_case("claude") || arg1.eq_ignore_ascii_case("cursor") {
+            (arg1, "unknown".to_string())
+        } else {
+            ("antigravity".to_string(), arg1)
+        }
+    } else {
+        ("antigravity".to_string(), "unknown".to_string())
+    };
 
     #[cfg(all(debug_assertions, feature = "approvals"))]
     log_hook(&format!("INVOKED agent={} event={}", agent, event));
@@ -337,6 +348,7 @@ fn main() {
             let _ = tx_reply.send(res);
         });
 
+        let is_ag = agent.eq_ignore_ascii_case("antigravity");
         match rx_reply.recv_timeout(Duration::from_secs(47)) {
             Ok(Ok(line)) => {
                 let reply = line.trim();
@@ -365,11 +377,9 @@ fn main() {
                                 }
                             })
                         };
-                        if !trimmed.is_empty() {
+                        if !trimmed.is_empty() && !is_ag {
                             val["permissionOverrides"] = json!([format!("command({})", trimmed)]);
-                            if !is_ag {
-                                val["hookSpecificOutput"]["permissionOverrides"] = json!([format!("command({})", trimmed)]);
-                            }
+                            val["hookSpecificOutput"]["permissionOverrides"] = json!([format!("command({})", trimmed)]);
                         }
                         log_hook(&format!("OUTPUT_DECISION id={} decision=allow", req_id));
                         val
@@ -414,23 +424,33 @@ fn main() {
             }
             Ok(Err(_e)) => {
                 log_hook(&format!("PIPE_READ_ERROR id={}", req_id));
-                println!("{}", json!({
-                    "decision": "force_ask",
-                    "hookSpecificOutput": {
-                        "hookEventName": "PreToolUse",
-                        "permissionDecision": "ask"
-                    }
-                }));
+                let out = if is_ag {
+                    json!({ "decision": "force_ask" })
+                } else {
+                    json!({
+                        "decision": "force_ask",
+                        "hookSpecificOutput": {
+                            "hookEventName": "PreToolUse",
+                            "permissionDecision": "ask"
+                        }
+                    })
+                };
+                println!("{}", out);
             }
             Err(_e) => {
                 log_hook(&format!("TIMEOUT id={}", req_id));
-                println!("{}", json!({
-                    "decision": "force_ask",
-                    "hookSpecificOutput": {
-                        "hookEventName": "PreToolUse",
-                        "permissionDecision": "ask"
-                    }
-                }));
+                let out = if is_ag {
+                    json!({ "decision": "force_ask" })
+                } else {
+                    json!({
+                        "decision": "force_ask",
+                        "hookSpecificOutput": {
+                            "hookEventName": "PreToolUse",
+                            "permissionDecision": "ask"
+                        }
+                    })
+                };
+                println!("{}", out);
             }
         }
         std::process::exit(0);

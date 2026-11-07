@@ -58,7 +58,8 @@ Switch between three views from the top pill:
 - Custom personality instructions.
 ### DropVault & File Drop
 
-- DropVault: drop files on the island and keep them in one folder.
+- DropVault: drop files on the island and keep them in one folder. Choose where DropVault lives in Settings.
+- Clean up old files: move files older than a chosen period to the Recycle Bin.
 - Recent files grid in the hub with one-click access and safe executable inspection.
 - Configure the provider, model, API key, and persona in Settings.
 
@@ -164,6 +165,8 @@ Dude's project documentation describes the following privacy goals:
 - API keys stored in Windows Credential Manager.
 - Laptop controls and agent event data kept locally on your machine.
 - Clipboard history is off by default. When you turn it on, text you copy is kept in memory only until you quit Dude; copies from password managers and text that looks like a secret are skipped; nothing is sent anywhere.
+- You can change where DropVault lives in Settings, DropVault. Dude only works inside that folder.
+- Clean-up only moves files to the Recycle Bin, only when you press the button, and only inside the DropVault folder.
 - Links in chat replies open in your default browser only when you click them. Dude does not load link previews or contact those sites itself.
 
 Read the [Privacy Policy](docs/PRIVACY.md) for more information.

@@ -127,6 +127,29 @@
       --agents-tile-bg: rgba(255, 255, 255, 0.35);
       --agents-tile-border: rgba(255, 255, 255, 0.85);
       --agents-label-color: #111111;
+
+      /* DropVault Section - Light Theme Variables */
+      --dropvault-banner-bg: linear-gradient(to right, #FFE6C7, #DCD6FF);
+      --dropvault-banner-border: #B8A9D0;
+      --dropvault-banner-title-color: #111111;
+      --dropvault-banner-sub-color: #5F6780;
+      --dropvault-divider-color: #B8A9D0;
+      --dropvault-card-bg: #A9BDF0;
+      --dropvault-card-shadow: 0 4px 3px rgba(0, 0, 0, 0.6);
+      --dropvault-card-title-color: #111111;
+      --dropvault-tile-bg: #FFFFFF;
+      --dropvault-tile-border: #1A1A1A;
+      --dropvault-tile-label-color: #111111;
+      --dropvault-tile-sub-color: #6B6B6B;
+      --dropvault-tile-amber: #B45309;
+      --dropvault-btn-bg: #FFFFFF;
+      --dropvault-btn-border: #1A1A1A;
+      --dropvault-btn-color: #111111;
+      --dropvault-btn-hover-bg: #EAEAEA;
+      --dropvault-clean-purple-bg: #6D28D9;
+      --dropvault-clean-purple-hover: #5B21B6;
+      --dropvault-clean-purple-color: #FFFFFF;
+      --dropvault-error-color: #DC2626;
       --agents-path-color: #7C7C88;
       --agents-btn-uninstall-bg: #D98095;
       --agents-btn-uninstall-color: #000000;
@@ -270,6 +293,29 @@
       --agents-tile-bg: rgba(255, 255, 255, 0.08);
       --agents-tile-border: rgba(255, 255, 255, 0.35);
       --agents-label-color: #FFFFFF;
+
+      /* DropVault Section - Dark Theme Variables */
+      --dropvault-banner-bg: linear-gradient(to right, #2A2140, #3B2C66);
+      --dropvault-banner-border: rgba(200, 210, 235, 0.45);
+      --dropvault-banner-title-color: #FFFFFF;
+      --dropvault-banner-sub-color: #D8D8E8;
+      --dropvault-divider-color: rgba(200, 210, 235, 0.35);
+      --dropvault-card-bg: linear-gradient(to bottom, #1F2347, #2D2A66);
+      --dropvault-card-shadow: 0 4px 3px rgba(0, 0, 0, 0.6);
+      --dropvault-card-title-color: #FFFFFF;
+      --dropvault-tile-bg: rgba(255, 255, 255, 0.08);
+      --dropvault-tile-border: rgba(255, 255, 255, 0.35);
+      --dropvault-tile-label-color: #FFFFFF;
+      --dropvault-tile-sub-color: #BDBDC6;
+      --dropvault-tile-amber: #FBBF24;
+      --dropvault-btn-bg: rgba(255, 255, 255, 0.14);
+      --dropvault-btn-border: rgba(255, 255, 255, 0.45);
+      --dropvault-btn-color: #FFFFFF;
+      --dropvault-btn-hover-bg: rgba(255, 255, 255, 0.22);
+      --dropvault-clean-purple-bg: #8B5CF6;
+      --dropvault-clean-purple-hover: #7C3AED;
+      --dropvault-clean-purple-color: #FFFFFF;
+      --dropvault-error-color: #F87171;
       --agents-path-color: #F0F0F5;
       --agents-btn-uninstall-bg: #B3122A;
       --agents-btn-uninstall-color: #FFFFFF;
@@ -3680,6 +3726,524 @@
       user-select: none;
       padding-bottom: 28px;
     }
+
+    /* ======================================================================
+       DropVault Section Styling
+       ====================================================================== */
+    .dropvault-panel {
+      display: none;
+    }
+
+    .dropvault-banner {
+      position: absolute;
+      left: 29px;
+      top: 29px;
+      width: 561px;
+      height: 124px;
+      border-radius: var(--banner-radius, 12px);
+      background: var(--dropvault-banner-bg);
+      border: 1px solid var(--dropvault-banner-border);
+      box-sizing: border-box;
+      overflow: hidden;
+      z-index: 5;
+      -webkit-app-region: drag;
+    }
+
+    .dropvault-banner-title {
+      position: absolute;
+      left: 18px;
+      top: 9px;
+      height: 44px;
+      line-height: 44px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 44px;
+      font-weight: 400;
+      color: var(--dropvault-banner-title-color, #111111);
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-app-region: drag;
+    }
+
+    .dropvault-banner-subtitle {
+      position: absolute;
+      left: 18px;
+      top: 61.5px;
+      max-width: 430px;
+      font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      line-height: 25px;
+      font-weight: 600;
+      letter-spacing: -0.1px;
+      color: var(--dropvault-banner-sub-color, #5F6780);
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .dropvault-window-controls {
+      position: absolute;
+      top: var(--section-banner-controls-top, 10px);
+      right: var(--section-banner-controls-right, 10px);
+      display: flex;
+      gap: 12px;
+      z-index: 10;
+      -webkit-app-region: no-drag;
+    }
+
+    .dropvault-divider {
+      position: absolute;
+      left: 29px;
+      top: 177px;
+      width: 561px;
+      height: 3px;
+      background-color: var(--dropvault-divider-color, #B8A9D0);
+      border-radius: 1.5px;
+      z-index: 4;
+    }
+
+    .dropvault-content-area {
+      position: absolute;
+      left: 0;
+      top: 177px;
+      width: 619px;
+      height: 408px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      -webkit-app-region: no-drag !important;
+    }
+
+    .dropvault-content-area::-webkit-scrollbar {
+      display: none;
+    }
+
+    .dropvault-card {
+      position: relative !important;
+      margin-left: 29px;
+      width: 561px;
+      border-radius: 6px;
+      background: var(--dropvault-card-bg);
+      box-shadow: var(--dropvault-card-shadow, 0 4px 3px rgba(0, 0, 0, 0.6));
+      box-sizing: border-box;
+      -webkit-app-region: no-drag;
+      transition: height 150ms ease;
+    }
+
+    #dropvault-folder-card {
+      margin-top: 48px;
+      height: 154px;
+    }
+
+    #dropvault-folder-card.confirm-open {
+      height: 198px;
+    }
+
+    #dropvault-folder-card.result-open {
+      height: 180px;
+    }
+
+    .dropvault-card-title {
+      position: absolute;
+      left: 22px;
+      top: 10px;
+      height: 20px;
+      line-height: 20px;
+      font-family: 'Fira Sans Condensed', 'Fira Sans', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.1px;
+      color: var(--dropvault-card-title-color, #111111);
+      user-select: none;
+    }
+
+    .dropvault-tile {
+      position: absolute;
+      left: 18px;
+      width: 525px;
+      box-sizing: border-box;
+      border-radius: 4px;
+      background: var(--dropvault-tile-bg);
+      border: 1px solid var(--dropvault-tile-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dropvault-tile-location {
+      top: 42px;
+      height: 44px;
+    }
+
+    .dropvault-tile-stats {
+      top: 98px;
+      height: 44px;
+      transition: top 150ms ease;
+    }
+
+    .dropvault-card.confirm-open .dropvault-tile-stats {
+      top: 142px;
+    }
+
+    .dropvault-tile-moving {
+      top: 42px;
+      height: 44px;
+    }
+
+    .dropvault-tile-confirm {
+      top: 42px;
+      height: 88px;
+      padding: 6px 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dropvault-tile-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .dropvault-tile-label {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--dropvault-tile-label-color, #111111);
+      padding-left: 10px;
+      line-height: 1.2;
+      user-select: none;
+    }
+
+    .dropvault-tile-subtitle {
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dropvault-tile-sub-color, #6B6B6B);
+      padding-left: 10px;
+      line-height: 1.2;
+      user-select: none;
+    }
+
+    .dropvault-tile-subtitle.amber {
+      color: var(--dropvault-tile-amber, #B45309) !important;
+    }
+
+    .dropvault-tile-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-right: 9px;
+    }
+
+    .dropvault-btn {
+      height: 26px;
+      border-radius: 5px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--dropvault-btn-bg);
+      border: 1px solid var(--dropvault-btn-border);
+      color: var(--dropvault-btn-color, #111111);
+      padding: 0 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      user-select: none;
+      transition: background-color 100ms ease;
+    }
+
+    .dropvault-btn:hover:not(:disabled) {
+      background-color: var(--dropvault-btn-hover-bg);
+    }
+
+    .dropvault-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .dropvault-confirm-content {
+      padding-left: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .dropvault-confirm-question {
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--dropvault-tile-label-color, #111111);
+      line-height: 1.2;
+    }
+
+    .dropvault-confirm-files {
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dropvault-tile-sub-color, #6B6B6B);
+      line-height: 1.2;
+    }
+
+    .dropvault-confirm-note {
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: var(--dropvault-tile-sub-color, #6B6B6B);
+      line-height: 1.2;
+      opacity: 0.85;
+    }
+
+    .dropvault-confirm-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      padding-right: 9px;
+      max-width: 200px;
+    }
+
+    .dropvault-error-msg {
+      position: absolute;
+      left: 18px;
+      top: 88px;
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dropvault-error-color, #DC2626);
+      user-select: none;
+    }
+
+    .dropvault-result-line {
+      position: absolute;
+      left: 18px;
+      top: 148px;
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--dropvault-tile-label-color, #111111);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+    }
+
+    .dropvault-btn-show {
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 4px;
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--dropvault-btn-bg);
+      border: 1px solid var(--dropvault-btn-border);
+      color: var(--dropvault-btn-color, #111111);
+      cursor: pointer;
+    }
+
+    .dropvault-btn-show:hover {
+      background-color: var(--dropvault-btn-hover-bg);
+    }
+
+    #dropvault-clean-card {
+      margin-top: 20px;
+      height: 98px;
+      margin-bottom: 24px;
+    }
+
+    #dropvault-clean-card.review-open {
+      height: 180px;
+    }
+
+    #dropvault-clean-card.empty-open {
+      height: 140px;
+    }
+
+    #dropvault-clean-card.moving-open {
+      height: 154px;
+    }
+
+    #dropvault-clean-card.result-open {
+      height: 160px;
+    }
+
+    .dropvault-tile-clean {
+      top: 42px;
+      height: 44px;
+    }
+
+    .dropvault-select-wrap {
+      position: relative;
+      width: 90px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .dropvault-select {
+      width: 100%;
+      height: 26px;
+      border-radius: 5px;
+      font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--dropvault-btn-bg);
+      border: 1px solid var(--dropvault-btn-border);
+      color: var(--dropvault-btn-color, #111111);
+      padding: 0 20px 0 8px;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    .dropvault-select:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .dropvault-select option {
+      background-color: var(--panel-bg);
+      color: var(--dropvault-tile-label-color, #111111);
+    }
+
+    .dropvault-select-chevron {
+      position: absolute;
+      right: 7px;
+      width: 8px;
+      height: 5px;
+      pointer-events: none;
+      color: var(--dropvault-btn-color, #111111);
+    }
+
+    .dropvault-clean-expand {
+      position: absolute;
+      left: 18px;
+      top: 96px;
+      width: 525px;
+      box-sizing: border-box;
+    }
+
+    .dropvault-clean-summary-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .dropvault-clean-summary-line {
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--dropvault-tile-label-color, #111111);
+      line-height: 1.25;
+      user-select: none;
+    }
+
+    .dropvault-clean-note-line {
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: var(--dropvault-tile-sub-color, #6B6B6B);
+      line-height: 1.2;
+      user-select: none;
+    }
+
+    .dropvault-clean-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .dropvault-btn-purple {
+      background: var(--dropvault-clean-purple-bg, #6D28D9) !important;
+      border-color: transparent !important;
+      color: var(--dropvault-clean-purple-color, #FFFFFF) !important;
+    }
+
+    .dropvault-btn-purple:hover:not(:disabled) {
+      background-color: var(--dropvault-clean-purple-hover, #5B21B6) !important;
+    }
+
+    .dropvault-clean-empty-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 32px;
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--dropvault-tile-sub-color, #6B6B6B);
+      user-select: none;
+    }
+
+    .dropvault-link-btn {
+      background: none;
+      border: none;
+      color: var(--dropvault-btn-color, #111111);
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0 4px;
+    }
+
+    .dropvault-clean-moving-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 44px;
+      border-radius: 4px;
+      background: var(--dropvault-tile-bg);
+      border: 1px solid var(--dropvault-tile-border);
+      box-sizing: border-box;
+      padding: 0 10px;
+    }
+
+    .dropvault-clean-result-line {
+      position: absolute;
+      left: 18px;
+      top: 96px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      user-select: none;
+    }
+
+    .dropvault-clean-result-text {
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--dropvault-tile-label-color, #111111);
+    }
+
+    .dropvault-clean-undo-hint {
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: var(--dropvault-tile-sub-color, #6B6B6B);
+    }
+
+    .dropvault-clean-error-msg {
+      position: absolute;
+      left: 18px;
+      top: 92px;
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dropvault-error-color, #DC2626);
+      user-select: none;
+    }
   </style>
 </head>
 
@@ -3722,6 +4286,7 @@
         <div class="nav-item" data-tab="behavior">Behavior</div>
         <div class="nav-item" data-tab="startup">Startup</div>
         <div class="nav-item" data-tab="agents">Agents</div>
+        <div class="nav-item" data-tab="dropvault">DropVault</div>
         <div class="nav-item" data-tab="about">About</div>
       </nav>
     </aside>
@@ -4310,7 +4875,162 @@
       </div>
     </section>
 
-        <!-- Right Content Panel (About section) -->
+    <!-- DropVault Subpanel -->
+    <section class="settings-subpanel dropvault-panel" id="dropvault-panel" style="display: none;">
+      <!-- DropVault Banner: left 29px, top 29px, 561 x 124px -->
+      <div class="dropvault-banner" data-tauri-drag-region>
+        <h1 class="dropvault-banner-title" data-tauri-drag-region>DropVault</h1>
+        <p class="dropvault-banner-subtitle">Where Dude keeps the files you drop on the island.</p>
+        <div class="behavior-window-controls dropvault-window-controls">
+          <button type="button" class="win-btn win-btn-minimize" id="dropvault-minimize-btn" aria-label="Minimize">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <line x1="2" y1="7" x2="12" y2="7"></line>
+            </svg>
+          </button>
+          <button type="button" class="win-btn win-btn-close" id="dropvault-close-btn" aria-label="Close">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line>
+              <line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Divider: left 29px, 561px wide, top 177px, thickness 3px -->
+      <div class="dropvault-divider"></div>
+
+      <!-- Content Area below divider -->
+      <div class="dropvault-content-area">
+        <!-- Card "Folder": left 29, width 561, top 225, radius 6 -->
+        <div class="dropvault-card" id="dropvault-folder-card">
+          <div class="dropvault-card-title">Folder</div>
+
+          <!-- Tile "Location" (normal state) -->
+          <div class="dropvault-tile dropvault-tile-location" id="dropvault-tile-location">
+            <div class="dropvault-tile-text">
+              <div class="dropvault-tile-label">Location</div>
+              <div class="dropvault-tile-subtitle" id="vault-location-subtitle">Calculating...</div>
+            </div>
+            <div class="dropvault-tile-buttons" id="dropvault-location-buttons">
+              <button type="button" class="dropvault-btn" id="vault-btn-primary" data-action="primary">Open</button>
+              <button type="button" class="dropvault-btn" id="vault-btn-change" data-action="change">Change...</button>
+            </div>
+          </div>
+
+          <!-- Confirmation Tile (shown during change location) -->
+          <div class="dropvault-tile dropvault-tile-confirm" id="dropvault-tile-confirm" style="display: none;">
+            <div class="dropvault-confirm-content">
+              <div class="dropvault-confirm-question" id="vault-confirm-question">Use <span id="vault-confirm-display"></span> for DropVault?</div>
+              <div class="dropvault-confirm-files" id="vault-confirm-files" style="display: none;"></div>
+              <div class="dropvault-confirm-note">The new folder will be created inside the folder you picked.</div>
+            </div>
+            <div class="dropvault-tile-buttons dropvault-confirm-buttons" id="dropvault-confirm-buttons">
+              <button type="button" class="dropvault-btn dropvault-btn-action" id="vault-btn-move" data-action="move" style="display: none;">Move files</button>
+              <button type="button" class="dropvault-btn dropvault-btn-action" id="vault-btn-leave" data-action="leave" style="display: none;">Leave them</button>
+              <button type="button" class="dropvault-btn dropvault-btn-action" id="vault-btn-use-folder" data-action="use-folder" style="display: none;">Use this folder</button>
+              <button type="button" class="dropvault-btn dropvault-btn-cancel" id="vault-btn-cancel-pick" data-action="cancel-pick">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Moving Progress Tile (shown while move is running) -->
+          <div class="dropvault-tile dropvault-tile-moving" id="dropvault-tile-moving" style="display: none;">
+            <div class="dropvault-tile-text">
+              <div class="dropvault-tile-label">DropVault</div>
+              <div class="dropvault-tile-subtitle" id="vault-move-progress-text">Moving...</div>
+            </div>
+            <div class="dropvault-tile-buttons">
+              <button type="button" class="dropvault-btn" id="vault-btn-cancel-move" data-action="cancel-move">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Pick Error Message (shown in soft red below tile) -->
+          <div class="dropvault-error-msg" id="vault-error-msg" style="display: none;"></div>
+
+          <!-- Tile "Files saved": 44px high, 12px below location tile -->
+          <div class="dropvault-tile dropvault-tile-stats" id="dropvault-tile-stats">
+            <div class="dropvault-tile-text">
+              <div class="dropvault-tile-label">Files saved</div>
+              <div class="dropvault-tile-subtitle" id="vault-stats-subtitle">Calculating...</div>
+            </div>
+          </div>
+
+          <!-- Result Line (shown when move completes) -->
+          <div class="dropvault-result-line" id="vault-result-line" style="display: none;">
+            <span id="vault-result-text"></span>
+            <button type="button" class="dropvault-btn-show" id="vault-btn-show-old" data-action="show-old" style="display: none;">Show them</button>
+          </div>
+        </div>
+
+        <!-- Card "Clean up": 20px gap below Folder card -->
+        <div class="dropvault-card dropvault-clean-card" id="dropvault-clean-card">
+          <div class="dropvault-card-title">Clean up</div>
+
+          <!-- Tile "Clean old files": 44px high -->
+          <div class="dropvault-tile dropvault-tile-clean" id="dropvault-tile-clean">
+            <div class="dropvault-tile-text">
+              <div class="dropvault-tile-label">Clean old files</div>
+              <div class="dropvault-tile-subtitle">Moves files that were not added or changed for a while to the Recycle Bin.</div>
+            </div>
+            <div class="dropvault-tile-buttons">
+              <div class="dropvault-select-wrap">
+                <select class="dropvault-select" id="vault-clean-days-select" aria-label="Clean threshold">
+                  <option value="30">30 days</option>
+                  <option value="60">60 days</option>
+                  <option value="90" selected>90 days</option>
+                  <option value="180">180 days</option>
+                  <option value="365">1 year</option>
+                </select>
+                <svg class="dropvault-select-chevron" viewBox="0 0 10 6" fill="none">
+                  <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <button type="button" class="dropvault-btn" id="vault-btn-clean-review" data-action="clean-review">Review...</button>
+            </div>
+          </div>
+
+          <!-- Review Expansion Area (shown after Review... is clicked) -->
+          <div class="dropvault-clean-expand" id="dropvault-clean-expand" style="display: none;">
+            <!-- Summary State: Files found -->
+            <div class="dropvault-clean-summary-content" id="dropvault-clean-summary-content">
+              <div class="dropvault-clean-summary-line" id="vault-clean-summary-text"></div>
+              <div class="dropvault-clean-note-line" id="vault-clean-subfolder-note" style="display: none;">Note: subfolders are never cleaned automatically.</div>
+              <div class="dropvault-clean-actions">
+                <button type="button" class="dropvault-btn dropvault-btn-purple" id="vault-btn-clean-apply" data-action="clean-apply">Move to Recycle Bin</button>
+                <button type="button" class="dropvault-btn" id="vault-btn-clean-cancel" data-action="clean-cancel">Cancel</button>
+              </div>
+            </div>
+
+            <!-- Empty State: 0 files found -->
+            <div class="dropvault-clean-empty-content" id="dropvault-clean-empty-content" style="display: none;">
+              <span id="vault-clean-empty-text">DropVault has no files older than 90 days.</span>
+              <button type="button" class="dropvault-link-btn" id="vault-btn-clean-close" data-action="clean-close">Close</button>
+            </div>
+
+            <!-- Moving State: Moving in progress -->
+            <div class="dropvault-clean-moving-content" id="dropvault-clean-moving-content" style="display: none;">
+              <div class="dropvault-tile-text">
+                <div class="dropvault-tile-label">DropVault</div>
+                <div class="dropvault-tile-subtitle" id="vault-clean-progress-text">Moving...</div>
+              </div>
+              <div class="dropvault-tile-buttons">
+                <button type="button" class="dropvault-btn" id="vault-btn-clean-cancel-move" data-action="clean-cancel-move">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Clean Result / Undo Hint Line (shown when clean finishes) -->
+          <div class="dropvault-clean-result-line" id="vault-clean-result-line" style="display: none;">
+            <div class="dropvault-clean-result-text" id="vault-clean-result-text"></div>
+            <div class="dropvault-clean-undo-hint">You can restore them from the Recycle Bin anytime.</div>
+          </div>
+
+          <!-- Clean Error Message (shown in soft red) -->
+          <div class="dropvault-clean-error-msg" id="vault-clean-error-msg" style="display: none;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Content Panel (About section) -->
     <section class="settings-subpanel about-panel" id="about-panel" style="display: none;">
       <!-- Banner: left 29px, top 29px, 561 x 124px, fixed (does not scroll) -->
       <div class="about-banner" id="about-banner" data-tauri-drag-region>
@@ -5179,6 +5899,690 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
       return { allPass, results };
     }
 
+    // ======================================================================
+    // DropVault Section Logic
+    // ======================================================================
+    let dropvaultInitialized = false;
+    let vaultCurrentState = 'ready';
+    let vaultCurrentPendingToken = null;
+    let vaultMoveCount = 0;
+    let vaultMoveBytes = 0;
+
+    let vaultCleanPendingToken = null;
+    let vaultCleanPendingCount = 0;
+    let vaultCleanPendingDays = 90;
+    let vaultCleanMisclickTimer = null;
+    let isVaultCleaning = false;
+
+    function formatBytesDisplay(bytes) {
+      if (!bytes || bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      const val = parseFloat((bytes / Math.pow(k, i)).toFixed(i === 0 ? 0 : 1));
+      return `${val} ${sizes[i]}`;
+    }
+
+    function getPeriodLabel(days) {
+      if (days === 365) return '1 year';
+      return `${days} days`;
+    }
+
+    async function refreshDropVaultUI() {
+      if (currentActiveTab !== 'dropvault') return;
+      try {
+        if (!window.__TAURI__?.core?.invoke) return;
+
+        // 1. Vault Status
+        const status = await window.__TAURI__.core.invoke('vault_status');
+        vaultCurrentState = status.state || 'not_created';
+
+        const subEl = document.getElementById('vault-location-subtitle');
+        const primaryBtn = document.getElementById('vault-btn-primary');
+        const changeBtn = document.getElementById('vault-btn-change');
+
+        if (subEl) {
+          if (vaultCurrentState === 'ready') {
+            subEl.textContent = status.display || 'Documents\\DropVault';
+            subEl.classList.remove('amber');
+          } else if (vaultCurrentState === 'not_created') {
+            subEl.textContent = 'Not created yet';
+            subEl.classList.add('amber');
+          } else if (vaultCurrentState === 'missing') {
+            subEl.textContent = 'Folder not found';
+            subEl.classList.add('amber');
+          }
+        }
+
+        if (primaryBtn) {
+          if (vaultCurrentState === 'ready') {
+            primaryBtn.textContent = 'Open';
+            primaryBtn.disabled = false;
+          } else {
+            primaryBtn.textContent = 'Create folder';
+            primaryBtn.disabled = false;
+          }
+        }
+
+        if (changeBtn) {
+          if (vaultCurrentState === 'ready') {
+            changeBtn.textContent = 'Change...';
+          } else {
+            changeBtn.textContent = 'Choose location';
+          }
+        }
+
+        // 2. Vault Stats
+        const statsEl = document.getElementById('vault-stats-subtitle');
+        if (statsEl) {
+          try {
+            const stats = await window.__TAURI__.core.invoke('vault_stats');
+            if (!stats || stats.count === 0) {
+              statsEl.textContent = 'Nothing saved yet';
+            } else {
+              const prefix = stats.truncated ? `${stats.count}+ files` : (stats.count === 1 ? '1 file' : `${stats.count} files`);
+              statsEl.textContent = `${prefix}, ${formatBytesDisplay(stats.bytes)}`;
+            }
+          } catch {
+            statsEl.textContent = 'Nothing saved yet';
+          }
+        }
+
+        // 3. Clean Settings & States
+        const daysSelect = document.getElementById('vault-clean-days-select');
+        const cleanReviewBtn = document.getElementById('vault-btn-clean-review');
+        const cleanTile = document.getElementById('dropvault-tile-clean');
+
+        if (daysSelect && !daysSelect.dataset.loaded) {
+          try {
+            const store = await getStoreHandle();
+            const savedDays = await store.get('dropvault.cleanDays');
+            if (savedDays && ['30', '60', '90', '180', '365'].includes(String(savedDays))) {
+              daysSelect.value = String(savedDays);
+              vaultCleanPendingDays = parseInt(savedDays, 10);
+            }
+            daysSelect.dataset.loaded = 'true';
+          } catch (_) {}
+        }
+
+        const isCleanDisabled = (vaultCurrentState !== 'ready') || isVaultCleaning || Boolean(vaultCleanPendingToken);
+        if (daysSelect) daysSelect.disabled = isCleanDisabled;
+        if (cleanReviewBtn) cleanReviewBtn.disabled = isCleanDisabled;
+        if (cleanTile) cleanTile.style.opacity = (vaultCurrentState !== 'ready') ? '0.5' : '1';
+
+      } catch (err) {
+        console.warn('Failed to refresh DropVault UI:', err);
+      }
+    }
+
+    function initDropVaultTab() {
+      if (dropvaultInitialized) return;
+      dropvaultInitialized = true;
+
+      const dropvaultPanel = document.getElementById('dropvault-panel');
+      if (!dropvaultPanel) return;
+
+      // Single delegated event listener attached once
+      dropvaultPanel.addEventListener('click', async (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const action = btn.getAttribute('data-action');
+        if (!action) return;
+        e.preventDefault();
+
+        try {
+          if (action === 'primary') {
+            if (vaultCurrentState === 'ready') {
+              await window.__TAURI__.core.invoke('open_vault_folder');
+            } else {
+              btn.textContent = 'Creating...';
+              btn.disabled = true;
+              await window.__TAURI__.core.invoke('create_vault');
+              await refreshDropVaultUI();
+            }
+          } else if (action === 'change') {
+            hideVaultError();
+            hideVaultResult();
+            try {
+              const pickRes = await window.__TAURI__.core.invoke('vault_pick_location');
+              if (pickRes && pickRes.token) {
+                showConfirmationTile(pickRes);
+              }
+            } catch (err) {
+              handlePickError(err);
+            }
+          } else if (action === 'move') {
+            if (!vaultCurrentPendingToken) return;
+            showMovingTile(vaultMoveCount);
+            try {
+              const applyRes = await window.__TAURI__.core.invoke('vault_apply_location', {
+                token: vaultCurrentPendingToken,
+                mode: 'move'
+              });
+              finishMove(applyRes);
+            } catch (err) {
+              console.error('Failed to move files:', err);
+              hideMovingTile();
+              await refreshDropVaultUI();
+            }
+          } else if (action === 'leave' || action === 'use-folder') {
+            if (!vaultCurrentPendingToken) return;
+            try {
+              await window.__TAURI__.core.invoke('vault_apply_location', {
+                token: vaultCurrentPendingToken,
+                mode: 'leave'
+              });
+              hideConfirmationTile();
+              await refreshDropVaultUI();
+            } catch (err) {
+              console.error('Failed to leave files:', err);
+              hideConfirmationTile();
+              await refreshDropVaultUI();
+            }
+          } else if (action === 'cancel-pick') {
+            if (vaultCurrentPendingToken) {
+              try {
+                await window.__TAURI__.core.invoke('vault_cancel_location', { token: vaultCurrentPendingToken });
+              } catch {}
+            }
+            hideConfirmationTile();
+          } else if (action === 'cancel-move') {
+            try {
+              await window.__TAURI__.core.invoke('vault_cancel_move');
+            } catch {}
+          } else if (action === 'show-old') {
+            try {
+              await window.__TAURI__.core.invoke('vault_open_old_folder');
+            } catch {}
+          } else if (action === 'clean-review') {
+            hideCleanError();
+            hideCleanResult();
+            const selectEl = document.getElementById('vault-clean-days-select');
+            const days = selectEl ? parseInt(selectEl.value, 10) : 90;
+            vaultCleanPendingDays = days;
+            btn.textContent = 'Scanning...';
+            btn.disabled = true;
+            try {
+              const res = await window.__TAURI__.core.invoke('vault_clean_preview', { days });
+              btn.textContent = 'Review...';
+              showCleanReview(res, days);
+            } catch (err) {
+              btn.textContent = 'Review...';
+              btn.disabled = false;
+              handleCleanError(err);
+            }
+          } else if (action === 'clean-apply') {
+            if (!vaultCleanPendingToken) return;
+            const token = vaultCleanPendingToken;
+            showCleanMoving(vaultCleanPendingCount);
+            isVaultCleaning = true;
+            try {
+              const res = await window.__TAURI__.core.invoke('vault_clean_apply', { token });
+              finishClean(res);
+            } catch (err) {
+              console.error('Clean apply failed:', err);
+              discardCleanReview();
+              handleCleanError(err);
+            } finally {
+              isVaultCleaning = false;
+              await refreshDropVaultUI();
+            }
+          } else if (action === 'clean-cancel' || action === 'clean-close') {
+            discardCleanReview();
+          } else if (action === 'clean-cancel-move') {
+            try {
+              await window.__TAURI__.core.invoke('vault_clean_cancel');
+            } catch {}
+          }
+        } catch (err) {
+          console.error('DropVault action error:', err);
+        }
+      });
+
+      // Days select change listener
+      const daysSelect = document.getElementById('vault-clean-days-select');
+      if (daysSelect) {
+        daysSelect.addEventListener('change', async (e) => {
+          const val = parseInt(e.target.value, 10);
+          vaultCleanPendingDays = val;
+          discardCleanReview();
+          try {
+            const store = await getStoreHandle();
+            await store.set('dropvault.cleanDays', String(val));
+            await store.save();
+          } catch (err) {
+            console.warn('Failed to save dropvault.cleanDays:', err);
+          }
+        });
+      }
+
+      // Listen for move progress
+      if (window.__TAURI__?.event?.listen) {
+        window.__TAURI__.event.listen('vault-move-progress', (event) => {
+          const payload = event.payload || {};
+          const curr = payload.current || 0;
+          const total = payload.total || 0;
+          const el = document.getElementById('vault-move-progress-text');
+          if (el) {
+            el.textContent = `Moving ${curr} of ${total}...`;
+          }
+        });
+
+        window.__TAURI__.event.listen('vault-clean-progress', (event) => {
+          const payload = event.payload || {};
+          const curr = payload.current || 0;
+          const total = payload.total || 0;
+          const el = document.getElementById('vault-clean-progress-text');
+          if (el) {
+            el.textContent = `Moving ${curr} of ${total}...`;
+          }
+        });
+      }
+
+      refreshDropVaultUI();
+    }
+
+    function showConfirmationTile(pickRes) {
+      vaultCurrentPendingToken = pickRes.token;
+      vaultMoveCount = pickRes.moveCount || 0;
+      vaultMoveBytes = pickRes.moveBytes || 0;
+
+      const card = document.getElementById('dropvault-folder-card');
+      const locTile = document.getElementById('dropvault-tile-location');
+      const confirmTile = document.getElementById('dropvault-tile-confirm');
+      const displaySpan = document.getElementById('vault-confirm-display');
+      const filesLine = document.getElementById('vault-confirm-files');
+      const moveBtn = document.getElementById('vault-btn-move');
+      const leaveBtn = document.getElementById('vault-btn-leave');
+      const useFolderBtn = document.getElementById('vault-btn-use-folder');
+
+      if (displaySpan) displaySpan.textContent = pickRes.vaultDisplay;
+
+      if (vaultMoveCount > 0) {
+        if (filesLine) {
+          filesLine.textContent = `${vaultMoveCount} files (${formatBytesDisplay(vaultMoveBytes)}) are in the current folder.`;
+          filesLine.style.display = 'block';
+        }
+        if (moveBtn) moveBtn.style.display = 'inline-flex';
+        if (leaveBtn) leaveBtn.style.display = 'inline-flex';
+        if (useFolderBtn) useFolderBtn.style.display = 'none';
+      } else {
+        if (filesLine) filesLine.style.display = 'none';
+        if (moveBtn) moveBtn.style.display = 'none';
+        if (leaveBtn) leaveBtn.style.display = 'none';
+        if (useFolderBtn) useFolderBtn.style.display = 'inline-flex';
+      }
+
+      if (locTile) locTile.style.display = 'none';
+      if (confirmTile) confirmTile.style.display = 'flex';
+      if (card) card.classList.add('confirm-open');
+    }
+
+    function hideConfirmationTile() {
+      vaultCurrentPendingToken = null;
+      const card = document.getElementById('dropvault-folder-card');
+      const locTile = document.getElementById('dropvault-tile-location');
+      const confirmTile = document.getElementById('dropvault-tile-confirm');
+
+      if (confirmTile) confirmTile.style.display = 'none';
+      if (locTile) locTile.style.display = 'flex';
+      if (card) card.classList.remove('confirm-open');
+    }
+
+    function showMovingTile(total) {
+      const locTile = document.getElementById('dropvault-tile-location');
+      const confirmTile = document.getElementById('dropvault-tile-confirm');
+      const movingTile = document.getElementById('dropvault-tile-moving');
+      const progressText = document.getElementById('vault-move-progress-text');
+
+      if (confirmTile) confirmTile.style.display = 'none';
+      if (locTile) locTile.style.display = 'none';
+      if (progressText) progressText.textContent = `Moving 0 of ${total}...`;
+      if (movingTile) movingTile.style.display = 'flex';
+    }
+
+    function hideMovingTile() {
+      const movingTile = document.getElementById('dropvault-tile-moving');
+      const locTile = document.getElementById('dropvault-tile-location');
+      const card = document.getElementById('dropvault-folder-card');
+
+      if (movingTile) movingTile.style.display = 'none';
+      if (locTile) locTile.style.display = 'flex';
+      if (card) card.classList.remove('confirm-open');
+    }
+
+    function finishMove(res) {
+      hideMovingTile();
+      vaultCurrentPendingToken = null;
+
+      const card = document.getElementById('dropvault-folder-card');
+      const resultLine = document.getElementById('vault-result-line');
+      const resultText = document.getElementById('vault-result-text');
+      const showOldBtn = document.getElementById('vault-btn-show-old');
+
+      if (res && res.failed > 0) {
+        if (resultText) resultText.textContent = `Moved ${res.moved} files. ${res.failed} couldn't be moved and stayed in the old folder.`;
+        if (showOldBtn) showOldBtn.style.display = 'inline-flex';
+      } else {
+        const cnt = res ? res.moved : 0;
+        if (resultText) resultText.textContent = `Moved ${cnt} files.`;
+        if (showOldBtn) showOldBtn.style.display = 'none';
+      }
+
+      if (resultLine) resultLine.style.display = 'flex';
+      if (card) card.classList.add('result-open');
+
+      refreshDropVaultUI();
+    }
+
+    function hideVaultResult() {
+      const card = document.getElementById('dropvault-folder-card');
+      const resultLine = document.getElementById('vault-result-line');
+      if (resultLine) resultLine.style.display = 'none';
+      if (card) card.classList.remove('result-open');
+    }
+
+    function handlePickError(err) {
+      const errStr = typeof err === 'string' ? err : (err?.message || '');
+      if (errStr === 'cancelled') return;
+
+      const errorMap = {
+        'network': "Network folders aren't supported.",
+        'system': "Choose another folder.",
+        'inside': "That folder is inside the current DropVault.",
+        'reparse': "Shortcuts and links aren't supported.",
+        'readonly': "Can't write to that folder.",
+        'same': "That is already the DropVault folder."
+      };
+
+      const msg = errorMap[errStr] || "Couldn't use that folder.";
+      const errorEl = document.getElementById('vault-error-msg');
+      if (errorEl) {
+        errorEl.textContent = msg;
+        errorEl.style.display = 'block';
+      }
+    }
+
+    function hideVaultError() {
+      const errorEl = document.getElementById('vault-error-msg');
+      if (errorEl) {
+        errorEl.textContent = '';
+        errorEl.style.display = 'none';
+      }
+    }
+
+    function showCleanReview(res, days) {
+      vaultCleanPendingToken = res.token;
+      vaultCleanPendingCount = res.count;
+
+      const card = document.getElementById('dropvault-clean-card');
+      const expandArea = document.getElementById('dropvault-clean-expand');
+      const summaryContent = document.getElementById('dropvault-clean-summary-content');
+      const emptyContent = document.getElementById('dropvault-clean-empty-content');
+      const movingContent = document.getElementById('dropvault-clean-moving-content');
+      const summaryText = document.getElementById('vault-clean-summary-text');
+      const subfolderNote = document.getElementById('vault-clean-subfolder-note');
+      const applyBtn = document.getElementById('vault-btn-clean-apply');
+      const emptyText = document.getElementById('vault-clean-empty-text');
+      const daysSelect = document.getElementById('vault-clean-days-select');
+      const reviewBtn = document.getElementById('vault-btn-clean-review');
+
+      if (daysSelect) daysSelect.disabled = true;
+      if (reviewBtn) reviewBtn.disabled = true;
+
+      hideCleanResult();
+      hideCleanError();
+
+      if (expandArea) expandArea.style.display = 'block';
+      if (movingContent) movingContent.style.display = 'none';
+
+      if (res.count === 0) {
+        if (summaryContent) summaryContent.style.display = 'none';
+        if (emptyText) emptyText.textContent = `DropVault has no files older than ${getPeriodLabel(days)}.`;
+        if (emptyContent) emptyContent.style.display = 'flex';
+        if (card) {
+          card.classList.remove('review-open', 'moving-open', 'result-open');
+          card.classList.add('empty-open');
+        }
+      } else {
+        if (emptyContent) emptyContent.style.display = 'none';
+        const fileStr = res.count === 1 ? '1 file' : `${res.count} files`;
+        const bytesStr = formatBytesDisplay(res.bytes);
+        const oldestPart = res.oldestAgeDays ? ` (oldest file is ${res.oldestAgeDays} days old)` : '';
+        if (summaryText) {
+          summaryText.textContent = `${fileStr} (${bytesStr}) are older than ${getPeriodLabel(days)}.${oldestPart}`;
+        }
+        if (subfolderNote) {
+          subfolderNote.style.display = (res.skippedFolders > 0) ? 'block' : 'none';
+        }
+        if (applyBtn) {
+          applyBtn.textContent = `Move ${fileStr} to the Recycle Bin`;
+          applyBtn.disabled = true;
+          if (vaultCleanMisclickTimer) clearTimeout(vaultCleanMisclickTimer);
+          vaultCleanMisclickTimer = setTimeout(() => {
+            applyBtn.disabled = false;
+          }, 600);
+        }
+        if (summaryContent) summaryContent.style.display = 'flex';
+        if (card) {
+          card.classList.remove('empty-open', 'moving-open', 'result-open');
+          card.classList.add('review-open');
+        }
+      }
+    }
+
+    function showCleanMoving(total) {
+      const card = document.getElementById('dropvault-clean-card');
+      const summaryContent = document.getElementById('dropvault-clean-summary-content');
+      const emptyContent = document.getElementById('dropvault-clean-empty-content');
+      const movingContent = document.getElementById('dropvault-clean-moving-content');
+      const progressText = document.getElementById('vault-clean-progress-text');
+
+      if (summaryContent) summaryContent.style.display = 'none';
+      if (emptyContent) emptyContent.style.display = 'none';
+      if (progressText) progressText.textContent = `Moving 0 of ${total}...`;
+      if (movingContent) movingContent.style.display = 'flex';
+
+      if (card) {
+        card.classList.remove('review-open', 'empty-open', 'result-open');
+        card.classList.add('moving-open');
+      }
+    }
+
+    function finishClean(res) {
+      discardCleanReview();
+
+      const card = document.getElementById('dropvault-clean-card');
+      const resultLine = document.getElementById('vault-clean-result-line');
+      const resultText = document.getElementById('vault-clean-result-text');
+
+      if (resultText && res) {
+        if (res.skipped > 0) {
+          resultText.textContent = `Moved ${res.moved} files. ${res.skipped} files were skipped because they changed.`;
+        } else {
+          resultText.textContent = `Moved ${res.moved} files to the Recycle Bin.`;
+        }
+      }
+      if (resultLine) resultLine.style.display = 'flex';
+      if (card) {
+        card.classList.remove('review-open', 'empty-open', 'moving-open');
+        card.classList.add('result-open');
+      }
+
+      refreshDropVaultUI();
+    }
+
+    function discardCleanReview() {
+      if (vaultCleanMisclickTimer) {
+        clearTimeout(vaultCleanMisclickTimer);
+        vaultCleanMisclickTimer = null;
+      }
+      if (vaultCleanPendingToken) {
+        const token = vaultCleanPendingToken;
+        vaultCleanPendingToken = null;
+        if (window.__TAURI__?.core?.invoke) {
+          window.__TAURI__.core.invoke('vault_clean_discard', { token }).catch(() => {});
+        }
+      }
+      vaultCleanPendingToken = null;
+      vaultCleanPendingCount = 0;
+
+      const card = document.getElementById('dropvault-clean-card');
+      const expandArea = document.getElementById('dropvault-clean-expand');
+      const summaryContent = document.getElementById('dropvault-clean-summary-content');
+      const emptyContent = document.getElementById('dropvault-clean-empty-content');
+      const movingContent = document.getElementById('dropvault-clean-moving-content');
+      const daysSelect = document.getElementById('vault-clean-days-select');
+      const reviewBtn = document.getElementById('vault-btn-clean-review');
+
+      if (expandArea) expandArea.style.display = 'none';
+      if (summaryContent) summaryContent.style.display = 'none';
+      if (emptyContent) emptyContent.style.display = 'none';
+      if (movingContent) movingContent.style.display = 'none';
+
+      if (daysSelect && !isVaultCleaning && vaultCurrentState === 'ready') daysSelect.disabled = false;
+      if (reviewBtn && !isVaultCleaning && vaultCurrentState === 'ready') reviewBtn.disabled = false;
+
+      if (card) {
+        card.classList.remove('review-open', 'empty-open', 'moving-open');
+      }
+    }
+
+    function hideCleanResult() {
+      const card = document.getElementById('dropvault-clean-card');
+      const resultLine = document.getElementById('vault-clean-result-line');
+      if (resultLine) resultLine.style.display = 'none';
+      if (card) card.classList.remove('result-open');
+    }
+
+    function handleCleanError(err) {
+      const errStr = typeof err === 'string' ? err : (err?.message || "Couldn't clean files safely.");
+      const errorEl = document.getElementById('vault-clean-error-msg');
+      if (errorEl) {
+        errorEl.textContent = errStr;
+        errorEl.style.display = 'block';
+      }
+    }
+
+    function hideCleanError() {
+      const errorEl = document.getElementById('vault-clean-error-msg');
+      if (errorEl) {
+        errorEl.textContent = '';
+        errorEl.style.display = 'none';
+      }
+    }
+
+    // Dev-only Key "Ctrl+Alt+S" to seed 30 test files in debug mode
+    window.addEventListener('keydown', async (e) => {
+      if (e.ctrlKey && e.altKey && (e.key === 's' || e.key === 'S')) {
+        try {
+          if (window.__TAURI__?.core?.invoke) {
+            await window.__TAURI__.core.invoke('seed_vault_test_files');
+            if (currentActiveTab === 'dropvault') {
+              await refreshDropVaultUI();
+            }
+          }
+        } catch (err) {
+          console.warn('Failed to seed vault test files:', err);
+        }
+      }
+    });
+
+    window.runDropVaultAlignmentAudit = function() {
+      showTab('dropvault');
+
+      const panel = document.getElementById('dropvault-panel');
+      const banner = document.querySelector('.dropvault-banner');
+      const divider = document.querySelector('.dropvault-divider');
+      const card = document.getElementById('dropvault-folder-card');
+      const title = card ? card.querySelector('.dropvault-card-title') : null;
+      const locTile = document.getElementById('dropvault-tile-location');
+      const statsTile = document.getElementById('dropvault-tile-stats');
+      const changeBtn = document.getElementById('vault-btn-change');
+      const cleanCard = document.getElementById('dropvault-clean-card');
+      const cleanTile = document.getElementById('dropvault-tile-clean');
+
+      if (!panel || !banner || !divider || !card) {
+        console.warn('[ALIGNMENT AUDIT] DropVault panel elements not found');
+        return { allPass: false, results: [] };
+      }
+
+      const pRect = panel.getBoundingClientRect();
+      const bRect = banner.getBoundingClientRect();
+      const dRect = divider.getBoundingClientRect();
+      const cRect = card.getBoundingClientRect();
+      const tRect = title ? title.getBoundingClientRect() : null;
+      const ltRect = locTile ? locTile.getBoundingClientRect() : null;
+      const stRect = statsTile ? statsTile.getBoundingClientRect() : null;
+      const chRect = changeBtn ? changeBtn.getBoundingClientRect() : null;
+
+      const round = (n) => Math.round(n * 10) / 10;
+      const results = [];
+
+      function check(item, measured, expected, unit = 'px') {
+        const pass = typeof expected === 'number'
+          ? Math.abs(measured - expected) <= 0.5
+          : measured === expected;
+        results.push({
+          Item: item,
+          Measured: `${round(measured)}${unit}`,
+          Expected: `${expected}${unit}`,
+          Status: pass ? 'PASS' : 'FAIL'
+        });
+      }
+
+      check('Banner left offset from panel', bRect.left - pRect.left, 29);
+      check('Banner right offset from panel', pRect.right - bRect.right, 29);
+      check('Banner top offset from panel', bRect.top - pRect.top, 29);
+      check('Banner height', bRect.height, 124);
+      check('Divider left offset from panel', dRect.left - pRect.left, 29);
+      check('Divider right offset from panel', pRect.right - dRect.right, 29);
+      check('Divider top offset from panel', dRect.top - pRect.top, 177);
+      check('Divider height', dRect.height, 3);
+      check('Card left offset from panel', cRect.left - pRect.left, 29);
+      check('Card right offset from panel', pRect.right - cRect.right, 29);
+      check('Card top offset from panel', cRect.top - pRect.top, 225);
+
+      if (ltRect) {
+        check('Location tile left from card', ltRect.left - cRect.left, 18);
+        check('Location tile right from card', cRect.right - ltRect.right, 18);
+        check('Location tile top from card', ltRect.top - cRect.top, 42);
+        check('Location tile height', ltRect.height, 44);
+      }
+      if (stRect) {
+        check('Stats tile left from card', stRect.left - cRect.left, 18);
+        check('Stats tile right from card', cRect.right - stRect.right, 18);
+        check('Stats tile top from card', stRect.top - cRect.top, 98);
+        check('Stats tile height', stRect.height, 44);
+      }
+      if (tRect) {
+        check('Card title left from card', tRect.left - cRect.left, 22);
+        check('Card title vertical center from card', (tRect.top + tRect.height / 2) - cRect.top, 20);
+      }
+      if (chRect && ltRect) {
+        check('Change button right inset from tile', ltRect.right - chRect.right, 9);
+        check('Change button height', chRect.height, 26);
+      }
+
+      if (cleanCard) {
+        const ccRect = cleanCard.getBoundingClientRect();
+        check('Clean card left offset from panel', ccRect.left - pRect.left, 29);
+        check('Clean card right offset from panel', pRect.right - ccRect.right, 29);
+        check('Gap between folder and clean cards', ccRect.top - cRect.bottom, 20);
+        if (cleanTile) {
+          const ctRect = cleanTile.getBoundingClientRect();
+          check('Clean tile left from card', ctRect.left - ccRect.left, 18);
+          check('Clean tile right from card', ccRect.right - ctRect.right, 18);
+          check('Clean tile top from card', ctRect.top - ccRect.top, 42);
+          check('Clean tile height', ctRect.height, 44);
+        }
+      }
+
+      const allPass = results.every(r => r.Status === 'PASS');
+      console.table(results);
+      return { allPass, results };
+    };
+
 
     function runAboutAlignmentAuditSingleTheme(targetTheme) {
       if (targetTheme && typeof applyTheme === 'function') {
@@ -5812,7 +7216,7 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
     }
 
     // Minimize buttons
-    ['minimize-btn', 'appearance-minimize-btn', 'welcome-minimize-btn', 'behavior-minimize-btn', 'startup-minimize-btn', 'agents-minimize-btn', 'about-minimize-btn'].forEach((id) => {
+    ['minimize-btn', 'appearance-minimize-btn', 'welcome-minimize-btn', 'behavior-minimize-btn', 'startup-minimize-btn', 'agents-minimize-btn', 'dropvault-minimize-btn', 'about-minimize-btn'].forEach((id) => {
       const btn = document.getElementById(id);
       if (btn) {
         btn.addEventListener('mousedown', (e) => e.stopPropagation());
@@ -5825,7 +7229,7 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
     });
 
     // Close buttons
-    ['close-btn', 'appearance-close-btn', 'welcome-close-btn', 'behavior-close-btn', 'startup-close-btn', 'agents-close-btn', 'about-close-btn'].forEach((id) => {
+    ['close-btn', 'appearance-close-btn', 'welcome-close-btn', 'behavior-close-btn', 'startup-close-btn', 'agents-close-btn', 'dropvault-close-btn', 'about-close-btn'].forEach((id) => {
       const btn = document.getElementById(id);
       if (btn) {
         btn.addEventListener('mousedown', (e) => e.stopPropagation());
@@ -5846,6 +7250,7 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
     const behaviorPanel = document.getElementById('behavior-panel');
     const startupPanel = document.getElementById('startup-panel');
     const agentsPanel = document.getElementById('agents-panel');
+    const dropvaultPanel = document.getElementById('dropvault-panel');
     const aboutPanel = document.getElementById('about-panel');
     const navItems = document.querySelectorAll('.nav-item');
 
@@ -5865,6 +7270,8 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
           preloadStartupImages();
         } else if (tab === 'agents') {
           loadAgentsSettings();
+        } else if (tab === 'dropvault') {
+          initDropVaultTab();
         } else if (tab === 'about') {
           loadAboutSection();
         } else if (tab === 'welcome') {
@@ -5901,6 +7308,7 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
       if (behaviorPanel) behaviorPanel.style.display = (tab === 'behavior') ? 'block' : 'none';
       if (startupPanel) startupPanel.style.display = (tab === 'startup') ? 'block' : 'none';
       if (agentsPanel) agentsPanel.style.display = (tab === 'agents') ? 'block' : 'none';
+      if (dropvaultPanel) dropvaultPanel.style.display = (tab === 'dropvault') ? 'block' : 'none';
       if (aboutPanel) {
         aboutPanel.style.display = (tab === 'about') ? 'block' : 'none';
         if (tab === 'about' && typeof resetAboutScroll === 'function') {
@@ -5910,6 +7318,14 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
 
       // Lazy-init section exactly ONCE
       ensureTabInitialized(tab);
+
+      if (tab === 'dropvault') {
+        refreshDropVaultUI();
+      } else {
+        if (typeof discardCleanReview === 'function') {
+          discardCleanReview();
+        }
+      }
 
       // Timers: agents polling only runs when agents tab is active
       if (tab === 'agents') {
@@ -5921,6 +7337,18 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
       // Refresh cached mascot center without layout thrashing
       refreshMascotCenterCache();
     }
+
+    window.addEventListener('blur', () => {
+      if (typeof discardCleanReview === 'function') {
+        discardCleanReview();
+      }
+    });
+
+    window.addEventListener('beforeunload', () => {
+      if (typeof discardCleanReview === 'function') {
+        discardCleanReview();
+      }
+    });
 
     // ONE click handler attached once through event delegation
     const navList = document.querySelector('.nav-list');
@@ -6292,6 +7720,15 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
     if (agentsBanner && window.__TAURI__?.window?.getCurrentWindow) {
       agentsBanner.addEventListener('mousedown', (e) => {
         if (e.button === 0 && !e.target.closest('.behavior-window-controls, .agents-window-controls')) {
+          window.__TAURI__.window.getCurrentWindow().startDragging();
+        }
+      });
+    }
+
+    const dropvaultBanner = document.querySelector('.dropvault-banner');
+    if (dropvaultBanner && window.__TAURI__?.window?.getCurrentWindow) {
+      dropvaultBanner.addEventListener('mousedown', (e) => {
+        if (e.button === 0 && !e.target.closest('.behavior-window-controls, .dropvault-window-controls')) {
           window.__TAURI__.window.getCurrentWindow().startDragging();
         }
       });

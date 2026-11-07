@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Floating Mascot Widget</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Montserrat:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Montserrat:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <style>
     @property --a {
       syntax: '<angle>';
@@ -34,7 +37,8 @@
       padding: 0;
     }
 
-    html, body {
+    html,
+    body {
       background: transparent;
       margin: 0;
       padding: 0;
@@ -57,9 +61,9 @@
       user-select: none;
       -webkit-user-select: none;
       transition: width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  background-color 200ms ease,
-                  border-radius 200ms ease;
+        height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+        background-color 200ms ease,
+        border-radius 200ms ease;
       will-change: width, height;
     }
 
@@ -100,7 +104,7 @@
       z-index: 100;
       box-sizing: border-box;
       animation: rotateStartupBorder 3000ms cubic-bezier(0.22, 0.7, 0.3, 1) forwards,
-                 startupBorderFade 3000ms linear forwards;
+        startupBorderFade 3000ms linear forwards;
     }
 
     /* Keep 2px border ring fully visible at window edges */
@@ -108,9 +112,11 @@
       top: 0;
       left: 0;
     }
+
     .widget.startup-animating.pos-top-center::before {
       top: 0;
     }
+
     .widget.startup-animating.pos-top-right::before {
       top: 0;
     }
@@ -128,7 +134,7 @@
       opacity: var(--glow-strength, 1);
       box-sizing: border-box;
       animation: rotateStartupBorder 3000ms cubic-bezier(0.22, 0.7, 0.3, 1) forwards,
-                 startupGlowFade 3000ms linear forwards;
+        startupGlowFade 3000ms linear forwards;
     }
 
     /* Fast Fade-Out on User Interruption (200ms) */
@@ -143,6 +149,7 @@
       0% {
         --a: 0deg;
       }
+
       100% {
         --a: 600deg;
       }
@@ -153,6 +160,7 @@
         opacity: 0;
         transform: scale(0.92);
       }
+
       100% {
         opacity: 1;
         transform: scale(1);
@@ -163,12 +171,15 @@
       0% {
         opacity: 0;
       }
+
       15% {
         opacity: 1;
       }
+
       76.67% {
         opacity: 1;
       }
+
       100% {
         opacity: 0;
       }
@@ -178,12 +189,15 @@
       0% {
         opacity: 0;
       }
+
       15% {
         opacity: var(--glow-strength, 1);
       }
+
       76.67% {
         opacity: var(--glow-strength, 1);
       }
+
       100% {
         opacity: 0;
       }
@@ -195,9 +209,11 @@
         animation: startupPillFadeInReduced 400ms ease forwards !important;
         transform: none !important;
       }
+
       .widget.startup-animating::before {
         animation: startupBorderFadeReduced 1600ms ease forwards !important;
       }
+
       .widget.startup-animating::after {
         animation: startupGlowFadeReduced 1600ms ease forwards !important;
       }
@@ -207,6 +223,7 @@
       0% {
         opacity: 0;
       }
+
       100% {
         opacity: 1;
       }
@@ -216,12 +233,15 @@
       0% {
         opacity: 0;
       }
+
       25% {
         opacity: 1;
       }
+
       75% {
         opacity: 1;
       }
+
       100% {
         opacity: 0;
       }
@@ -231,12 +251,15 @@
       0% {
         opacity: 0;
       }
+
       25% {
         opacity: var(--glow-strength, 1);
       }
+
       75% {
         opacity: var(--glow-strength, 1);
       }
+
       100% {
         opacity: 0;
       }
@@ -323,10 +346,10 @@
       transform: scale(1);
       transform-origin: center center;
       transition: width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  left calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  top calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  transform 200ms ease,
-                  opacity 150ms ease;
+        left calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+        top calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+        transform 200ms ease,
+        opacity 150ms ease;
       will-change: width, left, top, transform, opacity;
     }
 
@@ -408,8 +431,8 @@
       opacity: 0;
       transform: translateY(0);
       transition: opacity 120ms ease,
-                  visibility 0s linear 120ms,
-                  transform calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+        visibility 0s linear 120ms,
+        transform calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
       container-type: inline-size;
     }
 
@@ -420,8 +443,8 @@
       pointer-events: auto;
       transform: translateY(0);
       transition: opacity 150ms ease 150ms,
-                  visibility 0s linear 0s,
-                  transform calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+        visibility 0s linear 0s,
+        transform calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     /* Shared Top-Bar Icon Dimensions & Spacing */
@@ -456,8 +479,8 @@
       align-items: center;
       justify-content: center;
       transition: color 100ms ease,
-                  height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  top calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+        height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+        top calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
       user-select: none;
       -webkit-user-select: none;
       pointer-events: none;
@@ -679,15 +702,20 @@
 
     /* Happy bounce on mascot body */
     @keyframes happyBounce {
-      0%, 100% {
+
+      0%,
+      100% {
         transform: translateY(0) scale(1, 1);
       }
+
       25% {
         transform: translateY(-8px) scale(1.05, 0.94);
       }
+
       50% {
         transform: translateY(0) scale(0.97, 1.03);
       }
+
       75% {
         transform: translateY(-3px) scale(1.02, 0.98);
       }
@@ -753,7 +781,7 @@
       opacity: 0.85;
       z-index: 2;
       transition: transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1),
-                  opacity 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        opacity 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
       overflow: hidden;
     }
 
@@ -825,9 +853,17 @@
       outline: none;
     }
 
-    #hub-dot-0 { left: 0px; }
-    #hub-dot-1 { left: 11.5px; }
-    #hub-dot-2 { left: 23px; }
+    #hub-dot-0 {
+      left: 0px;
+    }
+
+    #hub-dot-1 {
+      left: 11.5px;
+    }
+
+    #hub-dot-2 {
+      left: 23px;
+    }
 
     .hub-dot {
       display: block;
@@ -1364,70 +1400,90 @@
     .widget.light-pill .tab-content-clipboard .clipboard-latest-card {
       background-color: #D6D6E0;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-latest-title {
       color: #111111;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-latest-age {
       color: #4A4A5A;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-latest-text {
       color: #1A1A24;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-tag {
       background-color: rgba(22, 101, 52, 0.2);
       color: #15803D;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-recent-title {
       color: #111111;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-clear-btn {
       color: #4A4A5A;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-clear-btn:hover {
       color: #111111;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-row {
       background-color: rgba(0, 0, 0, 0.04);
       border-color: rgba(0, 0, 0, 0.06);
       color: #111111;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-row:hover {
       background-color: rgba(0, 0, 0, 0.08);
       border-color: rgba(0, 0, 0, 0.12);
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-row .clipboard-row-text {
       color: #111111;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-row .clipboard-row-age {
       color: #4B5563;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-row .clipboard-row-copy-btn {
       color: #4B5563;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-row .clipboard-row-copy-btn:hover {
       color: #111111;
       background-color: rgba(0, 0, 0, 0.08);
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-row.selected {
       background-color: #D2D4DE;
       border-color: rgba(139, 92, 246, 0.5);
       box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.25);
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-row.selected .clipboard-row-text {
       color: #000000;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-row.selected .clipboard-row-age {
       color: #374151;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-row.selected .clipboard-row-copy-btn {
       color: #111111;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-off-title {
       color: #111111;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-off-desc {
       color: #4B5563;
     }
+
     .widget.light-pill .tab-content-clipboard .clipboard-empty-text {
       color: #4B5563;
     }
@@ -1478,6 +1534,7 @@
       outline: none;
       user-select: none;
       -webkit-user-select: none;
+      cursor: default;
     }
 
     .dropvault-recent-icon {
@@ -1662,6 +1719,7 @@
       text-align: center;
       user-select: none;
       -webkit-user-select: none;
+      cursor: default;
     }
 
     /* State Screens (not_created, missing, empty) */
@@ -1763,18 +1821,22 @@
       color: #111111;
       opacity: 0.85;
     }
+
     .widget.light-pill .tab-content-dropvault .dropvault-folder-btn:hover {
       color: #000000;
       opacity: 1;
       background: rgba(0, 0, 0, 0.08);
     }
+
     .widget.light-pill .tab-content-dropvault .dropvault-state-icon {
       color: #111111;
       opacity: 0.7;
     }
+
     .widget.light-pill .tab-content-dropvault .dropvault-state-title {
       color: #111111;
     }
+
     .widget.light-pill .tab-content-dropvault .dropvault-state-desc {
       color: #374151;
       opacity: 1;
@@ -1807,7 +1869,7 @@
       -webkit-user-select: none;
       z-index: 1;
       transition: width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+        height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .widget.expanded.panel-open.tab-agents.approval-state .agents-dark-panel {
@@ -1853,10 +1915,21 @@
       pointer-events: none;
     }
 
-    #agent-step-read { top: 109px; }
-    #agent-step-edit { top: 130px; }
-    #agent-step-bash { top: 150px; }
-    #agent-step-done { top: 170px; }
+    #agent-step-read {
+      top: 109px;
+    }
+
+    #agent-step-edit {
+      top: 130px;
+    }
+
+    #agent-step-bash {
+      top: 150px;
+    }
+
+    #agent-step-done {
+      top: 170px;
+    }
 
     /* 13px icon centered at x 23px (left = 23 - 6.5 = 16.5px), vertically centered (top = (20 - 13) / 2 = 3.5px) */
     .agent-step-icon-wrap {
@@ -1892,25 +1965,57 @@
     }
 
     /* State: Pending = white text and white icon */
-    .agent-step-row.pending .step-default-icon { display: block; stroke: #FFFFFF; }
-    .agent-step-row.pending .step-running-icon { display: none; }
-    .agent-step-row.pending .step-done-icon { display: none; }
-    .agent-step-row.pending .agent-step-label { color: #FFFFFF; }
+    .agent-step-row.pending .step-default-icon {
+      display: block;
+      stroke: #FFFFFF;
+    }
+
+    .agent-step-row.pending .step-running-icon {
+      display: none;
+    }
+
+    .agent-step-row.pending .step-done-icon {
+      display: none;
+    }
+
+    .agent-step-row.pending .agent-step-label {
+      color: #FFFFFF;
+    }
 
     /* State: Running = green (#4CD800) text with rotating ring spinner (0.9s linear loop) */
-    .agent-step-row.running .step-default-icon { display: none; }
+    .agent-step-row.running .step-default-icon {
+      display: none;
+    }
+
     .agent-step-row.running .step-running-icon {
       display: block;
       animation: stepSpin 0.9s linear infinite;
     }
-    .agent-step-row.running .step-done-icon { display: none; }
-    .agent-step-row.running .agent-step-label { color: #4CD800; }
+
+    .agent-step-row.running .step-done-icon {
+      display: none;
+    }
+
+    .agent-step-row.running .agent-step-label {
+      color: #4CD800;
+    }
 
     /* State: Done = a green check icon and the text in #B8BCC8 */
-    .agent-step-row.done .step-default-icon { display: none; }
-    .agent-step-row.done .step-running-icon { display: none; }
-    .agent-step-row.done .step-done-icon { display: block; }
-    .agent-step-row.done .agent-step-label { color: #B8BCC8; }
+    .agent-step-row.done .step-default-icon {
+      display: none;
+    }
+
+    .agent-step-row.done .step-running-icon {
+      display: none;
+    }
+
+    .agent-step-row.done .step-done-icon {
+      display: block;
+    }
+
+    .agent-step-row.done .agent-step-label {
+      color: #B8BCC8;
+    }
 
     .agent-step-row.agent-bash-flash {
       background-color: rgba(76, 216, 0, 0.45) !important;
@@ -1919,8 +2024,13 @@
     }
 
     @keyframes stepSpin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
     }
 
     /* File tab: left 109px, top 14px, max-width 60%, background black, radius 5px 5px 0 0 */
@@ -2076,6 +2186,7 @@
       justify-content: center;
       user-select: none;
       -webkit-user-select: none;
+      cursor: default;
     }
 
     .agent-latest-btn.visible {
@@ -2094,8 +2205,15 @@
     }
 
     @keyframes agentCaretBlink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -2247,12 +2365,29 @@
     }
 
     /* Syntax colors & Code box styling */
-    .agent-tok-kw { color: #E879F9; }
-    .agent-tok-id { color: #67E8F9; }
-    .agent-tok-str { color: #A3E635; }
-    .agent-tok-comment { color: #6B7280; }
-    .agent-tok-err { color: #FF6B6B; }
-    .agent-tok-done { color: #4CD800; }
+    .agent-tok-kw {
+      color: #E879F9;
+    }
+
+    .agent-tok-id {
+      color: #67E8F9;
+    }
+
+    .agent-tok-str {
+      color: #A3E635;
+    }
+
+    .agent-tok-comment {
+      color: #6B7280;
+    }
+
+    .agent-tok-err {
+      color: #FF6B6B;
+    }
+
+    .agent-tok-done {
+      color: #4CD800;
+    }
 
     .sr-only {
       position: absolute !important;
@@ -2333,6 +2468,7 @@
         transform: scale(0.85);
         opacity: 0;
       }
+
       to {
         transform: scale(1);
         opacity: 1;
@@ -2348,6 +2484,7 @@
         transform: scale(1);
         opacity: 1;
       }
+
       to {
         transform: scale(0.85);
         opacity: 0;
@@ -2362,9 +2499,11 @@
       0% {
         transform: scale(1);
       }
+
       50% {
         transform: scale(1.06);
       }
+
       100% {
         transform: scale(1);
       }
@@ -2379,6 +2518,7 @@
         transform: scale(1);
         opacity: 1;
       }
+
       to {
         transform: scale(0.9);
         opacity: 0;
@@ -2390,6 +2530,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
+
       .drop-folder-container.anim-enter,
       .drop-folder-container.anim-leave,
       .drop-folder-container.anim-pulse,
@@ -2397,6 +2538,7 @@
         animation: none !important;
         transform: none !important;
       }
+
       .drop-folder-img {
         transition: opacity 120ms ease !important;
       }
@@ -2409,13 +2551,13 @@
       border-color: transparent !important;
     }
 
-    .widget.file-drop-active > * {
+    .widget.file-drop-active>* {
       opacity: 0 !important;
       pointer-events: none !important;
       transition: opacity 150ms ease !important;
     }
 
-    .widget.file-drop-active.hidden-content > * {
+    .widget.file-drop-active.hidden-content>* {
       visibility: hidden !important;
     }
 
@@ -2558,8 +2700,8 @@
       pointer-events: auto;
       transform: translateY(var(--compact-topbar-shift));
       transition: opacity 150ms ease 150ms,
-                  visibility 0s linear 0s,
-                  transform calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+        visibility 0s linear 0s,
+        transform calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     /* Hit areas move with icons; clickable height limited to 32px so no hit area overlaps the card */
@@ -2609,11 +2751,12 @@
       visibility: hidden;
       pointer-events: none;
       transition: opacity 150ms ease,
-                  visibility 0s linear 150ms;
+        visibility 0s linear 150ms;
       cursor: default;
       z-index: 6;
       user-select: none;
       -webkit-user-select: none;
+      cursor: default;
     }
 
     .widget.approval-compact .compact-approval-card {
@@ -2621,7 +2764,7 @@
       visibility: visible;
       pointer-events: auto;
       transition: opacity 200ms ease 100ms,
-                  visibility 0s linear 0s;
+        visibility 0s linear 0s;
     }
 
     /* Header row: left 84k, vertically centered at y 12k */
@@ -2765,6 +2908,7 @@
     .widget.approval-state .agent-code-component {
       display: none !important;
     }
+
     .widget.approval-state .tab-content-hub,
     .widget.approval-state .tab-content-clipboard,
     .widget.approval-state .tab-content-dropvault,
@@ -2774,11 +2918,13 @@
       opacity: 0 !important;
       pointer-events: none !important;
     }
+
     .agent-approval-component {
       display: none;
       visibility: hidden;
       pointer-events: none;
     }
+
     .widget.approval-state .agent-approval-component {
       display: block;
       visibility: visible;
@@ -2815,6 +2961,7 @@
       pointer-events: none;
       user-select: none;
       -webkit-user-select: none;
+      cursor: default;
     }
 
     .agent-approval-title {
@@ -3035,6 +3182,7 @@
       color: #123175;
       box-shadow: none;
     }
+
     .mascot-agent-badge.thinking .badge-audio-bars,
     .mascot-agent-badge.working .badge-audio-bars {
       display: inline;
@@ -3048,6 +3196,7 @@
       color: #267800;
       box-shadow: none;
     }
+
     .mascot-agent-badge.done .badge-audio-bars {
       display: none;
       opacity: 0;
@@ -3061,12 +3210,15 @@
       color: rgba(0, 0, 0, 0.2);
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
     }
+
     .mascot-agent-badge.needs_you .badge-audio-bars {
       display: none;
     }
+
     .mascot-agent-badge .badge-needs-you-mark {
       display: none;
     }
+
     .mascot-agent-badge.needs_you .badge-needs-you-mark {
       display: inline;
     }
@@ -3075,6 +3227,7 @@
     .badge-audio-bars {
       transition: opacity 150ms ease;
     }
+
     .badge-bar {
       transform-box: fill-box;
       transform-origin: center center;
@@ -3083,25 +3236,32 @@
 
     /* Equalizer animation: scaleY between 0.45 and 1 around center, 900ms ease-in-out infinite, staggered by 150ms */
     @keyframes badgeEqualizer {
-      0%, 100% {
+
+      0%,
+      100% {
         transform: scaleY(0.45);
       }
+
       50% {
         transform: scaleY(1);
       }
     }
+
     .mascot-agent-badge.thinking .badge-bar,
     .mascot-agent-badge.working .badge-bar {
       animation: badgeEqualizer 900ms ease-in-out infinite;
     }
+
     .mascot-agent-badge.thinking .badge-bar.bar-1,
     .mascot-agent-badge.working .badge-bar.bar-1 {
       animation-delay: 0ms;
     }
+
     .mascot-agent-badge.thinking .badge-bar.bar-2,
     .mascot-agent-badge.working .badge-bar.bar-2 {
       animation-delay: 150ms;
     }
+
     .mascot-agent-badge.thinking .badge-bar.bar-3,
     .mascot-agent-badge.working .badge-bar.bar-3 {
       animation-delay: 300ms;
@@ -3120,11 +3280,13 @@
         opacity: 0;
         transform: translate(-50%, -50%) scale(0.6);
       }
+
       100% {
         opacity: 1;
         transform: translate(-50%, -50%) scale(1);
       }
     }
+
     .mascot-agent-badge.badge-entering {
       animation: badgeEnter 220ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
     }
@@ -3135,11 +3297,13 @@
         opacity: 1;
         transform: translate(-50%, -50%) scale(1);
       }
+
       100% {
         opacity: 0;
         transform: translate(-50%, -50%) scale(1);
       }
     }
+
     .mascot-agent-badge.badge-leaving {
       animation: badgeLeave 200ms ease-out both;
     }
@@ -3150,6 +3314,7 @@
         animation: none !important;
         transform: none !important;
       }
+
       .mascot-agent-badge.badge-entering,
       .mascot-agent-badge.badge-leaving {
         animation-duration: 0.01ms !important;
@@ -3158,10 +3323,19 @@
 
     /* Small hop animation on mascot body for needs_you */
     @keyframes mascotHop {
-      0% { transform: translateY(0); }
-      40% { transform: translateY(-8px); }
-      100% { transform: translateY(0); }
+      0% {
+        transform: translateY(0);
+      }
+
+      40% {
+        transform: translateY(-8px);
+      }
+
+      100% {
+        transform: translateY(0);
+      }
     }
+
     .mascot-body.mascot-hop {
       animation: mascotHop 0.4s ease-out;
     }
@@ -3180,6 +3354,7 @@
       z-index: 10;
       pointer-events: none;
     }
+
     .hamburger-badge-dot.visible {
       display: block;
     }
@@ -3198,6 +3373,7 @@
       z-index: 50;
       pointer-events: none;
     }
+
     .widget:not(.expanded) .collapsed-agent-dot.visible {
       display: block;
     }
@@ -3229,6 +3405,7 @@
       pointer-events: none;
       transition: opacity 150ms ease;
     }
+
     .widget:not(.now-playing) .mascot-wrapper {
       transition: opacity 150ms ease;
     }
@@ -3247,7 +3424,7 @@
       visibility: hidden;
       pointer-events: none;
       transition: opacity 200ms ease,
-                  visibility 0s linear 200ms;
+        visibility 0s linear 200ms;
       z-index: 20;
       overflow: hidden;
     }
@@ -3257,7 +3434,7 @@
       visibility: visible;
       pointer-events: auto;
       transition: opacity 200ms ease 150ms,
-                  visibility 0s linear 0s;
+        visibility 0s linear 0s;
     }
 
     /* Orange attention dot positioning when now-playing is active: 6px from corner */
@@ -3389,20 +3566,63 @@
     }
 
     /* Measured static heights and per-bar gradient accents (scaled to 15.5px peak static height so dynamic scaling fits cleanly) */
-    .now-playing-bar.bar-1  { height: 9.5px; }
-    .now-playing-bar.bar-2  { height: 5px; }
-    .now-playing-bar.bar-3  { height: 9.5px; }
-    .now-playing-bar.bar-4  { height: 5px; }
-    .now-playing-bar.bar-5  { height: 15.5px; background: linear-gradient(180deg, #2EEBFF 0%, #825EFF 100%); }
-    .now-playing-bar.bar-6  { height: 13px; background: linear-gradient(180deg, #2EEBFF 0%, #825EFF 100%); }
-    .now-playing-bar.bar-7  { height: 5px; }
-    .now-playing-bar.bar-8  { height: 9.5px; }
-    .now-playing-bar.bar-9  { height: 5px; }
-    .now-playing-bar.bar-10 { height: 9.5px; }
-    .now-playing-bar.bar-11 { height: 9.5px; }
-    .now-playing-bar.bar-12 { height: 5px; }
-    .now-playing-bar.bar-13 { height: 15.5px; }
-    .now-playing-bar.bar-14 { height: 9.5px; }
+    .now-playing-bar.bar-1 {
+      height: 9.5px;
+    }
+
+    .now-playing-bar.bar-2 {
+      height: 5px;
+    }
+
+    .now-playing-bar.bar-3 {
+      height: 9.5px;
+    }
+
+    .now-playing-bar.bar-4 {
+      height: 5px;
+    }
+
+    .now-playing-bar.bar-5 {
+      height: 15.5px;
+      background: linear-gradient(180deg, #2EEBFF 0%, #825EFF 100%);
+    }
+
+    .now-playing-bar.bar-6 {
+      height: 13px;
+      background: linear-gradient(180deg, #2EEBFF 0%, #825EFF 100%);
+    }
+
+    .now-playing-bar.bar-7 {
+      height: 5px;
+    }
+
+    .now-playing-bar.bar-8 {
+      height: 9.5px;
+    }
+
+    .now-playing-bar.bar-9 {
+      height: 5px;
+    }
+
+    .now-playing-bar.bar-10 {
+      height: 9.5px;
+    }
+
+    .now-playing-bar.bar-11 {
+      height: 9.5px;
+    }
+
+    .now-playing-bar.bar-12 {
+      height: 5px;
+    }
+
+    .now-playing-bar.bar-13 {
+      height: 15.5px;
+    }
+
+    .now-playing-bar.bar-14 {
+      height: 9.5px;
+    }
 
     /* While paused or not active: smoothly returns to static reference height */
     .widget.now-playing.is-paused .now-playing-bar,
@@ -3429,6 +3649,7 @@
       height: 100%;
       pointer-events: none;
     }
+
     .widget.tab-chat .tab-content-chat {
       pointer-events: auto;
     }
@@ -3447,12 +3668,12 @@
       overflow: hidden;
       z-index: 10;
       transition: left calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  top calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  background-color 200ms ease,
-                  border-color 200ms ease,
-                  border-radius 200ms ease;
+        top calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+        width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+        height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+        background-color 200ms ease,
+        border-color 200ms ease,
+        border-radius 200ms ease;
     }
 
     .widget.chat-max .chat-tab-panel,
@@ -3475,7 +3696,8 @@
       top: 0;
       left: 0;
       right: 0;
-      bottom: 42px; /* 26px input bar + 8px bottom + 8px space */
+      bottom: 42px;
+      /* 26px input bar + 8px bottom + 8px space */
       padding: 12px 24px 12px 12px;
       box-sizing: border-box;
       color: #F2F2F7;
@@ -3494,7 +3716,8 @@
     }
 
     .widget.chat-max .chat-answer-box {
-      bottom: 39px; /* 21px input bar + 10px bottom + 8px space */
+      bottom: 39px;
+      /* 21px input bar + 10px bottom + 8px space */
       padding: 12px 28px 12px 12px;
       color: #111827;
     }
@@ -3582,15 +3805,27 @@
       background-color: #374151;
     }
 
-    .thinking-dots span:nth-child(1) { animation-delay: 0s; }
-    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+    .thinking-dots span:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .thinking-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .thinking-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
 
     @keyframes thinkingDot {
-      0%, 80%, 100% {
+
+      0%,
+      80%,
+      100% {
         transform: scale(0.65);
         opacity: 0.35;
       }
+
       40% {
         transform: scale(1.15);
         opacity: 1;
@@ -3643,12 +3878,14 @@
       visibility: hidden;
       pointer-events: none;
       transition: opacity 150ms ease,
-                  visibility 0s linear 150ms;
+        visibility 0s linear 150ms;
     }
+
     .widget.chat-max .chat-actions-bar {
       background: rgba(255, 255, 255, 0.55);
       border-radius: 10px;
     }
+
     .chat-tab-panel:hover .chat-actions-bar,
     .chat-tab-panel:focus-within .chat-actions-bar,
     .chat-actions-bar:focus-within {
@@ -3656,7 +3893,7 @@
       visibility: visible;
       pointer-events: auto;
       transition: opacity 150ms ease,
-                  visibility 0s linear 0s;
+        visibility 0s linear 0s;
     }
 
     .chat-action-btn {
@@ -3674,19 +3911,24 @@
       outline: none;
       transition: color 120ms ease, transform 120ms ease;
     }
+
     .widget.chat-max .chat-action-btn {
       color: #1A1A2E;
     }
+
     .chat-action-btn:hover {
       color: #FFFFFF;
       transform: scale(1.1);
     }
+
     .widget.chat-max .chat-action-btn:hover {
       color: #000000;
     }
+
     .chat-action-btn:active {
       transform: scale(0.95);
     }
+
     .chat-action-btn:focus-visible {
       outline: 1.5px solid #8B5CF6;
       border-radius: 3px;
@@ -3709,23 +3951,28 @@
       pointer-events: auto !important;
       transition: color 120ms ease, transform 120ms ease;
     }
+
     .chat-maximize-btn svg,
     .chat-shrink-btn svg,
     .chat-action-btn svg {
       pointer-events: none;
     }
+
     .chat-maximize-btn:hover {
       color: #FFFFFF;
       transform: scale(1.1);
     }
+
     .chat-maximize-btn:active {
       transform: scale(0.95);
     }
+
     .chat-maximize-btn:focus-visible {
       color: #FFFFFF;
       outline: 1.5px solid #8B5CF6;
       border-radius: 3px;
     }
+
     .widget.chat-max .chat-maximize-btn {
       display: none !important;
       opacity: 0 !important;
@@ -3749,17 +3996,21 @@
       outline: none;
       transition: color 120ms ease, transform 120ms ease;
     }
+
     .chat-shrink-btn:hover {
       color: #000000;
       transform: scale(1.1);
     }
+
     .chat-shrink-btn:active {
       transform: scale(0.95);
     }
+
     .chat-shrink-btn:focus-visible {
       outline: 1.5px solid #8B5CF6;
       border-radius: 3px;
     }
+
     .widget.chat-max .chat-shrink-btn {
       display: flex !important;
       opacity: 1 !important;
@@ -3783,12 +4034,12 @@
       box-sizing: border-box;
       z-index: 10;
       transition: left calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  bottom calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  border-radius calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  background 200ms ease,
-                  border-color 200ms ease;
+        bottom calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+        width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+        height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+        border-radius calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+        background 200ms ease,
+        border-color 200ms ease;
     }
 
     .widget.chat-max .chat-input-bar {
@@ -3819,9 +4070,11 @@
       color: #000000;
       transition: transform 120ms ease, opacity 120ms ease;
     }
+
     .chat-plus-btn:hover {
       transform: scale(1.1);
     }
+
     .chat-plus-btn svg {
       width: 12px;
       height: 12px;
@@ -3872,6 +4125,7 @@
       height: 11px;
       color: #111111;
     }
+
     .widget.chat-max .chat-plus-btn svg {
       width: 11px;
       height: 11px;
@@ -3894,12 +4148,15 @@
       flex-shrink: 0;
       transition: transform 150ms ease, opacity 150ms ease;
     }
+
     .chat-send-btn:hover {
       transform: scale(1.08);
     }
+
     .chat-send-btn:active {
       transform: scale(0.95);
     }
+
     .chat-send-btn svg {
       width: 20px;
       height: 20px;
@@ -3930,17 +4187,20 @@
       z-index: 12;
       box-sizing: border-box;
       transition: left calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  bottom calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-                  width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+        bottom calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+        width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+
     .widget.chat-max .chat-attachments-row {
       left: 11px;
       bottom: 35px;
       width: 502px;
     }
+
     .chat-attachments-row::-webkit-scrollbar {
       display: none;
     }
+
     .chat-tab-panel.has-chips .chat-attachments-row {
       display: flex;
     }
@@ -3963,11 +4223,13 @@
       cursor: default;
       border: 1px solid rgba(255, 255, 255, 0.20);
     }
+
     .widget.chat-max .chat-attachment-chip {
       background: rgba(0, 0, 0, 0.08);
       color: #111827;
       border: 1px solid rgba(0, 0, 0, 0.12);
     }
+
     .chat-attachment-chip .chip-icon {
       display: flex;
       align-items: center;
@@ -3975,9 +4237,11 @@
       flex-shrink: 0;
       color: rgba(255, 255, 255, 0.9);
     }
+
     .widget.chat-max .chat-attachment-chip .chip-icon {
       color: #111827;
     }
+
     .chat-attachment-chip .chip-name {
       max-width: 90px;
       overflow: hidden;
@@ -3985,15 +4249,18 @@
       white-space: nowrap;
       font-weight: 500;
     }
+
     .chat-attachment-chip .chip-size {
       font-size: 10px;
       color: rgba(255, 255, 255, 0.7);
       white-space: nowrap;
       margin-left: 1px;
     }
+
     .widget.chat-max .chat-attachment-chip .chip-size {
       color: #374151;
     }
+
     .chat-attachment-chip .chip-remove-btn {
       background: none;
       border: none;
@@ -4010,13 +4277,16 @@
       cursor: pointer;
       transition: color 120ms ease, background-color 120ms ease;
     }
+
     .widget.chat-max .chat-attachment-chip .chip-remove-btn {
       color: #374151;
     }
+
     .chat-attachment-chip .chip-remove-btn:hover {
       color: #FFFFFF;
       background-color: rgba(255, 255, 255, 0.25);
     }
+
     .widget.chat-max .chat-attachment-chip .chip-remove-btn:hover {
       color: #111827;
       background-color: rgba(0, 0, 0, 0.10);
@@ -4030,6 +4300,7 @@
       height: 24px;
       user-select: none;
     }
+
     .thinking-dots span {
       width: 6px;
       height: 6px;
@@ -4037,15 +4308,28 @@
       border-radius: 50%;
       animation: thinkingDot 1.2s infinite ease-in-out;
     }
-    .thinking-dots span:nth-child(1) { animation-delay: 0s; }
-    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    .thinking-dots span:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .thinking-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .thinking-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
 
     @keyframes thinkingDot {
-      0%, 80%, 100% {
+
+      0%,
+      80%,
+      100% {
         transform: scale(0.65);
         opacity: 0.35;
       }
+
       40% {
         transform: scale(1.15);
         opacity: 1;
@@ -4061,8 +4345,14 @@
       user-select: text;
       -webkit-user-select: text;
     }
-    .chat-md-p:first-child { margin-top: 0; }
-    .chat-md-p:last-child { margin-bottom: 0; }
+
+    .chat-md-p:first-child {
+      margin-top: 0;
+    }
+
+    .chat-md-p:last-child {
+      margin-bottom: 0;
+    }
 
     /* Code blocks background rgba(8,8,16,0.65) */
     .chat-code-block {
@@ -4074,13 +4364,16 @@
       box-sizing: border-box;
       position: relative;
     }
+
     .widget.chat-max .chat-code-block {
       background: #1A1A1F;
       border: 1px solid rgba(255, 255, 255, 0.15);
     }
+
     .widget.chat-max .is-error {
       color: #B42318;
     }
+
     .chat-code-header {
       display: flex;
       align-items: center;
@@ -4090,11 +4383,13 @@
       color: rgba(255, 255, 255, 0.6);
       user-select: none;
     }
+
     .chat-code-lang {
       text-transform: uppercase;
       font-weight: 600;
       letter-spacing: 0.5px;
     }
+
     .chat-code-copy-btn {
       background: none;
       border: none;
@@ -4106,10 +4401,12 @@
       cursor: pointer;
       transition: color 150ms ease, background-color 150ms ease;
     }
+
     .chat-code-copy-btn:hover {
       color: #FFFFFF;
       background: rgba(255, 255, 255, 0.15);
     }
+
     .chat-code-pre {
       margin: 0;
       padding: 0;
@@ -4119,9 +4416,11 @@
       max-width: 100%;
       box-sizing: border-box;
     }
+
     .chat-code-pre::-webkit-scrollbar {
       display: none;
     }
+
     .chat-code-content {
       font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
       font-size: 11px;
@@ -4151,16 +4450,22 @@
       user-select: text;
       -webkit-user-select: text;
     }
-    .chat-md-heading:first-child { margin-top: 0; }
 
-    .chat-md-ul, .chat-md-ol {
+    .chat-md-heading:first-child {
+      margin-top: 0;
+    }
+
+    .chat-md-ul,
+    .chat-md-ol {
       margin: 6px 0;
       padding-left: 18px;
       line-height: 1.5;
       user-select: text;
       -webkit-user-select: text;
     }
-    .chat-md-ul li, .chat-md-ol li {
+
+    .chat-md-ul li,
+    .chat-md-ol li {
       margin: 2px 0;
       user-select: text;
       -webkit-user-select: text;
@@ -4195,18 +4500,22 @@
       word-break: break-word;
       transition: filter 100ms ease, text-decoration-thickness 100ms ease;
     }
+
     a.chat-link:hover {
       filter: brightness(1.2);
       text-decoration-thickness: 2px;
     }
+
     a.chat-link:focus-visible {
       outline: 2px solid #8B5CF6;
       outline-offset: 1px;
       border-radius: 3px;
     }
+
     a.chat-link:visited {
       color: #8CC8FF !important;
     }
+
     .chat-link-icon {
       display: inline-block;
       vertical-align: -1.5px;
@@ -4222,14 +4531,17 @@
       opacity: 0;
       transition: opacity 250ms ease;
     }
+
     .answer-text-fade.visible {
       opacity: 1;
     }
+
     .answer-text-fade a.settings-link {
       color: #8CC8FF;
       text-decoration: underline;
       cursor: pointer;
     }
+
     .chat-error-text {
       color: #FF8A8A !important;
     }
@@ -4253,8 +4565,12 @@
       visibility: hidden;
       pointer-events: none;
       flex-direction: column;
-      z-index: 50;
+      z-index: 100;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: default;
     }
+
     .chat-plus-menu.open {
       display: flex;
       visibility: visible;
@@ -4273,17 +4589,28 @@
       color: #FFFFFF;
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       font-size: 12px;
-      cursor: pointer;
+      cursor: pointer !important;
       text-align: left;
       width: 100%;
       box-sizing: border-box;
       outline: none;
       transition: background 120ms ease;
+      user-select: none !important;
+      -webkit-user-select: none !important;
     }
+
     .chat-menu-item:hover,
     .chat-menu-item.focused {
       background: rgba(255, 255, 255, 0.10);
     }
+
+    .chat-menu-item * {
+      pointer-events: none !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      cursor: pointer !important;
+    }
+
     .chat-menu-item .menu-icon {
       width: 16px;
       height: 16px;
@@ -4291,10 +4618,13 @@
       stroke: rgba(255, 255, 255, 0.9);
       display: block;
     }
-    .chat-menu-item.disabled {
+
+    .chat-menu-item.disabled,
+    .chat-menu-item.disabled * {
       opacity: 0.5;
-      cursor: not-allowed;
+      cursor: not-allowed !important;
     }
+
     .chat-vault-menu {
       position: absolute;
       left: 9px;
@@ -4313,23 +4643,29 @@
       visibility: hidden;
       pointer-events: none;
       flex-direction: column;
-      z-index: 52;
+      z-index: 102;
+      user-select: none;
+      -webkit-user-select: none;
       max-height: calc(100% - 46px);
       overflow-y: auto;
       overflow-x: hidden;
     }
+
     .chat-vault-menu.open {
       display: flex;
       visibility: visible;
       pointer-events: auto;
     }
+
     .chat-vault-menu::-webkit-scrollbar {
       width: 4px;
     }
+
     .chat-vault-menu::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.2);
       border-radius: 2px;
     }
+
     .chat-vault-back-row {
       height: 26px;
       display: flex;
@@ -4343,25 +4679,37 @@
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       font-size: 11px;
       font-weight: 500;
-      cursor: pointer;
+      cursor: pointer !important;
       text-align: left;
       width: 100%;
       box-sizing: border-box;
       outline: none;
       transition: background 120ms ease, color 120ms ease;
       flex-shrink: 0;
+      user-select: none !important;
+      -webkit-user-select: none !important;
     }
+
     .chat-vault-back-row:hover,
     .chat-vault-back-row.focused {
       background: rgba(255, 255, 255, 0.10);
       color: #FFFFFF;
     }
+
+    .chat-vault-back-row * {
+      pointer-events: none !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      cursor: pointer !important;
+    }
+
     .chat-vault-list {
       display: flex;
       flex-direction: column;
       gap: 2px;
       width: 100%;
     }
+
     .chat-vault-file-row {
       height: 34px;
       display: flex;
@@ -4375,18 +4723,29 @@
       color: #FFFFFF;
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       font-size: 12px;
-      cursor: pointer;
+      cursor: pointer !important;
       text-align: left;
       width: 100%;
       box-sizing: border-box;
       outline: none;
       transition: background 120ms ease;
       flex-shrink: 0;
+      user-select: none !important;
+      -webkit-user-select: none !important;
     }
+
     .chat-vault-file-row:hover,
     .chat-vault-file-row.focused {
       background: rgba(255, 255, 255, 0.10);
     }
+
+    .chat-vault-file-row * {
+      pointer-events: none !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      cursor: pointer !important;
+    }
+
     .chat-vault-file-name {
       white-space: nowrap;
       overflow: hidden;
@@ -4394,12 +4753,14 @@
       flex: 1;
       min-width: 0;
     }
+
     .chat-vault-file-size {
       color: #8E8E93;
       font-size: 11px;
       flex-shrink: 0;
       margin-left: 6px;
     }
+
     .chat-vault-empty-row {
       height: 34px;
       display: flex;
@@ -4428,12 +4789,15 @@
       z-index: 15;
       transition: opacity 200ms ease;
     }
+
     .chat-tab-panel.has-chips .chat-attachment-error {
       bottom: 64px;
     }
+
     .chat-attachment-error.visible {
       opacity: 1;
     }
+
     .chat-attachment-error.gray {
       color: #8E8E93;
     }
@@ -4454,6 +4818,7 @@
       pointer-events: none;
       border-radius: 5px;
     }
+
     .chat-tab-panel.drop-hover .chat-drop-overlay {
       display: flex;
     }
@@ -4473,9 +4838,11 @@
       text-align: center;
       border-radius: 5px;
     }
+
     .chat-secret-modal.open {
       display: flex;
     }
+
     .chat-secret-text {
       font-size: 11px;
       font-weight: 600;
@@ -4483,6 +4850,7 @@
       margin-bottom: 4px;
       line-height: 1.3;
     }
+
     .chat-secret-subtext {
       font-size: 10px;
       color: #8E8E93;
@@ -4492,10 +4860,12 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     .chat-secret-actions {
       display: flex;
       gap: 8px;
     }
+
     .chat-secret-btn {
       height: 24px;
       padding: 0 12px;
@@ -4506,20 +4876,24 @@
       outline: none;
       transition: background 120ms ease;
     }
+
     .chat-secret-btn.cancel {
       background: rgba(255, 255, 255, 0.12);
       color: #FFFFFF;
       border: 1px solid rgba(255, 255, 255, 0.18);
     }
+
     .chat-secret-btn.cancel:hover,
     .chat-secret-btn.cancel:focus {
       background: rgba(255, 255, 255, 0.22);
     }
+
     .chat-secret-btn.attach {
       background: rgba(239, 68, 68, 0.85);
       color: #FFFFFF;
       border: none;
     }
+
     .chat-secret-btn.attach:hover,
     .chat-secret-btn.attach:focus {
       background: rgba(239, 68, 68, 1);
@@ -4542,18 +4916,22 @@
       z-index: 40;
       box-sizing: border-box;
     }
+
     .chat-tab-panel.has-chips .chat-first-notice {
       bottom: 64px;
     }
+
     .chat-first-notice.open {
       display: flex;
     }
+
     .chat-notice-text {
       font-size: 10.5px;
       color: #E5E7EB;
       line-height: 1.3;
       flex: 1;
     }
+
     .chat-notice-ok-btn {
       background: #6B5BFF;
       color: #FFFFFF;
@@ -4567,6 +4945,7 @@
       outline: none;
       transition: background 120ms ease;
     }
+
     .chat-notice-ok-btn:hover {
       background: #7C6DFF;
     }
@@ -4586,6 +4965,7 @@
       text-align: center;
       border-radius: 5px;
     }
+
     .chat-link-confirm-modal.open {
       display: flex;
     }
@@ -4608,9 +4988,11 @@
       opacity: 0;
       transition: opacity 300ms ease;
     }
+
     .chat-tab-panel.has-chips .chat-link-notice {
       bottom: 50px;
     }
+
     .chat-link-notice.open {
       display: flex;
       opacity: 1;
@@ -4640,6 +5022,7 @@
       box-sizing: border-box;
       user-select: none;
       -webkit-user-select: none;
+      cursor: default;
     }
 
     .cc-album-art {
@@ -4851,6 +5234,7 @@
       outline: none;
       user-select: none;
       -webkit-user-select: none;
+      cursor: default;
     }
 
     .cc-tile:hover {
@@ -5070,15 +5454,19 @@
       0% {
         transform: scale(1, 1) rotate(0deg);
       }
+
       25% {
         transform: scale(1.08, 0.92) rotate(-2deg);
       }
+
       50% {
         transform: scale(0.96, 1.05) rotate(2deg);
       }
+
       75% {
         transform: scale(1.01, 0.99) rotate(-0.5deg);
       }
+
       100% {
         transform: scale(1, 1) rotate(0deg);
       }
@@ -5139,8 +5527,10 @@
 
     .widget:hover .blush,
     .widget.hovered .blush {
-      opacity: 1; /* ~1.4x opacity */
-      transform: translate(-50%, -50%) scale(1.18); /* slightly larger size */
+      opacity: 1;
+      /* ~1.4x opacity */
+      transform: translate(-50%, -50%) scale(1.18);
+      /* slightly larger size */
     }
 
     /* Disable hover blush pulse when blushSmile behavior flag is OFF */
@@ -5207,9 +5597,12 @@
 
     /* Eye blink */
     @keyframes eyeBlink {
-      0%, 100% {
+
+      0%,
+      100% {
         transform: scaleY(1);
       }
+
       50% {
         transform: scaleY(0.06);
       }
@@ -5233,12 +5626,15 @@
       0% {
         transform: scaleY(0.05);
       }
+
       55% {
         transform: scaleY(1.22);
       }
+
       75% {
         transform: scaleY(0.92);
       }
+
       100% {
         transform: scaleY(1);
       }
@@ -5274,12 +5670,15 @@
         opacity: 0;
         transform: translate(0, 0) scale(0.6);
       }
+
       35% {
         opacity: 0.95;
       }
+
       75% {
         opacity: 0.75;
       }
+
       100% {
         opacity: 0;
         transform: translate(12px, -24px) scale(1.15);
@@ -5357,6 +5756,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="widget" id="widget">
     <!-- 8px orange notification dot for collapsed state -->
@@ -5367,7 +5767,7 @@
         <img id="now-playing-art-img" class="now-playing-art-img" src="" alt="" style="display: none;">
         <div id="now-playing-art-fallback" class="now-playing-art-fallback">
           <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
           </svg>
         </div>
       </div>
@@ -5443,9 +5843,12 @@
       <button type="button" class="top-bar-btn" id="top-bar-agents-btn" aria-label="Agents Tab" data-tooltip="Agents">
         <div class="hamburger-badge-dot" id="hamburger-badge-dot"></div>
         <svg class="top-bar-hamburger-icon hamburger-icon" viewBox="0 0 22 13" fill="none" aria-hidden="true">
-          <line x1="1.15" y1="1.15" x2="20.85" y2="1.15" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>
-          <line x1="1.15" y1="6.5" x2="20.85" y2="6.5" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>
-          <line x1="1.15" y1="11.85" x2="20.85" y2="11.85" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>
+          <line x1="1.15" y1="1.15" x2="20.85" y2="1.15" stroke="currentColor" stroke-width="2.3"
+            stroke-linecap="round" />
+          <line x1="1.15" y1="6.5" x2="20.85" y2="6.5" stroke="currentColor" stroke-width="2.3"
+            stroke-linecap="round" />
+          <line x1="1.15" y1="11.85" x2="20.85" y2="11.85" stroke="currentColor" stroke-width="2.3"
+            stroke-linecap="round" />
         </svg>
       </button>
 
@@ -5453,41 +5856,49 @@
       <div class="top-bar-battery-indicator" id="top-bar-battery-indicator" aria-label="Battery Status">
         <div class="top-bar-battery-icon-wrap">
           <!-- Discharging icon (white outline with nub on right, green/red fill) -->
-          <svg class="top-bar-battery-icon discharging" id="top-bar-battery-discharging" viewBox="0 0 34 16" fill="none">
-            <rect x="1" y="1" width="28" height="14" rx="3.5" stroke="currentColor" stroke-width="1.8"/>
-            <path d="M 30.2 5.5 C 31.8 5.5 32.5 6.3 32.5 7.5 L 32.5 8.5 C 32.5 9.7 31.8 10.5 30.2 10.5 Z" fill="currentColor"/>
-            <rect id="top-bar-battery-fill-rect" x="2.8" y="2.8" width="24.4" height="10.4" rx="2" fill="#4CD800"/>
+          <svg class="top-bar-battery-icon discharging" id="top-bar-battery-discharging" viewBox="0 0 34 16"
+            fill="none">
+            <rect x="1" y="1" width="28" height="14" rx="3.5" stroke="currentColor" stroke-width="1.8" />
+            <path d="M 30.2 5.5 C 31.8 5.5 32.5 6.3 32.5 7.5 L 32.5 8.5 C 32.5 9.7 31.8 10.5 30.2 10.5 Z"
+              fill="currentColor" />
+            <rect id="top-bar-battery-fill-rect" x="2.8" y="2.8" width="24.4" height="10.4" rx="2" fill="#4CD800" />
           </svg>
           <!-- Charging icon (bracket-style battery with lightning bolt, green #34C759) -->
           <svg class="top-bar-battery-icon charging" id="top-bar-battery-charging" viewBox="0 0 34 16" fill="none">
-            <path d="M 7.5 1.5 L 4 1.5 C 2.5 1.5 1.5 2.5 1.5 4 L 1.5 12 C 1.5 13.5 2.5 14.5 4 14.5 L 7.5 14.5" stroke="#34C759" stroke-width="2" stroke-linecap="round"/>
-            <path d="M 21.5 1.5 L 25 1.5 C 26.5 1.5 27.5 2.5 27.5 4 L 27.5 12 C 27.5 13.5 26.5 14.5 25 14.5 L 21.5 14.5" stroke="#34C759" stroke-width="2" stroke-linecap="round"/>
-            <path d="M 29.5 5.8 C 30.8 5.8 31.5 6.6 31.5 7.8 L 31.5 8.2 C 31.5 9.4 30.8 10.2 29.5 10.2 Z" fill="#34C759"/>
-            <path d="M 15.5 1.5 L 10.5 8.5 L 14.5 8.5 L 13.5 14.5 L 18.5 7.5 L 14.5 7.5 Z" fill="#34C759"/>
+            <path d="M 7.5 1.5 L 4 1.5 C 2.5 1.5 1.5 2.5 1.5 4 L 1.5 12 C 1.5 13.5 2.5 14.5 4 14.5 L 7.5 14.5"
+              stroke="#34C759" stroke-width="2" stroke-linecap="round" />
+            <path d="M 21.5 1.5 L 25 1.5 C 26.5 1.5 27.5 2.5 27.5 4 L 27.5 12 C 27.5 13.5 26.5 14.5 25 14.5 L 21.5 14.5"
+              stroke="#34C759" stroke-width="2" stroke-linecap="round" />
+            <path d="M 29.5 5.8 C 30.8 5.8 31.5 6.6 31.5 7.8 L 31.5 8.2 C 31.5 9.4 30.8 10.2 29.5 10.2 Z"
+              fill="#34C759" />
+            <path d="M 15.5 1.5 L 10.5 8.5 L 14.5 8.5 L 13.5 14.5 L 18.5 7.5 L 14.5 7.5 Z" fill="#34C759" />
           </svg>
         </div>
         <span class="top-bar-battery-pct" id="top-bar-battery-pct">--%</span>
       </div>
 
       <!-- Centered Clipboard Title for Clipboard tab -->
-      <div class="top-bar-clipboard-title" id="top-bar-clipboard-title" aria-hidden="true" style="display: none;">Clipboard</div>
+      <div class="top-bar-clipboard-title" id="top-bar-clipboard-title" aria-hidden="true" style="display: none;">
+        Clipboard</div>
 
       <!-- Sliders / Controls Icon (Controls tab): 26x23px, right edge 9px, centered y=24px, 40x40 hit area -->
-      <button type="button" class="top-bar-btn" id="top-bar-controls-btn" aria-label="Controls Tab" data-tooltip="Controls">
+      <button type="button" class="top-bar-btn" id="top-bar-controls-btn" aria-label="Controls Tab"
+        data-tooltip="Controls">
         <svg class="top-bar-sliders-icon sliders-icon" viewBox="0 0 34 30" fill="none" aria-hidden="true">
-          <line x1="7" y1="3" x2="7" y2="27" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="2" y1="9" x2="12" y2="9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="17" y1="3" x2="17" y2="27" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="12" y1="21" x2="22" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="27" y1="3" x2="27" y2="27" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="22" y1="12" x2="32" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="7" y1="3" x2="7" y2="27" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+          <line x1="2" y1="9" x2="12" y2="9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+          <line x1="17" y1="3" x2="17" y2="27" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+          <line x1="12" y1="21" x2="22" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+          <line x1="27" y1="3" x2="27" y2="27" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+          <line x1="22" y1="12" x2="32" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
         </svg>
       </button>
 
       <!-- Chat Bubble Icon (Chat tab): 24x22px, 10px gap left of sliders, centered y=24px, 40x40 hit area -->
       <button type="button" class="top-bar-btn" id="top-bar-chat-btn" aria-label="Chat Tab" data-tooltip="Chat">
         <svg class="top-bar-chat-icon chat-bubble-icon" viewBox="0 0 31 28" fill="none" aria-hidden="true">
-          <path d="M 4 3 C 2.9 3 2 3.9 2 5 L 2 17 C 2 18.1 2.9 19 4 19 L 21 19 L 28 24 L 28 5 C 28 3.9 27.1 3 26 3 Z" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M 4 3 C 2.9 3 2 3.9 2 5 L 2 17 C 2 18.1 2.9 19 4 19 L 21 19 L 28 24 L 28 5 C 28 3.9 27.1 3 26 3 Z"
+            stroke="currentColor" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round" />
         </svg>
       </button>
     </div>
@@ -5511,23 +5922,30 @@
     </div>
 
     <!-- HUB TAB (Pill: 397 x 174 px) -->
-    <div class="tab-content tab-content-hub" id="tab-content-hub" role="region" aria-label="Hub" inert aria-hidden="true" style="display: none;">
+    <div class="tab-content tab-content-hub" id="tab-content-hub" role="region" aria-label="Hub" inert
+      aria-hidden="true" style="display: none;">
       <!-- Coverflow Carousel: 3 cards -->
-      <div class="hub-carousel" id="hub-carousel" role="listbox" aria-label="Hub Carousel" aria-activedescendant="hub-card-1" tabindex="0">
+      <div class="hub-carousel" id="hub-carousel" role="listbox" aria-label="Hub Carousel"
+        aria-activedescendant="hub-card-1" tabindex="0">
         <!-- Card 0: Clipboard -->
-        <div class="hub-card" id="hub-card-0" role="option" aria-selected="false" data-index="0" data-offset="-1" style="--offset: -1;">
+        <div class="hub-card" id="hub-card-0" role="option" aria-selected="false" data-index="0" data-offset="-1"
+          style="--offset: -1;">
           <span class="hub-card-label">Clipboard</span>
         </div>
         <!-- Card 1: Agents -->
-        <div class="hub-card active" id="hub-card-1" role="option" aria-selected="true" data-index="1" data-offset="0" style="--offset: 0;">
+        <div class="hub-card active" id="hub-card-1" role="option" aria-selected="true" data-index="1" data-offset="0"
+          style="--offset: 0;">
           <svg class="hub-code-icon" viewBox="0 0 100 42" fill="none" aria-hidden="true">
-            <path d="M 33 8 L 9 21 L 33 34" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M 46 38 L 56 4" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="7" stroke-linecap="round"/>
-            <path d="M 67 8 L 91 21 L 67 34" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 33 8 L 9 21 L 33 34" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="7"
+              stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 46 38 L 56 4" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="7" stroke-linecap="round" />
+            <path d="M 67 8 L 91 21 L 67 34" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="7"
+              stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </div>
         <!-- Card 2: DropVault -->
-        <div class="hub-card" id="hub-card-2" role="option" aria-selected="false" data-index="2" data-offset="1" style="--offset: 1;">
+        <div class="hub-card" id="hub-card-2" role="option" aria-selected="false" data-index="2" data-offset="1"
+          style="--offset: 1;">
           <span class="hub-card-label">DropVault</span>
         </div>
       </div>
@@ -5547,25 +5965,31 @@
 
       <!-- Chips: visible only while Agents card is active -->
       <div class="hub-chips-row visible" id="hub-chips-row">
-        <button type="button" class="hub-chip selected" id="hub-chip-antigravity" data-agent="antigravity" aria-pressed="true">Antigravity</button>
-        <button type="button" class="hub-chip" id="hub-chip-vscode" data-agent="vscode" aria-pressed="false">VS Code</button>
-        <button type="button" class="hub-chip" id="hub-chip-cursor" data-agent="cursor" aria-pressed="false">Cursor</button>
+        <button type="button" class="hub-chip selected" id="hub-chip-antigravity" data-agent="antigravity"
+          aria-pressed="true">Antigravity</button>
+        <button type="button" class="hub-chip" id="hub-chip-vscode" data-agent="vscode" aria-pressed="false">VS
+          Code</button>
+        <button type="button" class="hub-chip" id="hub-chip-cursor" data-agent="cursor"
+          aria-pressed="false">Cursor</button>
       </div>
 
       <!-- Chips: visible only while Clipboard card is active -->
       <div class="hub-chips-clipboard" id="hub-chips-clipboard" inert aria-hidden="true">
         <button type="button" class="hub-chip-clipboard" id="hub-chip-text" aria-label="Clipboard text history">
-          <svg class="hub-chip-icon" viewBox="0 0 16 16" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M9.5 2H4.5a1.5 1.5 0 0 0-1.5 1.5v9a1.5 1.5 0 0 0 1.5 1.5h7a1.5 1.5 0 0 0 1.5-1.5V5.5z"/>
-            <polyline points="9.5 2 9.5 5.5 13 5.5"/>
-            <line x1="5.5" y1="8.5" x2="9" y2="8.5"/>
-            <line x1="5.5" y1="11" x2="10.5" y2="11"/>
+          <svg class="hub-chip-icon" viewBox="0 0 16 16" fill="none" stroke="#FFFFFF" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9.5 2H4.5a1.5 1.5 0 0 0-1.5 1.5v9a1.5 1.5 0 0 0 1.5 1.5h7a1.5 1.5 0 0 0 1.5-1.5V5.5z" />
+            <polyline points="9.5 2 9.5 5.5 13 5.5" />
+            <line x1="5.5" y1="8.5" x2="9" y2="8.5" />
+            <line x1="5.5" y1="11" x2="10.5" y2="11" />
           </svg>
           <span class="hub-chip-label">Text</span>
         </button>
         <button type="button" class="hub-chip-clipboard" id="hub-chip-links" aria-label="Links, coming soon">
-          <svg class="hub-chip-icon" viewBox="0 0 16 16" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M14.2 7.8 L7.8 14.2 a4 4 0 0 1-5.6-5.6 l6.8-6.8 a2.7 2.7 0 0 1 3.8 3.8 l-6.8 6.8 a1.3 1.3 0 0 1-1.8-1.8 l6.2-6.2"/>
+          <svg class="hub-chip-icon" viewBox="0 0 16 16" fill="none" stroke="#FFFFFF" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path
+              d="M14.2 7.8 L7.8 14.2 a4 4 0 0 1-5.6-5.6 l6.8-6.8 a2.7 2.7 0 0 1 3.8 3.8 l-6.8 6.8 a1.3 1.3 0 0 1-1.8-1.8 l6.2-6.2" />
           </svg>
           <span class="hub-chip-label">Links</span>
         </button>
@@ -5573,11 +5997,13 @@
     </div>
 
     <!-- CLIPBOARD TAB (Pill: 352 x 203 px) -->
-    <div class="tab-content tab-content-clipboard" id="tab-content-clipboard" role="region" aria-label="Clipboard History" inert aria-hidden="true" style="display: none;">
+    <div class="tab-content tab-content-clipboard" id="tab-content-clipboard" role="region"
+      aria-label="Clipboard History" inert aria-hidden="true" style="display: none;">
       <!-- Active view (when clipboard.enabled is true) -->
       <div class="clipboard-active-view" id="clipboard-active-view">
         <!-- Latest Copied Card: left 12, top 33, 328 x 62, radius 8 -->
-        <div class="clipboard-latest-card" id="clipboard-latest-card" tabindex="0" role="button" aria-label="Copy latest item">
+        <div class="clipboard-latest-card" id="clipboard-latest-card" tabindex="0" role="button"
+          aria-label="Copy latest item">
           <div class="clipboard-latest-header">
             <span class="clipboard-latest-title">Latest Copied</span>
             <span class="clipboard-latest-age" id="clipboard-latest-age">Just now</span>
@@ -5589,17 +6015,20 @@
         <!-- Recent heading row: left 12, top 105 -->
         <div class="clipboard-recent-header">
           <span class="clipboard-recent-title">Recent</span>
-          <button type="button" class="clipboard-clear-btn" id="clipboard-clear-btn" aria-label="Clear clipboard history">Clear</button>
+          <button type="button" class="clipboard-clear-btn" id="clipboard-clear-btn"
+            aria-label="Clear clipboard history">Clear</button>
         </div>
 
         <!-- Recent items list: left 12, right 12, top 122, scrollable -->
-        <div class="clipboard-recent-list" id="clipboard-recent-list" role="listbox" aria-label="Recent copied items" tabindex="0"></div>
+        <div class="clipboard-recent-list" id="clipboard-recent-list" role="listbox" aria-label="Recent copied items"
+          tabindex="0"></div>
       </div>
 
       <!-- OFF view (when clipboard.enabled is false) -->
       <div class="clipboard-off-view" id="clipboard-off-view" style="display: none;">
         <div class="clipboard-off-title">Clipboard history is off.</div>
-        <div class="clipboard-off-desc">Dude keeps what you copy in memory only, until you quit. Password managers and secrets are skipped.</div>
+        <div class="clipboard-off-desc">Dude keeps what you copy in memory only, until you quit. Password managers and
+          secrets are skipped.</div>
         <button type="button" class="clipboard-turn-on-btn" id="clipboard-turn-on-btn">Turn on</button>
       </div>
 
@@ -5610,19 +6039,24 @@
     </div>
 
     <!-- DROPVAULT TAB (Pill: 359 x 317 px) -->
-    <div class="tab-content tab-content-dropvault" id="tab-content-dropvault" role="region" aria-label="DropVault" inert aria-hidden="true" style="display: none;">
+    <div class="tab-content tab-content-dropvault" id="tab-content-dropvault" role="region" aria-label="DropVault" inert
+      aria-hidden="true" style="display: none;">
       <!-- Header row: top 47px inside pill (left 12 for recent chip, left 88 for folder button) -->
       <div class="dropvault-header-row" id="dropvault-header-row">
-        <button type="button" class="dropvault-recent-chip" id="dropvault-recent-chip" aria-pressed="true" aria-label="Recent files">
-          <svg class="dropvault-recent-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="7" cy="7" r="5.5"/>
-            <polyline points="7 4 7 7 4.5 7"/>
+        <button type="button" class="dropvault-recent-chip" id="dropvault-recent-chip" aria-pressed="true"
+          aria-label="Recent files">
+          <svg class="dropvault-recent-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="7" cy="7" r="5.5" />
+            <polyline points="7 4 7 7 4.5 7" />
           </svg>
           <span>Recent</span>
         </button>
         <button type="button" class="dropvault-folder-btn" id="dropvault-folder-btn" aria-label="Open DropVault folder">
-          <svg class="dropvault-folder-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M2.5 5.5A1.5 1.5 0 0 1 4 4h3.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 0 11.121 6.5H16A1.5 1.5 0 0 1 17.5 8v6.5a1.5 1.5 0 0 1-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5V5.5z"/>
+          <svg class="dropvault-folder-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path
+              d="M2.5 5.5A1.5 1.5 0 0 1 4 4h3.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 0 11.121 6.5H16A1.5 1.5 0 0 1 17.5 8v6.5a1.5 1.5 0 0 1-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5V5.5z" />
           </svg>
         </button>
       </div>
@@ -5634,20 +6068,27 @@
 
       <!-- State screen: Not Created or Missing -->
       <div class="dropvault-state-screen" id="dropvault-state-setup" style="display: none;" inert aria-hidden="true">
-        <svg class="dropvault-state-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M4.5 9.5A2.5 2.5 0 0 1 7 7h6.5a2.5 2.5 0 0 1 1.77.73l2.5 2.54A2.5 2.5 0 0 0 19.54 11H29a2.5 2.5 0 0 1 2.5 2.5V26a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V9.5z"/>
+        <svg class="dropvault-state-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path
+            d="M4.5 9.5A2.5 2.5 0 0 1 7 7h6.5a2.5 2.5 0 0 1 1.77.73l2.5 2.54A2.5 2.5 0 0 0 19.54 11H29a2.5 2.5 0 0 1 2.5 2.5V26a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V9.5z" />
         </svg>
         <div class="dropvault-state-title" id="dropvault-setup-title">Create your DropVault folder</div>
-        <div class="dropvault-missing-note" id="dropvault-setup-missing-note" style="display: none;">The DropVault folder was not found.</div>
-        <div class="dropvault-state-desc" id="dropvault-setup-desc">Files you drop on the island are saved here: Documents\DropVault</div>
+        <div class="dropvault-missing-note" id="dropvault-setup-missing-note" style="display: none;">The DropVault
+          folder was not found.</div>
+        <div class="dropvault-state-desc" id="dropvault-setup-desc">Files you drop on the island are saved here:
+          Documents\DropVault</div>
         <button type="button" class="dropvault-create-btn" id="dropvault-create-btn">Create folder</button>
-        <div class="dropvault-state-error" id="dropvault-setup-error" style="display: none;">Couldn't create the folder. Try again.</div>
+        <div class="dropvault-state-error" id="dropvault-setup-error" style="display: none;">Couldn't create the folder.
+          Try again.</div>
       </div>
 
       <!-- State screen: Empty ("ready" but 0 files) -->
       <div class="dropvault-state-screen" id="dropvault-state-empty" style="display: none;" inert aria-hidden="true">
-        <svg class="dropvault-state-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M4.5 9.5A2.5 2.5 0 0 1 7 7h6.5a2.5 2.5 0 0 1 1.77.73l2.5 2.54A2.5 2.5 0 0 0 19.54 11H29a2.5 2.5 0 0 1 2.5 2.5V26a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V9.5z"/>
+        <svg class="dropvault-state-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path
+            d="M4.5 9.5A2.5 2.5 0 0 1 7 7h6.5a2.5 2.5 0 0 1 1.77.73l2.5 2.54A2.5 2.5 0 0 0 19.54 11H29a2.5 2.5 0 0 1 2.5 2.5V26a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V9.5z" />
         </svg>
         <div class="dropvault-state-title">Nothing here yet.</div>
         <div class="dropvault-state-desc">Drag a file onto the island to save it in DropVault.</div>
@@ -5666,17 +6107,20 @@
         <!-- Steps list: four rows of 20px height at tops 109px, 130px, 150px, 170px -->
         <div class="agent-steps-list" id="agent-steps-list">
           <!-- Step 1: Read (running placeholder) -->
-          <div class="agent-step-row pending" id="agent-step-read">
+          <div class="agent-step-row running" id="agent-step-read">
             <div class="agent-step-icon-wrap">
-              <svg class="step-default-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <svg class="step-default-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round">
                 <circle cx="8" cy="8" r="6" stroke="rgba(255, 255, 255, 0.3)" />
                 <path d="M 8 2 A 6 6 0 0 1 14 8" stroke="#FFFFFF" />
               </svg>
-              <svg class="step-running-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5" stroke-linecap="round">
+              <svg class="step-running-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5"
+                stroke-linecap="round">
                 <circle cx="8" cy="8" r="6" stroke="rgba(76, 216, 0, 0.25)" />
                 <path d="M 8 2 A 6 6 0 0 1 14 8" stroke="#4CD800" />
               </svg>
-              <svg class="step-done-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="step-done-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="8" cy="8" r="6" />
                 <path d="M5.5 8.2 L7.2 9.9 L10.8 6.3" />
               </svg>
@@ -5687,15 +6131,18 @@
           <!-- Step 2: Edit (pending) -->
           <div class="agent-step-row pending" id="agent-step-edit">
             <div class="agent-step-icon-wrap">
-              <svg class="step-default-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="step-default-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
                 <path d="M11 2.5 L13.5 5 L4.5 14 L2 14 L2 11.5 Z" />
                 <line x1="9" y1="4.5" x2="11.5" y2="7" />
               </svg>
-              <svg class="step-running-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5" stroke-linecap="round">
+              <svg class="step-running-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5"
+                stroke-linecap="round">
                 <circle cx="8" cy="8" r="6" stroke="rgba(76, 216, 0, 0.25)" />
                 <path d="M 8 2 A 6 6 0 0 1 14 8" stroke="#4CD800" />
               </svg>
-              <svg class="step-done-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="step-done-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="8" cy="8" r="6" />
                 <path d="M5.5 8.2 L7.2 9.9 L10.8 6.3" />
               </svg>
@@ -5706,15 +6153,18 @@
           <!-- Step 3: Bash (terminal prompt, pending) -->
           <div class="agent-step-row pending" id="agent-step-bash">
             <div class="agent-step-icon-wrap">
-              <svg class="step-default-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="step-default-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 4.5 L7 8 L3 11.5" />
                 <line x1="8.5" y1="12" x2="13" y2="12" />
               </svg>
-              <svg class="step-running-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5" stroke-linecap="round">
+              <svg class="step-running-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5"
+                stroke-linecap="round">
                 <circle cx="8" cy="8" r="6" stroke="rgba(76, 216, 0, 0.25)" />
                 <path d="M 8 2 A 6 6 0 0 1 14 8" stroke="#4CD800" />
               </svg>
-              <svg class="step-done-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="step-done-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="8" cy="8" r="6" />
                 <path d="M5.5 8.2 L7.2 9.9 L10.8 6.3" />
               </svg>
@@ -5725,15 +6175,18 @@
           <!-- Step 4: Done (check in circle, pending) -->
           <div class="agent-step-row pending" id="agent-step-done">
             <div class="agent-step-icon-wrap">
-              <svg class="step-default-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="step-default-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="8" cy="8" r="6" />
                 <path d="M5.5 8.2 L7.2 9.9 L10.8 6.3" />
               </svg>
-              <svg class="step-running-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5" stroke-linecap="round">
+              <svg class="step-running-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5"
+                stroke-linecap="round">
                 <circle cx="8" cy="8" r="6" stroke="rgba(76, 216, 0, 0.25)" />
                 <path d="M 8 2 A 6 6 0 0 1 14 8" stroke="#4CD800" />
               </svg>
-              <svg class="step-done-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="step-done-icon" viewBox="0 0 16 16" fill="none" stroke="#4CD800" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="8" cy="8" r="6" />
                 <path d="M5.5 8.2 L7.2 9.9 L10.8 6.3" />
               </svg>
@@ -5745,33 +6198,55 @@
         <!-- Code Component Container: File Tab + Code Box -->
         <div class="agent-code-component" id="agent-code-component">
           <!-- File tab: left 109px, top 14px, max-width 60%, background black, radius 5px 5px 0 0 -->
-          <div class="agent-file-tab" id="agent-file-tab" role="tab" aria-label="settings.html" data-tooltip="settings.html">
-            <svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#FF8A1F" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <div class="agent-file-tab" id="agent-file-tab" role="tab" aria-label="settings.html"
+            data-tooltip="settings.html">
+            <svg class="agent-file-icon" viewBox="0 0 10 10" fill="none" stroke="#FF8A1F" stroke-width="1.4"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M 3 2.5 L 1 5 L 3 7.5" />
               <path d="M 7 2.5 L 9 5 L 7 7.5" />
               <line x1="6" y1="2" x2="4" y2="8" />
             </svg>
             <span class="agent-file-name" id="agent-file-name">settings.html</span>
-            <span class="agent-file-stats" id="agent-file-stats"></span>
+            <span class="agent-file-stats" id="agent-file-stats"><span class="stat-add">+1</span><span class="stat-del">-1</span></span>
           </div>
 
           <!-- Code box: left 109px, top 29px, 411 x 159px, background #0B0C11, radius 6px -->
           <div class="agent-code-box" id="agent-code-box" tabindex="0" role="region" aria-label="Code diff viewer">
             <div class="agent-diff-table" id="agent-diff-table">
               <div class="agent-diff-row diff-context" data-idx="0">
-                <div class="agent-diff-gutter"><span class="agent-diff-linenum">120</span><span class="agent-diff-marker"></span></div>
-                <div class="agent-diff-text"><span class="agent-tok-kw">function</span> <span class="agent-tok-id">expandwidget</span>() {</div>
+                <div class="agent-diff-gutter"><span class="agent-diff-linenum">10</span><span class="agent-diff-marker"></span></div>
+                <div class="agent-diff-text"><span class="agent-tok-kw">import</span> { <span class="agent-tok-id">Item</span> } <span class="agent-tok-kw">from</span> <span class="agent-tok-str">'./types'</span></div>
               </div>
               <div class="agent-diff-row diff-context" data-idx="1">
-                <div class="agent-diff-gutter"><span class="agent-diff-linenum">121</span><span class="agent-diff-marker"></span></div>
-                <div class="agent-diff-text">  <span class="agent-tok-kw">const</span> <span class="agent-tok-id">island</span> = document.<span class="agent-tok-id">getElementById</span>(<span class="agent-tok-str">"island"</span>);</div>
+                <div class="agent-diff-gutter"><span class="agent-diff-linenum">11</span><span class="agent-diff-marker"></span></div>
+                <div class="agent-diff-text"></div>
               </div>
-              <div class="agent-diff-row diff-context" data-idx="2">
-                <div class="agent-diff-gutter"><span class="agent-diff-linenum">122</span><span class="agent-diff-marker"></span></div>
-                <div class="agent-diff-text">  <span class="agent-tok-id">island</span>.<span class="agent-tok-id">classList.add</span>(<span class="agent-tok-str">"expanded"</span>);</div>
+              <div class="agent-diff-row diff-removed" data-idx="2">
+                <div class="agent-diff-gutter"><span class="agent-diff-linenum">12</span><span class="agent-diff-marker">-</span></div>
+                <div class="agent-diff-text"><span class="agent-tok-kw">const</span> <span class="agent-tok-id">TVA</span> = <span class="agent-tok-num">0.196</span></div>
               </div>
-              <div class="agent-diff-row diff-context" data-idx="3">
-                <div class="agent-diff-gutter"><span class="agent-diff-linenum">123</span><span class="agent-diff-marker"></span></div>
+              <div class="agent-diff-row diff-added" data-idx="3">
+                <div class="agent-diff-gutter"><span class="agent-diff-linenum">12</span><span class="agent-diff-marker">+</span></div>
+                <div class="agent-diff-text"><span class="agent-tok-kw">const</span> <span class="agent-tok-id">TVA</span> <span class="agent-diff-caret" aria-hidden="true"></span></div>
+              </div>
+              <div class="agent-diff-row diff-context" data-idx="4">
+                <div class="agent-diff-gutter"><span class="agent-diff-linenum">13</span><span class="agent-diff-marker"></span></div>
+                <div class="agent-diff-text"></div>
+              </div>
+              <div class="agent-diff-row diff-context" data-idx="5">
+                <div class="agent-diff-gutter"><span class="agent-diff-linenum">14</span><span class="agent-diff-marker"></span></div>
+                <div class="agent-diff-text"><span class="agent-tok-kw">export</span> <span class="agent-tok-kw">function</span> <span class="agent-tok-id">total</span>(<span class="agent-tok-id">items</span>: <span class="agent-tok-id">Item</span>[]) {</div>
+              </div>
+              <div class="agent-diff-row diff-context" data-idx="6">
+                <div class="agent-diff-gutter"><span class="agent-diff-linenum">15</span><span class="agent-diff-marker"></span></div>
+                <div class="agent-diff-text">  <span class="agent-tok-kw">const</span> <span class="agent-tok-id">sum</span> = <span class="agent-tok-id">items</span>.<span class="agent-tok-id">reduce</span>((<span class="agent-tok-id">s</span>, <span class="agent-tok-id">i</span>) =&gt; <span class="agent-tok-id">s</span> + <span class="agent-tok-id">i</span>.<span class="agent-tok-id">price</span>, <span class="agent-tok-num">0</span>)</div>
+              </div>
+              <div class="agent-diff-row diff-context" data-idx="7">
+                <div class="agent-diff-gutter"><span class="agent-diff-linenum">16</span><span class="agent-diff-marker"></span></div>
+                <div class="agent-diff-text">  <span class="agent-tok-kw">return</span> <span class="agent-tok-id">sum</span> * (<span class="agent-tok-num">1</span> + <span class="agent-tok-id">TVA</span>)</div>
+              </div>
+              <div class="agent-diff-row diff-context" data-idx="8">
+                <div class="agent-diff-gutter"><span class="agent-diff-linenum">17</span><span class="agent-diff-marker"></span></div>
                 <div class="agent-diff-text">}</div>
               </div>
             </div>
@@ -5782,12 +6257,14 @@
           <div class="agent-code-fade-right" id="agent-code-fade-right" aria-hidden="true"></div>
 
           <!-- Auto-follow Latest Button: Inter 600 10.5px, white on #3B3B52, radius 10px, height 20px, 8px from bottom-right -->
-          <button type="button" class="agent-latest-btn" id="agent-latest-btn" inert aria-hidden="true" tabindex="-1">Latest</button>
+          <button type="button" class="agent-latest-btn" id="agent-latest-btn" inert aria-hidden="true"
+            tabindex="-1">Latest</button>
 
           <!-- Agent Empty State Overlay -->
-          <div class="agent-empty-overlay" id="agent-empty-overlay">
+          <div class="agent-empty-overlay hidden" id="agent-empty-overlay" aria-hidden="true" inert>
             <div class="agent-empty-title" id="agent-empty-title">Agents are not connected.</div>
-            <div class="agent-empty-desc" id="agent-empty-desc">Install Dude's hooks for Antigravity in Settings, then restart Antigravity IDE.</div>
+            <div class="agent-empty-desc" id="agent-empty-desc">Install Dude's hooks for Antigravity in Settings, then
+              restart Antigravity IDE.</div>
             <button type="button" class="agent-empty-btn" id="agent-empty-btn">Open Agents settings</button>
           </div>
         </div>
@@ -5807,7 +6284,8 @@
           </div>
           <button type="button" class="agent-approval-submit-btn" id="agent-approval-submit-btn">
             <span>Submit</span>
-            <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round">
               <path d="M8 2.5 v3.5 H2.5 M4.5 4 L2.5 6 L4.5 8" />
             </svg>
           </button>
@@ -5822,34 +6300,44 @@
         <!-- Persistent Top Controls: Action buttons (Copy, Regenerate, New chat) -->
         <div class="chat-top-controls" id="chat-top-controls">
           <div class="chat-actions-bar" id="chat-actions-bar" style="display: none;">
-            <button class="chat-action-btn" id="chat-new-btn" data-tooltip="New chat" type="button" aria-label="New chat">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                <path d="M3 3v5h5"/>
-                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
-                <path d="M16 21h5v-5"/>
+            <button class="chat-action-btn" id="chat-new-btn" data-tooltip="New chat" type="button"
+              aria-label="New chat">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                <path d="M16 21h5v-5" />
               </svg>
             </button>
-            <button class="chat-action-btn" id="chat-regen-btn" data-tooltip="Regenerate" type="button" aria-label="Regenerate">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
+            <button class="chat-action-btn" id="chat-regen-btn" data-tooltip="Regenerate" type="button"
+              aria-label="Regenerate">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19" />
               </svg>
             </button>
-            <button class="chat-action-btn" id="chat-copy-btn" data-tooltip="Copy reply" type="button" aria-label="Copy reply">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <button class="chat-action-btn" id="chat-copy-btn" data-tooltip="Copy reply" type="button"
+              aria-label="Copy reply">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
             </button>
           </div>
-          <button class="chat-action-btn chat-maximize-btn" id="chat-maximize-btn" data-tooltip="Maximize" type="button" aria-label="Maximize chat" tabindex="0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+          <button class="chat-action-btn chat-maximize-btn" id="chat-maximize-btn" data-tooltip="Maximize" type="button"
+            aria-label="Maximize chat" tabindex="0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
             </svg>
           </button>
-          <button class="chat-action-btn chat-shrink-btn" id="chat-shrink-btn" data-tooltip="Restore chat size" type="button" aria-label="Restore chat size" inert aria-hidden="true" tabindex="-1">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M4 9h5V4M20 9h-5V4M4 15h5v5M20 15h-5v5"/>
+          <button class="chat-action-btn chat-shrink-btn" id="chat-shrink-btn" data-tooltip="Restore chat size"
+            type="button" aria-label="Restore chat size" inert aria-hidden="true" tabindex="-1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 9h5V4M20 9h-5V4M4 15h5v5M20 15h-5v5" />
             </svg>
           </button>
         </div>
@@ -5863,33 +6351,44 @@
         <div class="chat-attachment-error" id="chat-attachment-error" aria-live="polite"></div>
 
         <!-- Plus Menu Popup: glass-dark style above '+' icon -->
-        <div class="chat-plus-menu" id="chat-plus-menu" role="menu" aria-label="Attachments menu">
+        <div class="chat-plus-menu" id="chat-plus-menu" role="menu" aria-label="Attachments menu" aria-hidden="true"
+          inert>
           <button class="chat-menu-item" id="chat-menu-paste" role="menuitem" type="button" tabindex="-1">
-            <svg class="menu-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M10.5 2.5H12a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 13V4A1.5 1.5 0 0 1 4 2.5h1.5"/>
-              <rect x="5.5" y="1" width="5" height="3" rx="1"/>
+            <svg class="menu-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path
+                d="M10.5 2.5H12a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 13V4A1.5 1.5 0 0 1 4 2.5h1.5" />
+              <rect x="5.5" y="1" width="5" height="3" rx="1" />
             </svg>
             <span>Paste from clipboard</span>
           </button>
           <button class="chat-menu-item" id="chat-menu-files" role="menuitem" type="button" tabindex="-1">
-            <svg class="menu-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M14.2 7.8 L7.8 14.2 a4 4 0 0 1-5.6-5.6 l6.8-6.8 a2.7 2.7 0 0 1 3.8 3.8 l-6.8 6.8 a1.3 1.3 0 0 1-1.8-1.8 l6.2-6.2"/>
+            <svg class="menu-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path
+                d="M14.2 7.8 L7.8 14.2 a4 4 0 0 1-5.6-5.6 l6.8-6.8 a2.7 2.7 0 0 1 3.8 3.8 l-6.8 6.8 a1.3 1.3 0 0 1-1.8-1.8 l6.2-6.2" />
             </svg>
             <span>Attach image or file...</span>
           </button>
-          <button class="chat-menu-item disabled" id="chat-menu-dropvault" role="menuitem" type="button" tabindex="-1" aria-disabled="true" data-tooltip="Set up DropVault first">
-            <svg class="menu-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M2 4.5A1.5 1.5 0 0 1 3.5 3h2.8a1.5 1.5 0 0 1 1.06.44l1.14 1.12A1.5 1.5 0 0 0 9.56 5H12.5A1.5 1.5 0 0 1 14 6.5v6a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 12.5v-8z"/>
+          <button class="chat-menu-item disabled" id="chat-menu-dropvault" role="menuitem" type="button" tabindex="-1"
+            aria-disabled="true" data-tooltip="Set up DropVault first">
+            <svg class="menu-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path
+                d="M2 4.5A1.5 1.5 0 0 1 3.5 3h2.8a1.5 1.5 0 0 1 1.06.44l1.14 1.12A1.5 1.5 0 0 0 9.56 5H12.5A1.5 1.5 0 0 1 14 6.5v6a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 12.5v-8z" />
             </svg>
             <span>From DropVault...</span>
           </button>
         </div>
 
         <!-- DropVault Files Popup Menu (Directly over/above '+' menu) -->
-        <div class="chat-vault-menu" id="chat-vault-menu" role="menu" aria-label="DropVault files" aria-hidden="true" inert>
-          <button class="chat-vault-back-row" id="chat-vault-back-btn" role="menuitem" type="button" tabindex="-1" aria-label="Back to attachments menu">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: 12px; height: 12px; margin-right: 4px;">
-              <polyline points="10 13 5 8 10 3"/>
+        <div class="chat-vault-menu" id="chat-vault-menu" role="menu" aria-label="DropVault files" aria-hidden="true"
+          inert>
+          <button class="chat-vault-back-row" id="chat-vault-back-btn" role="menuitem" type="button" tabindex="-1"
+            aria-label="Back to attachments menu">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true" style="width: 12px; height: 12px; margin-right: 4px;">
+              <polyline points="10 13 5 8 10 3" />
             </svg>
             <span>&lt; Back</span>
           </button>
@@ -5898,16 +6397,18 @@
 
         <!-- Drag & Drop overlay inside chat panel -->
         <div class="chat-drop-overlay" id="chat-drop-overlay" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#D8B4FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px; margin-bottom: 4px;">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#D8B4FE" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" style="width: 24px; height: 24px; margin-bottom: 4px;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
           <span>Drop to attach</span>
         </div>
 
         <!-- Secret confirmation modal -->
-        <div class="chat-secret-modal" id="chat-secret-modal" role="dialog" aria-modal="true" aria-labelledby="chat-secret-text">
+        <div class="chat-secret-modal" id="chat-secret-modal" role="dialog" aria-modal="true"
+          aria-labelledby="chat-secret-text">
           <div class="chat-secret-text" id="chat-secret-text">This file seems to contain a secret. Send it anyway?</div>
           <div class="chat-secret-subtext" id="chat-secret-filename"></div>
           <div class="chat-secret-actions">
@@ -5923,8 +6424,10 @@
         </div>
 
         <!-- Link Punycode confirmation modal -->
-        <div class="chat-link-confirm-modal" id="chat-link-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="chat-link-confirm-text">
-          <div class="chat-secret-text" id="chat-link-confirm-text">This address uses unusual characters: <span id="chat-link-confirm-host"></span>. Open anyway?</div>
+        <div class="chat-link-confirm-modal" id="chat-link-confirm-modal" role="dialog" aria-modal="true"
+          aria-labelledby="chat-link-confirm-text">
+          <div class="chat-secret-text" id="chat-link-confirm-text">This address uses unusual characters: <span
+              id="chat-link-confirm-host"></span>. Open anyway?</div>
           <div class="chat-secret-actions" style="margin-top: 10px;">
             <button class="chat-secret-btn cancel" id="chat-link-confirm-cancel" type="button">Cancel</button>
             <button class="chat-secret-btn attach" id="chat-link-confirm-open" type="button">Open</button>
@@ -5938,22 +6441,20 @@
 
         <!-- Input bar INSIDE panel: left 9, bottom 8, 371 x 26, background #E0E0E0, radius 6 -->
         <div class="chat-input-bar" id="chat-input-bar">
-          <button class="chat-plus-btn" id="chat-plus-btn" type="button" aria-label="Add attachments" aria-haspopup="menu" aria-expanded="false" tabindex="-1">
+          <button class="chat-plus-btn" id="chat-plus-btn" type="button" aria-label="Add attachments"
+            aria-haspopup="menu" aria-expanded="false" tabindex="-1">
             <svg class="plus-icon" viewBox="0 0 14 14" width="12" height="12" fill="none" aria-hidden="true">
-              <path d="M7 2V12M2 7H12" stroke="#000000" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 2V12M2 7H12" stroke="#000000" stroke-width="2.3" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </button>
-          <input
-            type="text"
-            class="chat-input"
-            id="chat-input"
-            placeholder="Ask Dude"
-            autocomplete="off"
-            spellcheck="false"
-          />
+          <input type="text" class="chat-input" id="chat-input" placeholder="Ask Dude" autocomplete="off"
+            spellcheck="false" />
           <button class="chat-send-btn" id="chat-send-btn" type="button" aria-label="Send" tabindex="-1">
             <svg class="send-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
-              <path d="M 4.5 4.5 C 6 8.5 7.5 10.5 7.5 12 C 7.5 13.5 6 15.5 4.5 19.5 C 9 17 15 14 20.5 12 C 15 10 9 7 4.5 4.5 Z" stroke="#6B5BFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path
+                d="M 4.5 4.5 C 6 8.5 7.5 10.5 7.5 12 C 7.5 13.5 6 15.5 4.5 19.5 C 9 17 15 14 20.5 12 C 15 10 9 7 4.5 4.5 Z"
+                stroke="#6B5BFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </button>
         </div>
@@ -5971,13 +6472,19 @@
         </div>
         <div class="cc-controls-row" id="cc-controls-row">
           <button type="button" class="cc-media-btn" id="cc-media-prev" aria-label="Previous track">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 6L3 12L11 18V6Z M20 6L12 12L20 18V6Z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M11 6L3 12L11 18V6Z M20 6L12 12L20 18V6Z" />
+            </svg>
           </button>
           <button type="button" class="cc-media-btn" id="cc-media-play" aria-label="Play/Pause">
-            <svg viewBox="0 0 24 24" fill="currentColor" id="cc-play-icon"><path d="M7 4L19 12L7 20V4Z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor" id="cc-play-icon">
+              <path d="M7 4L19 12L7 20V4Z" />
+            </svg>
           </button>
           <button type="button" class="cc-media-btn" id="cc-media-next" aria-label="Next track">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6L12 12L4 18V6Z M13 6L21 12L13 18V6Z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4 6L12 12L4 18V6Z M13 6L21 12L13 18V6Z" />
+            </svg>
           </button>
         </div>
         <div class="cc-progress-bar" id="cc-progress-container">
@@ -5995,7 +6502,8 @@
       <!-- Wi-Fi -->
       <button type="button" class="cc-tile active" id="cc-tile-wifi">
         <div class="cc-tile-icon-square">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.3" stroke-linecap="round"
+            stroke-linejoin="round" style="width: 20px; height: 20px;">
             <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
             <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
             <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
@@ -6011,7 +6519,8 @@
       <!-- Bluetooth -->
       <button type="button" class="cc-tile active" id="cc-tile-bluetooth">
         <div class="cc-tile-icon-square">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.3" stroke-linecap="round"
+            stroke-linejoin="round" style="width: 20px; height: 20px;">
             <polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"></polyline>
           </svg>
         </div>
@@ -6025,7 +6534,8 @@
       <button type="button" class="cc-tile" id="cc-tile-airplane">
         <div class="cc-tile-icon-square">
           <svg viewBox="0 0 24 24" style="width: 20px; height: 20px;">
-            <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+            <path
+              d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
           </svg>
         </div>
         <div class="cc-tile-text-col">
@@ -6037,7 +6547,8 @@
       <!-- Hotspot -->
       <button type="button" class="cc-tile" id="cc-tile-hotspot">
         <div class="cc-tile-icon-square">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"
+            style="width: 20px; height: 20px;">
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
           </svg>
@@ -6055,9 +6566,12 @@
           <div class="cc-slider-fill" id="cc-brightness-fill" style="width: 62%;"></div>
         </div>
         <div class="cc-slider-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.4" stroke-linecap="round"
+            stroke-linejoin="round" style="width: 20px; height: 20px;">
             <circle cx="12" cy="12" r="4.2" fill="#000000"></circle>
-            <path d="M12 2v2.5M12 19.5V22M4.22 4.22l1.77 1.77M18.01 18.01l1.77 1.77M2 12h2.5M19.5 12H22M4.22 19.78l1.77-1.77M18.01 5.99l1.77-1.77"></path>
+            <path
+              d="M12 2v2.5M12 19.5V22M4.22 4.22l1.77 1.77M18.01 18.01l1.77 1.77M2 12h2.5M19.5 12H22M4.22 19.78l1.77-1.77M18.01 5.99l1.77-1.77">
+            </path>
           </svg>
         </div>
       </div>
@@ -6068,7 +6582,8 @@
           <div class="cc-slider-fill" id="cc-volume-fill" style="width: 73%;"></div>
         </div>
         <div class="cc-slider-icon" id="cc-volume-icon" style="cursor: pointer;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.3" stroke-linecap="round"
+            stroke-linejoin="round" style="width: 20px; height: 20px;">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#000000"></polygon>
             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
             <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
@@ -6085,9 +6600,12 @@
   </div>
 
   <!-- File Drop Folder Artwork Container (Image 1 "over", Image 2 "dropped") -->
-  <div class="drop-folder-container" id="drop-folder-container" role="img" aria-label="Drop File" inert aria-hidden="true">
-    <img id="drop-folder-img-over" class="drop-folder-img over" src="assets/drop-folder-over.webp" alt="" draggable="false" />
-    <img id="drop-folder-img-dropped" class="drop-folder-img dropped" src="assets/drop-folder-dropped.webp" alt="" draggable="false" />
+  <div class="drop-folder-container" id="drop-folder-container" role="img" aria-label="Drop File" inert
+    aria-hidden="true">
+    <img id="drop-folder-img-over" class="drop-folder-img over" src="assets/drop-folder-over.webp" alt=""
+      draggable="false" />
+    <img id="drop-folder-img-dropped" class="drop-folder-img dropped" src="assets/drop-folder-dropped.webp" alt=""
+      draggable="false" />
   </div>
 
   <!-- Screen reader live announcer -->
@@ -6108,9 +6626,9 @@
       if (window.__TAURI__?.core?.invoke) {
         window.__TAURI__.core.invoke('is_debug').then((res) => {
           isDebugMode = Boolean(res);
-        }).catch(() => {});
+        }).catch(() => { });
       }
-    } catch (_) {}
+    } catch (_) { }
 
     window.addEventListener('error', (event) => {
       if (!isDebugMode) return;
@@ -6120,7 +6638,7 @@
         if (window.__TAURI__?.core?.invoke) {
           window.__TAURI__.core.invoke('log_frontend_error', { message: msg, stack });
         }
-      } catch (_) {}
+      } catch (_) { }
     });
     window.addEventListener('unhandledrejection', (event) => {
       if (!isDebugMode) return;
@@ -6130,7 +6648,7 @@
         if (window.__TAURI__?.core?.invoke) {
           window.__TAURI__.core.invoke('log_frontend_error', { message: msg, stack });
         }
-      } catch (_) {}
+      } catch (_) { }
     });
 
     const widget = document.getElementById('widget');
@@ -6158,9 +6676,9 @@
       if (id === 'copy') {
         try {
           if (window.__TAURI__?.core?.invoke) {
-            window.__TAURI__.core.invoke('play_sound', { id: 'copy' }).catch(() => {});
+            window.__TAURI__.core.invoke('play_sound', { id: 'copy' }).catch(() => { });
           }
-        } catch (_) {}
+        } catch (_) { }
       }
     }
 
@@ -6313,11 +6831,11 @@
       if (currentMediaSession.status === 'playing') {
         widget.classList.add('is-playing');
         widget.classList.remove('is-paused');
-        try { window.__TAURI__?.core?.invoke('start_audio_visualizer').catch(() => {}); } catch (_) {}
+        try { window.__TAURI__?.core?.invoke('start_audio_visualizer').catch(() => { }); } catch (_) { }
       } else {
         widget.classList.remove('is-playing');
         widget.classList.add('is-paused');
-        try { window.__TAURI__?.core?.invoke('stop_audio_visualizer').catch(() => {}); } catch (_) {}
+        try { window.__TAURI__?.core?.invoke('stop_audio_visualizer').catch(() => { }); } catch (_) { }
         resetNowPlayingBars();
       }
 
@@ -6336,7 +6854,7 @@
       if (!isNowPlayingActive) return;
       isNowPlayingActive = false;
 
-      try { window.__TAURI__?.core?.invoke('stop_audio_visualizer').catch(() => {}); } catch (_) {}
+      try { window.__TAURI__?.core?.invoke('stop_audio_visualizer').catch(() => { }); } catch (_) { }
       resetNowPlayingBars();
 
       if (pausedExitTimer) { clearTimeout(pausedExitTimer); pausedExitTimer = null; }
@@ -6428,7 +6946,7 @@
         if (isNowPlayingActive) {
           widget.classList.add('is-playing');
           widget.classList.remove('is-paused');
-          try { window.__TAURI__?.core?.invoke('start_audio_visualizer').catch(() => {}); } catch (_) {}
+          try { window.__TAURI__?.core?.invoke('start_audio_visualizer').catch(() => { }); } catch (_) { }
         } else {
           if (isPlainCollapsed() && isMascotWindowVisible() && behavior.nowPlayingPill !== false) {
             if (!playingStatusTimer) {
@@ -6448,7 +6966,7 @@
         if (isNowPlayingActive) {
           widget.classList.remove('is-playing');
           widget.classList.add('is-paused');
-          try { window.__TAURI__?.core?.invoke('stop_audio_visualizer').catch(() => {}); } catch (_) {}
+          try { window.__TAURI__?.core?.invoke('stop_audio_visualizer').catch(() => { }); } catch (_) { }
           resetNowPlayingBars();
           if (!trackChangeGraceTimer) {
             if (pausedExitTimer) clearTimeout(pausedExitTimer);
@@ -6464,7 +6982,7 @@
         if (isNowPlayingActive) {
           widget.classList.remove('is-playing');
           widget.classList.add('is-paused');
-          try { window.__TAURI__?.core?.invoke('stop_audio_visualizer').catch(() => {}); } catch (_) {}
+          try { window.__TAURI__?.core?.invoke('stop_audio_visualizer').catch(() => { }); } catch (_) { }
           resetNowPlayingBars();
           if (!trackChangeGraceTimer) {
             if (pausedExitTimer) clearTimeout(pausedExitTimer);
@@ -6528,7 +7046,7 @@
               bar.style.transform = `scaleY(${scale.toFixed(3)})`;
             }
           }
-        } catch (_) {}
+        } catch (_) { }
       });
     }
 
@@ -6547,14 +7065,14 @@
               thumbnail: null
             };
             enterNowPlayingState();
-            try { window.__TAURI__?.core?.invoke('start_audio_visualizer').catch(() => {}); } catch (_) {}
+            try { window.__TAURI__?.core?.invoke('start_audio_visualizer').catch(() => { }); } catch (_) { }
             console.log('[DEBUG Now-Playing Preview] State: ACTIVE, Status: PLAYING', currentMediaSession);
           } else if (debugNowPlayingPlaying) {
             debugNowPlayingPlaying = false;
             currentMediaSession.status = 'paused';
             widget.classList.remove('is-playing');
             widget.classList.add('is-paused');
-            try { window.__TAURI__?.core?.invoke('stop_audio_visualizer').catch(() => {}); } catch (_) {}
+            try { window.__TAURI__?.core?.invoke('stop_audio_visualizer').catch(() => { }); } catch (_) { }
             resetNowPlayingBars();
             console.log('[DEBUG Now-Playing Preview] State: ACTIVE, Status: PAUSED', currentMediaSession);
           } else {
@@ -6562,7 +7080,7 @@
             currentMediaSession.status = 'playing';
             widget.classList.remove('is-paused');
             widget.classList.add('is-playing');
-            try { window.__TAURI__?.core?.invoke('start_audio_visualizer').catch(() => {}); } catch (_) {}
+            try { window.__TAURI__?.core?.invoke('start_audio_visualizer').catch(() => { }); } catch (_) { }
             console.log('[DEBUG Now-Playing Preview] State: ACTIVE, Status: PLAYING', currentMediaSession);
           }
         }
@@ -7228,13 +7746,13 @@
             return true;
           }
         }
-      } catch (_) {}
+      } catch (_) { }
       try {
         if (localStorage.getItem('dude_link_notice_ack') === 'true') {
           isLinkNoticeAcknowledged = true;
           return true;
         }
-      } catch (_) {}
+      } catch (_) { }
       return false;
     }
 
@@ -7252,10 +7770,10 @@
           });
           await window.__TAURI__.core.invoke('plugin:store|save', { rid });
         }
-      } catch (_) {}
+      } catch (_) { }
       try {
         localStorage.setItem('dude_link_notice_ack', 'true');
-      } catch (_) {}
+      } catch (_) { }
     }
 
     async function handleOpenLink(url, confirmed = false) {
@@ -7457,7 +7975,7 @@
             try {
               navigator.clipboard.writeText(blockEl.dataset.code || '');
               playSound('copy');
-            } catch (_) {}
+            } catch (_) { }
             copyBtn.textContent = 'Copied';
             setTimeout(() => {
               copyBtn.textContent = 'Copy';
@@ -7613,7 +8131,7 @@
       }
     }
 
-    
+
     let isChatMaximized = false;
 
     function setChatMaximized(maximized) {
@@ -7768,7 +8286,7 @@
           try {
             navigator.clipboard.writeText(textToCopy);
             playSound('copy');
-          } catch (_) {}
+          } catch (_) { }
           copyBtn.innerHTML = TICK_ICON_SVG;
           setTimeout(() => {
             const btn = document.getElementById('chat-copy-btn');
@@ -7857,7 +8375,7 @@
             }
           }
         }
-      } catch (_) {}
+      } catch (_) { }
 
       if (!hasKey) {
         showNoApiKeyPrompt();
@@ -8044,7 +8562,7 @@
             await window.__TAURI__.core.invoke('chat_cancel', { requestId: reqId });
           }
         }
-      } catch (_) {}
+      } catch (_) { }
 
       chatAnswerBox.innerHTML = '';
       stagedAttachments = [];
@@ -8250,7 +8768,7 @@
             }
           }
         }
-      } catch (_) {}
+      } catch (_) { }
 
       if (!hasKey) {
         showNoApiKeyPrompt();
@@ -8479,7 +8997,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               if (window.__TAURI__?.core?.invoke) {
                 await window.__TAURI__.core.invoke('remove_attachment', { id: att.id });
               }
-            } catch (_) {}
+            } catch (_) { }
             renderAttachmentChips();
             if (chatInput) chatInput.focus();
           };
@@ -8507,13 +9025,13 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             return true;
           }
         }
-      } catch (_) {}
+      } catch (_) { }
       try {
         if (localStorage.getItem('dude_attachments_notice_ack') === 'true') {
           isNoticeAcknowledged = true;
           return true;
         }
-      } catch (_) {}
+      } catch (_) { }
       return false;
     }
 
@@ -8531,10 +9049,10 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           });
           await window.__TAURI__.core.invoke('plugin:store|save', { rid });
         }
-      } catch (_) {}
+      } catch (_) { }
       try {
         localStorage.setItem('dude_attachments_notice_ack', 'true');
-      } catch (_) {}
+      } catch (_) { }
     }
 
     function showFirstAttachNotice() {
@@ -8604,6 +9122,13 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       isPlusMenuOpen = willOpen;
       if (chatPlusMenu) {
         chatPlusMenu.classList.toggle('open', willOpen);
+        if (willOpen) {
+          chatPlusMenu.removeAttribute('inert');
+          chatPlusMenu.removeAttribute('aria-hidden');
+        } else {
+          chatPlusMenu.setAttribute('inert', '');
+          chatPlusMenu.setAttribute('aria-hidden', 'true');
+        }
       }
       if (chatPlusBtn) {
         chatPlusBtn.setAttribute('aria-expanded', String(willOpen));
@@ -8647,6 +9172,8 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       if (!chatVaultMenu) return;
       if (chatPlusMenu) {
         chatPlusMenu.classList.remove('open');
+        chatPlusMenu.setAttribute('inert', '');
+        chatPlusMenu.setAttribute('aria-hidden', 'true');
       }
       isPlusMenuOpen = false;
       isVaultMenuOpen = true;
@@ -8660,7 +9187,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         if (window.__TAURI__?.core?.invoke) {
           try {
             cards = await window.__TAURI__.core.invoke('vault_recent');
-          } catch (_) {}
+          } catch (_) { }
         }
         if (!Array.isArray(cards)) cards = [];
         cards = cards.slice(0, 6);
@@ -8766,6 +9293,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
     if (chatPlusMenu) {
       chatPlusMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      chatPlusMenu.addEventListener('mousedown', (e) => {
         e.stopPropagation();
       });
     }
@@ -8963,6 +9493,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       chatVaultMenu.addEventListener('click', (e) => {
         e.stopPropagation();
       });
+      chatVaultMenu.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+      });
     }
 
     if (chatInput) {
@@ -9019,7 +9552,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             if (window.__TAURI__?.core?.invoke) {
               await window.__TAURI__.core.invoke('remove_attachment', { id: att.id });
             }
-          } catch (_) {}
+          } catch (_) { }
         }
         showNextSecretCheck();
       });
@@ -9084,8 +9617,8 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
     // Global navigation protection: override window.open & prevent navigation from any http(s) href
     try {
-      window.open = function() { return null; };
-    } catch (_) {}
+      window.open = function () { return null; };
+    } catch (_) { }
 
     document.addEventListener('click', (e) => {
       const target = e.target;
@@ -9130,11 +9663,11 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
     try {
       const preloadOver = new Image();
       preloadOver.src = dropFolderOverUrl;
-      preloadOver.decode?.().catch(() => {});
+      preloadOver.decode?.().catch(() => { });
       const preloadDropped = new Image();
       preloadDropped.src = dropFolderDroppedUrl;
-      preloadDropped.decode?.().catch(() => {});
-    } catch (_) {}
+      preloadDropped.decode?.().catch(() => { });
+    } catch (_) { }
 
     function updateDropFolderPosition() {
       const folder = document.getElementById('drop-folder-container');
@@ -9355,7 +9888,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       } else {
         let msg = "Couldn't save the file.";
         if (Array.isArray(rejected)) {
-          if (rejected.includes('no-vault')) {
+          if (rejected.includes('busy')) {
+            msg = "DropVault is busy. Try again in a moment.";
+          } else if (rejected.includes('no-vault')) {
             msg = "Create your DropVault folder first.";
           } else if (rejected.includes('folder')) {
             msg = "Folders aren't supported.";
@@ -9408,7 +9943,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           onFileDropResult(payload);
         }
       });
-      window.__TAURI__.event.listen('chat-chunk' , (event) => {
+      window.__TAURI__.event.listen('chat-chunk', (event) => {
         handleChatChunk(event);
       });
       window.__TAURI__.event.listen('chat-done', (event) => {
@@ -9754,7 +10289,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             } else if (window.__TAURI__?.core?.invoke) {
               await window.__TAURI__.core.invoke('plugin:window|set_focus', { label: 'main' });
             }
-          } catch (_) {}
+          } catch (_) { }
           window.focus();
           setTimeout(() => {
             if (chatInput) chatInput.focus();
@@ -10072,6 +10607,18 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         } else {
           chatPlusMenu.setAttribute('inert', '');
           chatPlusMenu.setAttribute('aria-hidden', 'true');
+        }
+      }
+
+      const chatVaultMenu = document.getElementById('chat-vault-menu');
+      if (chatVaultMenu) {
+        const isVaultOpen = chatVaultMenu.classList.contains('open') && isChatActive;
+        if (isVaultOpen) {
+          chatVaultMenu.removeAttribute('inert');
+          chatVaultMenu.removeAttribute('aria-hidden');
+        } else {
+          chatVaultMenu.setAttribute('inert', '');
+          chatVaultMenu.setAttribute('aria-hidden', 'true');
         }
       }
 
@@ -10623,7 +11170,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           try {
             hubCarouselEl.setPointerCapture(e.pointerId);
             hasCapturedPointer = true;
-          } catch (_) {}
+          } catch (_) { }
         }
       });
 
@@ -10633,7 +11180,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         if (hasCapturedPointer) {
           try {
             hubCarouselEl.releasePointerCapture(e.pointerId);
-          } catch (_) {}
+          } catch (_) { }
           hasCapturedPointer = false;
         }
 
@@ -11098,7 +11645,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           }
         });
       }
-    } catch (_) {}
+    } catch (_) { }
 
     // --- Agents Tab Code Component & Step Cycling Demo ---
     const agentsDarkPanelEl = document.getElementById('agents-dark-panel');
@@ -11841,7 +12388,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         if (!status && window.__TAURI__?.core?.invoke) {
           try {
             status = await window.__TAURI__.core.invoke('vault_status');
-          } catch (_) {}
+          } catch (_) { }
         }
         if (!status) {
           status = { state: 'not_created', display: 'Documents\\DropVault' };
@@ -11905,7 +12452,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         if (!cards && window.__TAURI__?.core?.invoke) {
           try {
             cards = await window.__TAURI__.core.invoke('vault_recent');
-          } catch (_) {}
+          } catch (_) { }
         }
         if (!Array.isArray(cards)) cards = [];
 
@@ -11990,13 +12537,15 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
               cardEl.addEventListener('click', (e) => {
                 e.stopPropagation();
-                handleVaultOpen(card.id);
+                const curId = cardEl.getAttribute('data-id') || card.id;
+                handleVaultOpen(curId);
               });
               cardEl.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
                   e.stopPropagation();
-                  handleVaultOpen(card.id);
+                  const curId = cardEl.getAttribute('data-id') || card.id;
+                  handleVaultOpen(curId);
                 }
               });
 
@@ -12005,19 +12554,41 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
                 cardEl.classList.remove('entering');
               });
             } else {
-              const prevId = cardEl.getAttribute('data-id');
-              if (prevId !== card.id) {
-                cardEl.setAttribute('data-id', card.id);
-                cardEl.className = `dropvault-card dropvault-palette-${card.color_index}`;
-                cardEl.setAttribute('aria-label', `Open ${card.name}`);
-                cardEl.style.left = `${left}px`;
-                cardEl.style.top = `${top}px`;
-                const textEl = cardEl.querySelector('.dropvault-label-text');
-                if (textEl) textEl.textContent = formattedName;
-              }
+              cardEl.setAttribute('data-id', card.id);
+              cardEl.className = `dropvault-card dropvault-palette-${card.color_index}`;
+              cardEl.setAttribute('aria-label', `Open ${card.name}`);
+              cardEl.style.left = `${left}px`;
+              cardEl.style.top = `${top}px`;
+              const textEl = cardEl.querySelector('.dropvault-label-text');
+              if (textEl) textEl.textContent = formattedName;
             }
           });
           currentDropVaultCards = cards;
+
+          if (!gridEl.hasAttribute('data-delegated')) {
+            gridEl.setAttribute('data-delegated', 'true');
+            gridEl.addEventListener('click', (e) => {
+              const card = e.target.closest('.dropvault-card');
+              if (!card) return;
+              e.stopPropagation();
+              const id = card.getAttribute('data-id');
+              if (id) {
+                handleVaultOpen(id);
+              }
+            });
+            gridEl.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter') {
+                const card = e.target.closest('.dropvault-card');
+                if (!card) return;
+                e.preventDefault();
+                e.stopPropagation();
+                const id = card.getAttribute('data-id');
+                if (id) {
+                  handleVaultOpen(id);
+                }
+              }
+            });
+          }
         });
       } catch (err) {
         console.error('Failed to refresh DropVault UI:', err);
@@ -12035,6 +12606,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         }
       } catch (err) {
         console.error('Failed to open vault item:', err);
+        showDropPillMessage('Could not open file: ' + (err?.message || err || 'Unknown error'), true);
       }
     }
 
@@ -12074,7 +12646,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         if (window.__TAURI__?.core?.invoke) {
           await window.__TAURI__.core.invoke('start_vault_watcher');
         }
-      } catch (_) {}
+      } catch (_) { }
     }
 
     async function closeDropVaultTab() {
@@ -12082,7 +12654,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         if (window.__TAURI__?.core?.invoke) {
           await window.__TAURI__.core.invoke('stop_vault_watcher');
         }
-      } catch (_) {}
+      } catch (_) { }
     }
 
     function handleDropVaultKeydown(e) {
@@ -12260,7 +12832,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         // 3. Restoration of pill rect
         const afterPillRect = pill.getBoundingClientRect();
         const rectPass = Math.abs(afterPillRect.width - initialStyles.width) <= 0.5 &&
-                         Math.abs(afterPillRect.height - initialStyles.height) <= 0.5;
+          Math.abs(afterPillRect.height - initialStyles.height) <= 0.5;
         auditResults.push({
           name: 'Exact restoration of pill rect (within 0.5px)',
           pass: rectPass,
@@ -12291,6 +12863,25 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       }
     }
 
+    // Sample diff reproducing Figma mockup exactly (idle/mockup state)
+    const defaultFigmaMockDiff = {
+      fileName: 'settings.html',
+      iconKind: 'file',
+      status: 'working',
+      stats: { add: 1, del: 1 },
+      rows: [
+        { type: 'context', num: 10, marker: '', code: "import { Item } from './types'" },
+        { type: 'context', num: 11, marker: '', code: "" },
+        { type: 'removed', num: 12, marker: '-', code: "const TVA = 0.196" },
+        { type: 'added', num: 12, marker: '+', code: "const TVA " },
+        { type: 'context', num: 13, marker: '', code: "" },
+        { type: 'context', num: 14, marker: '', code: "export function total(items: Item[]) {" },
+        { type: 'context', num: 15, marker: '', code: "  const sum = items.reduce((s, i) => s + i.price, 0)" },
+        { type: 'context', num: 16, marker: '', code: "  return sum * (1 + TVA)" },
+        { type: 'context', num: 17, marker: '', code: "}" }
+      ]
+    };
+
     // Dev-only Key "L" automated audit & mock diff
     if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) {
       let devKeyLStep = 0;
@@ -12305,24 +12896,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             // Press 1: sample diff reproducing Figma mockup exactly
             dismissEmptyState();
             if (typeof switchTab === 'function') switchTab('agents');
-            const mockDiff = {
-              fileName: 'settings.html',
-              iconKind: 'file',
-              status: 'working',
-              stats: { add: 1, del: 1 },
-              rows: [
-                { type: 'context', num: 10, marker: '', code: "import { Item } from './types'" },
-                { type: 'context', num: 11, marker: '', code: "" },
-                { type: 'removed', num: 12, marker: '-', code: "const TVA = 0.196" },
-                { type: 'added',   num: 12, marker: '+', code: "const TVA " },
-                { type: 'context', num: 13, marker: '', code: "" },
-                { type: 'context', num: 14, marker: '', code: "export function total(items: Item[]) {" },
-                { type: 'context', num: 15, marker: '', code: "  const sum = items.reduce((s, i) => s + i.price, 0)" },
-                { type: 'context', num: 16, marker: '', code: "  return sum * (1 + TVA)" },
-                { type: 'context', num: 17, marker: '', code: "}" }
-              ]
-            };
-            window.AgentCodeViewer.render(mockDiff);
+            window.AgentCodeViewer.render(defaultFigmaMockDiff);
             if (typeof showCcToast === 'function') showCcToast('Loaded Figma Mockup Diff');
           } else if (devKeyLStep === 2) {
             // Press 2: 300-row long diff with 300-char lines + automated audit
@@ -12379,10 +12953,10 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         const cbHeight = Math.round(cbRect.height);
         const rightMargin = Math.round(dpRect.right - cbRect.right);
         const insetsPass = Math.abs(leftInset - 109) <= 1 &&
-                           Math.abs(topInset - 29) <= 1 &&
-                           Math.abs(cbWidth - 411) <= 1 &&
-                           Math.abs(cbHeight - 159) <= 1 &&
-                           Math.abs(rightMargin - 10) <= 1;
+          Math.abs(topInset - 29) <= 1 &&
+          Math.abs(cbWidth - 411) <= 1 &&
+          Math.abs(cbHeight - 159) <= 1 &&
+          Math.abs(rightMargin - 10) <= 1;
         results.push({
           name: 'Code box insets (left 109, top 29, w 411, h 159, right 10)',
           pass: insetsPass,
@@ -12464,185 +13038,185 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
     }
 
 
-      let dropVaultDebugStep = 0;
+    let dropVaultDebugStep = 0;
 
-      async function runDropVaultDebugAudit() {
-        // If not in dropvault tab, open it first
-        if (currentTab !== 'dropvault') {
-          await switchTab('dropvault');
-          await new Promise(r => setTimeout(r, 150));
-        }
-
-        const step = dropVaultDebugStep;
-        dropVaultDebugStep = (dropVaultDebugStep + 1) % 6;
-
-        const sampleCards5 = [
-          { id: 'sample-1', name: 'drop-folder-dropped.png', extension: 'png', size: 1024, color_index: 0 },
-          { id: 'sample-2', name: 'drop-file-dropped.png', extension: 'png', size: 2048, color_index: 1 },
-          { id: 'sample-3', name: 'Desktop - 57', extension: '', size: 512, color_index: 2 },
-          { id: 'sample-4', name: 'Lavender AI Sidebar with Mascot', extension: '', size: 4096, color_index: 3 },
-          { id: 'sample-5', name: 'Very Long Project Documentation And Requirements File Name.pdf', extension: 'pdf', size: 8192, color_index: 0 }
-        ];
-
-        const sampleCards6 = [
-          ...sampleCards5,
-          { id: 'sample-6', name: 'Quarterly Report Final Approved Version 2026.docx', extension: 'docx', size: 16384, color_index: 1 }
-        ];
-
-        let stepName = '';
-        if (step === 0) {
-          stepName = '1/6: Not Created';
-          await refreshDropVaultUI(null, { state: 'not_created', display: 'Documents\\DropVault' });
-        } else if (step === 1) {
-          stepName = '2/6: Missing Folder';
-          await refreshDropVaultUI(null, { state: 'missing', display: 'Documents\\DropVault' });
-        } else if (step === 2) {
-          stepName = '3/6: Empty State';
-          await refreshDropVaultUI([], { state: 'ready', display: 'Documents\\DropVault' });
-        } else if (step === 3) {
-          stepName = '4/6: 5 Sample Cards (Figma Image 1)';
-          await refreshDropVaultUI(sampleCards5, { state: 'ready', display: 'Documents\\DropVault' });
-        } else if (step === 4) {
-          stepName = '5/6: 6 Sample Cards (Full Grid)';
-          await refreshDropVaultUI(sampleCards6, { state: 'ready', display: 'Documents\\DropVault' });
-        } else {
-          stepName = '6/6: Live Vault (Reset)';
-          await refreshDropVaultUI();
-        }
-
-        console.group(`=== DROPVAULT AUDIT (KEY V) - ${stepName} ===`);
-        const results = [];
-        const pill = document.querySelector('.widget');
-
-        // 1. Pill size measurement (359 x 317)
-        const pillRect = pill.getBoundingClientRect();
-        const pillPass = Math.abs(pillRect.width - 359) <= 2 && Math.abs(pillRect.height - 317) <= 2;
-        results.push({
-          name: 'Pill size 359 x 317 px within 2px',
-          pass: pillPass,
-          actual: `w=${pillRect.width.toFixed(1)}, h=${pillRect.height.toFixed(1)}`
-        });
-
-        // 2. Vertical rule: 8px gap below top-bar icons (icon bottom ~38.5, header row top 47 -> gap 8.5)
-        const headerRow = document.getElementById('dropvault-header-row');
-        const topBarHamburger = document.getElementById('top-bar-agents-btn');
-        let iconBottom = 38.5;
-        if (topBarHamburger) {
-          const hRect = topBarHamburger.getBoundingClientRect();
-          iconBottom = hRect.bottom - pillRect.top;
-        }
-        let rowTop = 47;
-        if (headerRow) {
-          const rRect = headerRow.getBoundingClientRect();
-          rowTop = rRect.top - pillRect.top;
-        }
-        const gap = rowTop - iconBottom;
-        const gapPass = gap >= 7.5;
-        results.push({
-          name: 'Vertical rule: gap below icons >= 8px',
-          pass: gapPass,
-          actual: `gap=${gap.toFixed(1)}px (iconBottom=${iconBottom.toFixed(1)}, rowTop=${rowTop.toFixed(1)})`
-        });
-
-        // 3. "Recent" chip (66 x 21, radius 11, background #3B9BFF)
-        const chip = document.getElementById('dropvault-recent-chip');
-        if (chip && headerRow && headerRow.style.display !== 'none') {
-          const cRect = chip.getBoundingClientRect();
-          const relLeft = cRect.left - pillRect.left;
-          const chipPass = Math.abs(cRect.width - 66) <= 2 && Math.abs(cRect.height - 21) <= 2 && Math.abs(relLeft - 12) <= 2;
-          results.push({
-            name: 'Recent chip size 66x21 and left 12px within 2px',
-            pass: chipPass,
-            actual: `w=${cRect.width.toFixed(1)}, h=${cRect.height.toFixed(1)}, left=${relLeft.toFixed(1)}`
-          });
-        }
-
-        // 4. Folder button (28 x 28 hit area, left 88px)
-        const folderBtn = document.getElementById('dropvault-folder-btn');
-        if (folderBtn && headerRow && headerRow.style.display !== 'none') {
-          const fRect = folderBtn.getBoundingClientRect();
-          const relLeft = fRect.left - pillRect.left;
-          const folderPass = Math.abs(fRect.width - 28) <= 2 && Math.abs(fRect.height - 28) <= 2 && Math.abs(relLeft - 88) <= 2;
-          results.push({
-            name: 'Folder button hit area 28x28 and left 88px within 2px',
-            pass: folderPass,
-            actual: `w=${fRect.width.toFixed(1)}, h=${fRect.height.toFixed(1)}, left=${relLeft.toFixed(1)}`
-          });
-        }
-
-        // 5. Cards geometry: 78 x 100, radius 9, col pitch 115.5, row pitch 115
-        const cards = Array.from(document.querySelectorAll('#dropvault-grid .dropvault-card'));
-        if (cards.length >= 4) {
-          const c0 = cards[0].getBoundingClientRect();
-          const c1 = cards[1].getBoundingClientRect();
-          const colPitch = (c1.left - c0.left);
-          const c0Left = c0.left - pillRect.left;
-          const c0Top = c0.top - pillRect.top;
-          let rowPitch = 115;
-          if (cards.length >= 4) {
-            const c3 = cards[3].getBoundingClientRect();
-            rowPitch = (c3.top - c0.top);
-          }
-          const sizeOk = Math.abs(c0.width - 78) <= 2 && Math.abs(c0.height - 100) <= 2;
-          const posOk = Math.abs(c0Left - 23) <= 2 && Math.abs(c0Top - 80) <= 2;
-          const pitchOk = Math.abs(colPitch - 115.5) <= 2 && Math.abs(rowPitch - 115) <= 2;
-          results.push({
-            name: 'Cards geometry: 78x100, colPitch=115.5, rowPitch=115 within 2px',
-            pass: sizeOk && posOk && pitchOk,
-            actual: `size=${c0.width.toFixed(1)}x${c0.height.toFixed(1)}, c0=(${c0Left.toFixed(1)}, ${c0Top.toFixed(1)}), colPitch=${colPitch.toFixed(1)}, rowPitch=${rowPitch.toFixed(1)}`
-          });
-        }
-
-        // 6. Hub card 2 geometry check in DOM
-        const hubCard2 = document.getElementById('hub-card-2');
-        const hubDot2 = document.getElementById('hub-dot-2');
-        if (hubCard2 && hubDot2) {
-          const dotAriaOk = hubDot2.getAttribute('aria-label') === 'DropVault';
-          const cardLabel = hubCard2.querySelector('.hub-card-label');
-          const cardLabelOk = cardLabel && cardLabel.textContent.trim() === 'DropVault';
-          results.push({
-            name: 'Hub card and dot 2 configured for DropVault',
-            pass: dotAriaOk && cardLabelOk,
-            actual: `label="${cardLabel ? cardLabel.textContent : ''}", dotAria="${hubDot2.getAttribute('aria-label')}"`
-          });
-        }
-
-        // 7. Horizontal overflow check
-        const noHOverflow = pill.scrollWidth <= pill.clientWidth + 1;
-        results.push({
-          name: 'No horizontal overflow in DropVault panel',
-          pass: noHOverflow,
-          actual: `scrollWidth=${pill.scrollWidth}, clientWidth=${pill.clientWidth}`
-        });
-
-        // 8. Hit-testing at inactive state screens
-        const setupScreen = document.getElementById('dropvault-state-setup');
-        const emptyScreen = document.getElementById('dropvault-state-empty');
-        let hiddenPass = true;
-        if (step >= 2 && setupScreen) {
-          hiddenPass = hiddenPass && (setupScreen.style.display === 'none' || setupScreen.hasAttribute('inert'));
-        }
-        if (step >= 3 && emptyScreen) {
-          hiddenPass = hiddenPass && (emptyScreen.style.display === 'none' || emptyScreen.hasAttribute('inert'));
-        }
-        results.push({
-          name: 'Hit-testing: inactive state screens are hidden/inert',
-          pass: hiddenPass,
-          actual: `setupDisplay=${setupScreen ? setupScreen.style.display : 'none'}, emptyDisplay=${emptyScreen ? emptyScreen.style.display : 'none'}`
-        });
-
-        let allPass = true;
-        for (const r of results) {
-          if (!r.pass) allPass = false;
-          console.log(`[${r.pass ? 'PASS' : 'FAIL'}] ${r.name}: ${r.actual}`);
-        }
-        console.log(`OVERALL: ${allPass ? 'ALL CHECKS PASSED' : 'FAILURES DETECTED'}`);
-        console.groupEnd();
-
-        if (typeof showCcToast === 'function') {
-          showCcToast(`DropVault: ${stepName}`);
-        }
+    async function runDropVaultDebugAudit() {
+      // If not in dropvault tab, open it first
+      if (currentTab !== 'dropvault') {
+        await switchTab('dropvault');
+        await new Promise(r => setTimeout(r, 150));
       }
+
+      const step = dropVaultDebugStep;
+      dropVaultDebugStep = (dropVaultDebugStep + 1) % 6;
+
+      const sampleCards5 = [
+        { id: 'sample-1', name: 'drop-folder-dropped.png', extension: 'png', size: 1024, color_index: 0 },
+        { id: 'sample-2', name: 'drop-file-dropped.png', extension: 'png', size: 2048, color_index: 1 },
+        { id: 'sample-3', name: 'Desktop - 57', extension: '', size: 512, color_index: 2 },
+        { id: 'sample-4', name: 'Lavender AI Sidebar with Mascot', extension: '', size: 4096, color_index: 3 },
+        { id: 'sample-5', name: 'Very Long Project Documentation And Requirements File Name.pdf', extension: 'pdf', size: 8192, color_index: 0 }
+      ];
+
+      const sampleCards6 = [
+        ...sampleCards5,
+        { id: 'sample-6', name: 'Quarterly Report Final Approved Version 2026.docx', extension: 'docx', size: 16384, color_index: 1 }
+      ];
+
+      let stepName = '';
+      if (step === 0) {
+        stepName = '1/6: Not Created';
+        await refreshDropVaultUI(null, { state: 'not_created', display: 'Documents\\DropVault' });
+      } else if (step === 1) {
+        stepName = '2/6: Missing Folder';
+        await refreshDropVaultUI(null, { state: 'missing', display: 'Documents\\DropVault' });
+      } else if (step === 2) {
+        stepName = '3/6: Empty State';
+        await refreshDropVaultUI([], { state: 'ready', display: 'Documents\\DropVault' });
+      } else if (step === 3) {
+        stepName = '4/6: 5 Sample Cards (Figma Image 1)';
+        await refreshDropVaultUI(sampleCards5, { state: 'ready', display: 'Documents\\DropVault' });
+      } else if (step === 4) {
+        stepName = '5/6: 6 Sample Cards (Full Grid)';
+        await refreshDropVaultUI(sampleCards6, { state: 'ready', display: 'Documents\\DropVault' });
+      } else {
+        stepName = '6/6: Live Vault (Reset)';
+        await refreshDropVaultUI();
+      }
+
+      console.group(`=== DROPVAULT AUDIT (KEY V) - ${stepName} ===`);
+      const results = [];
+      const pill = document.querySelector('.widget');
+
+      // 1. Pill size measurement (359 x 317)
+      const pillRect = pill.getBoundingClientRect();
+      const pillPass = Math.abs(pillRect.width - 359) <= 2 && Math.abs(pillRect.height - 317) <= 2;
+      results.push({
+        name: 'Pill size 359 x 317 px within 2px',
+        pass: pillPass,
+        actual: `w=${pillRect.width.toFixed(1)}, h=${pillRect.height.toFixed(1)}`
+      });
+
+      // 2. Vertical rule: 8px gap below top-bar icons (icon bottom ~38.5, header row top 47 -> gap 8.5)
+      const headerRow = document.getElementById('dropvault-header-row');
+      const topBarHamburger = document.getElementById('top-bar-agents-btn');
+      let iconBottom = 38.5;
+      if (topBarHamburger) {
+        const hRect = topBarHamburger.getBoundingClientRect();
+        iconBottom = hRect.bottom - pillRect.top;
+      }
+      let rowTop = 47;
+      if (headerRow) {
+        const rRect = headerRow.getBoundingClientRect();
+        rowTop = rRect.top - pillRect.top;
+      }
+      const gap = rowTop - iconBottom;
+      const gapPass = gap >= 7.5;
+      results.push({
+        name: 'Vertical rule: gap below icons >= 8px',
+        pass: gapPass,
+        actual: `gap=${gap.toFixed(1)}px (iconBottom=${iconBottom.toFixed(1)}, rowTop=${rowTop.toFixed(1)})`
+      });
+
+      // 3. "Recent" chip (66 x 21, radius 11, background #3B9BFF)
+      const chip = document.getElementById('dropvault-recent-chip');
+      if (chip && headerRow && headerRow.style.display !== 'none') {
+        const cRect = chip.getBoundingClientRect();
+        const relLeft = cRect.left - pillRect.left;
+        const chipPass = Math.abs(cRect.width - 66) <= 2 && Math.abs(cRect.height - 21) <= 2 && Math.abs(relLeft - 12) <= 2;
+        results.push({
+          name: 'Recent chip size 66x21 and left 12px within 2px',
+          pass: chipPass,
+          actual: `w=${cRect.width.toFixed(1)}, h=${cRect.height.toFixed(1)}, left=${relLeft.toFixed(1)}`
+        });
+      }
+
+      // 4. Folder button (28 x 28 hit area, left 88px)
+      const folderBtn = document.getElementById('dropvault-folder-btn');
+      if (folderBtn && headerRow && headerRow.style.display !== 'none') {
+        const fRect = folderBtn.getBoundingClientRect();
+        const relLeft = fRect.left - pillRect.left;
+        const folderPass = Math.abs(fRect.width - 28) <= 2 && Math.abs(fRect.height - 28) <= 2 && Math.abs(relLeft - 88) <= 2;
+        results.push({
+          name: 'Folder button hit area 28x28 and left 88px within 2px',
+          pass: folderPass,
+          actual: `w=${fRect.width.toFixed(1)}, h=${fRect.height.toFixed(1)}, left=${relLeft.toFixed(1)}`
+        });
+      }
+
+      // 5. Cards geometry: 78 x 100, radius 9, col pitch 115.5, row pitch 115
+      const cards = Array.from(document.querySelectorAll('#dropvault-grid .dropvault-card'));
+      if (cards.length >= 4) {
+        const c0 = cards[0].getBoundingClientRect();
+        const c1 = cards[1].getBoundingClientRect();
+        const colPitch = (c1.left - c0.left);
+        const c0Left = c0.left - pillRect.left;
+        const c0Top = c0.top - pillRect.top;
+        let rowPitch = 115;
+        if (cards.length >= 4) {
+          const c3 = cards[3].getBoundingClientRect();
+          rowPitch = (c3.top - c0.top);
+        }
+        const sizeOk = Math.abs(c0.width - 78) <= 2 && Math.abs(c0.height - 100) <= 2;
+        const posOk = Math.abs(c0Left - 23) <= 2 && Math.abs(c0Top - 80) <= 2;
+        const pitchOk = Math.abs(colPitch - 115.5) <= 2 && Math.abs(rowPitch - 115) <= 2;
+        results.push({
+          name: 'Cards geometry: 78x100, colPitch=115.5, rowPitch=115 within 2px',
+          pass: sizeOk && posOk && pitchOk,
+          actual: `size=${c0.width.toFixed(1)}x${c0.height.toFixed(1)}, c0=(${c0Left.toFixed(1)}, ${c0Top.toFixed(1)}), colPitch=${colPitch.toFixed(1)}, rowPitch=${rowPitch.toFixed(1)}`
+        });
+      }
+
+      // 6. Hub card 2 geometry check in DOM
+      const hubCard2 = document.getElementById('hub-card-2');
+      const hubDot2 = document.getElementById('hub-dot-2');
+      if (hubCard2 && hubDot2) {
+        const dotAriaOk = hubDot2.getAttribute('aria-label') === 'DropVault';
+        const cardLabel = hubCard2.querySelector('.hub-card-label');
+        const cardLabelOk = cardLabel && cardLabel.textContent.trim() === 'DropVault';
+        results.push({
+          name: 'Hub card and dot 2 configured for DropVault',
+          pass: dotAriaOk && cardLabelOk,
+          actual: `label="${cardLabel ? cardLabel.textContent : ''}", dotAria="${hubDot2.getAttribute('aria-label')}"`
+        });
+      }
+
+      // 7. Horizontal overflow check
+      const noHOverflow = pill.scrollWidth <= pill.clientWidth + 1;
+      results.push({
+        name: 'No horizontal overflow in DropVault panel',
+        pass: noHOverflow,
+        actual: `scrollWidth=${pill.scrollWidth}, clientWidth=${pill.clientWidth}`
+      });
+
+      // 8. Hit-testing at inactive state screens
+      const setupScreen = document.getElementById('dropvault-state-setup');
+      const emptyScreen = document.getElementById('dropvault-state-empty');
+      let hiddenPass = true;
+      if (step >= 2 && setupScreen) {
+        hiddenPass = hiddenPass && (setupScreen.style.display === 'none' || setupScreen.hasAttribute('inert'));
+      }
+      if (step >= 3 && emptyScreen) {
+        hiddenPass = hiddenPass && (emptyScreen.style.display === 'none' || emptyScreen.hasAttribute('inert'));
+      }
+      results.push({
+        name: 'Hit-testing: inactive state screens are hidden/inert',
+        pass: hiddenPass,
+        actual: `setupDisplay=${setupScreen ? setupScreen.style.display : 'none'}, emptyDisplay=${emptyScreen ? emptyScreen.style.display : 'none'}`
+      });
+
+      let allPass = true;
+      for (const r of results) {
+        if (!r.pass) allPass = false;
+        console.log(`[${r.pass ? 'PASS' : 'FAIL'}] ${r.name}: ${r.actual}`);
+      }
+      console.log(`OVERALL: ${allPass ? 'ALL CHECKS PASSED' : 'FAILURES DETECTED'}`);
+      console.groupEnd();
+
+      if (typeof showCcToast === 'function') {
+        showCcToast(`DropVault: ${stepName}`);
+      }
+    }
 
     function renderActiveConversationUI() {
       if (!activeAgentConversationId) return;
@@ -12817,9 +13391,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           window.__TAURI__.core.invoke('log_agent_debug', {
             eventName: String(eventName || ''),
             transition: String(transition || '')
-          }).catch(() => {});
+          }).catch(() => { });
         }
-      } catch {}
+      } catch { }
     }
 
     async function handleAgentEventPayload(payload) {
@@ -13028,9 +13602,13 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         return;
       }
 
-      // 2. Installed & enabled, but no event arrived yet in this session
+      // 2. Installed & enabled, but no event arrived yet in this session -> render default Figma mockup diff
       if (!hasReceivedAgentEvent) {
-        showEmptyState('waiting');
+        dismissEmptyState();
+        if (window.AgentCodeViewer?.render) {
+          window.AgentCodeViewer.render(defaultFigmaMockDiff);
+        }
+        setAgentStepStates({ read: 'running', edit: 'pending', bash: 'pending', done: 'pending' });
         return;
       }
 
@@ -13257,7 +13835,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             persistentAllowedCommands = allowedVal;
           }
           if (window.__TAURI__?.core?.invoke) {
-            window.__TAURI__.core.invoke('set_approvals_failsafe', { enabled: approveCommandsSetting }).catch(() => {});
+            window.__TAURI__.core.invoke('set_approvals_failsafe', { enabled: approveCommandsSetting }).catch(() => { });
           }
         }
       } catch (e) {
@@ -13281,12 +13859,12 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents', value: current });
           await window.__TAURI__.core.invoke('plugin:store|set', { rid, key: 'agents.allowedCommands', value: persistentAllowedCommands });
           await window.__TAURI__.core.invoke('plugin:store|save', { rid });
-          window.__TAURI__.core.invoke('set_approvals_failsafe', { enabled: approveCommandsSetting }).catch(() => {});
+          window.__TAURI__.core.invoke('set_approvals_failsafe', { enabled: approveCommandsSetting }).catch(() => { });
           if (window.__TAURI__?.event?.emit) {
             window.__TAURI__.event.emit('agents-settings-changed', {
               approveCommands: approveCommandsSetting,
               allowedCommands: persistentAllowedCommands
-            }).catch(() => {});
+            }).catch(() => { });
           }
         }
       } catch (e) {
@@ -13322,38 +13900,38 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
     const recentHandledApprovalIds = new Set();
 
     async function handleApprovalRequest(req) {
-        if (!req || !req.id) return;
+      if (!req || !req.id) return;
 
-        // Deduplication: prevent duplicate approval requests from showing twice on mascot
-        if (recentHandledApprovalIds.has(req.id)) {
-          return;
-        }
-        recentHandledApprovalIds.add(req.id);
-        setTimeout(() => {
-          recentHandledApprovalIds.delete(req.id);
-        }, 15000);
+      // Deduplication: prevent duplicate approval requests from showing twice on mascot
+      if (recentHandledApprovalIds.has(req.id)) {
+        return;
+      }
+      recentHandledApprovalIds.add(req.id);
+      setTimeout(() => {
+        recentHandledApprovalIds.delete(req.id);
+      }, 15000);
 
-        if (!lastKnownAgentsStatus) {
-          try {
-            if (window.__TAURI__?.core?.invoke) {
-              lastKnownAgentsStatus = await window.__TAURI__.core.invoke('agents_status');
-            }
-          } catch (_) {}
-        }
-
-        const hooksNeedRepair = !lastKnownAgentsStatus?.installed ||
-                                lastKnownAgentsStatus?.status === 'needs repair' ||
-                                lastKnownAgentsStatus?.status?.includes('needs repair') ||
-                                lastKnownAgentsStatus?.error === 'approval timeout' ||
-                                lastKnownAgentsStatus?.error === 'hook outdated';
-
-        // Rule 4: When explicitly turned OFF, Dude replies "allow" immediately.
-        if (approveCommandsSetting === false) {
+      if (!lastKnownAgentsStatus) {
+        try {
           if (window.__TAURI__?.core?.invoke) {
-            window.__TAURI__.core.invoke('resolve_agent_approval', { id: req.id, choice: 'allow' }).catch(() => {});
+            lastKnownAgentsStatus = await window.__TAURI__.core.invoke('agents_status');
           }
-          return;
+        } catch (_) { }
+      }
+
+      const hooksNeedRepair = !lastKnownAgentsStatus?.installed ||
+        lastKnownAgentsStatus?.status === 'needs repair' ||
+        lastKnownAgentsStatus?.status?.includes('needs repair') ||
+        lastKnownAgentsStatus?.error === 'approval timeout' ||
+        lastKnownAgentsStatus?.error === 'hook outdated';
+
+      // Rule 4: When explicitly turned OFF, Dude replies "allow" immediately.
+      if (approveCommandsSetting === false) {
+        if (window.__TAURI__?.core?.invoke) {
+          window.__TAURI__.core.invoke('resolve_agent_approval', { id: req.id, choice: 'allow' }).catch(() => { });
         }
+        return;
+      }
 
       const rawCmd = String(req.command || '');
       const normCmd = normalizeCommand(rawCmd);
@@ -13366,7 +13944,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       if (!dangerous && (inConv || inPersist)) {
         flashBashRowGreen();
         if (window.__TAURI__?.core?.invoke) {
-          window.__TAURI__.core.invoke('resolve_agent_approval', { id: req.id, choice: 'once' }).catch(() => {});
+          window.__TAURI__.core.invoke('resolve_agent_approval', { id: req.id, choice: 'once' }).catch(() => { });
         }
         return;
       }
@@ -13407,7 +13985,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       // Map reply: once, conversation, always, deny, dismiss -> deny (Option 2: stay inside Dude)
       const replyChoice = (choice === 'dismiss') ? 'deny' : choice;
       if (window.__TAURI__?.core?.invoke) {
-        window.__TAURI__.core.invoke('resolve_agent_approval', { id: req.id, choice: replyChoice }).catch(() => {});
+        window.__TAURI__.core.invoke('resolve_agent_approval', { id: req.id, choice: replyChoice }).catch(() => { });
       }
     }
     window.handleApprovalRequest = handleApprovalRequest;
@@ -13509,16 +14087,16 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
     function isPillCollapsed() {
       return !widget.classList.contains('expanded') &&
-             !isPanelOpen() &&
-             !widget.classList.contains('tab-agents') &&
-             !widget.classList.contains('tab-chat') &&
-             !widget.classList.contains('tab-controls') &&
-             !widget.classList.contains('tab-hub') &&
-             !widget.classList.contains('tab-clipboard') &&
-             !widget.classList.contains('chat-open') &&
-             !widget.classList.contains('control-center-open') &&
-             !widget.classList.contains('approval-state') &&
-             !widget.classList.contains('approval-compact');
+        !isPanelOpen() &&
+        !widget.classList.contains('tab-agents') &&
+        !widget.classList.contains('tab-chat') &&
+        !widget.classList.contains('tab-controls') &&
+        !widget.classList.contains('tab-hub') &&
+        !widget.classList.contains('tab-clipboard') &&
+        !widget.classList.contains('chat-open') &&
+        !widget.classList.contains('control-center-open') &&
+        !widget.classList.contains('approval-state') &&
+        !widget.classList.contains('approval-compact');
     }
 
     function restorePillStateAfterApprovals() {
@@ -13807,7 +14385,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       // If anything else (expanded or any tab), use existing approval state of Agents tab.
       // Choice is made when the request is shown and does not change if the user collapses the pill later.
       const useCompact = (typeof __FEATURE_APPROVALS__ !== 'undefined' ? __FEATURE_APPROVALS__ : true) &&
-                         (activeApproval.forceCompact || isPillCollapsed());
+        (activeApproval.forceCompact || isPillCollapsed());
 
       if (useCompact) {
         activeApprovalMode = 'compact';
@@ -14016,7 +14594,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         }
       });
 
-      window.__diagnoseMascotBadges = function() {
+      window.__diagnoseMascotBadges = function () {
         const mascotWrapper = document.getElementById('mascot-wrapper');
         const badgeEl = document.getElementById('mascot-agent-badge');
         if (!mascotWrapper || !badgeEl) return [];
@@ -14094,258 +14672,258 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
     let switchCompactApprovalToAgentsTab = () => false;
 
     function renderCompactApproval(req) {
-        // Rule 1: New state "approval-compact", entered only from the collapsed state.
-        // Morph pill from collapsed size to 393k x 129k with existing spring.
-        if (typeof exitNowPlayingState === 'function') {
-          exitNowPlayingState(true);
-        }
-        widget.classList.add('approval-compact');
-        widget.classList.remove('expanded', 'panel-open', 'tab-agents', 'tab-chat', 'tab-controls', 'tab-hub', 'tab-clipboard', 'chat-open', 'control-center-open', 'chat-closing', 'approval-state');
+      // Rule 1: New state "approval-compact", entered only from the collapsed state.
+      // Morph pill from collapsed size to 393k x 129k with existing spring.
+      if (typeof exitNowPlayingState === 'function') {
+        exitNowPlayingState(true);
+      }
+      widget.classList.add('approval-compact');
+      widget.classList.remove('expanded', 'panel-open', 'tab-agents', 'tab-chat', 'tab-controls', 'tab-hub', 'tab-clipboard', 'chat-open', 'control-center-open', 'chat-closing', 'approval-state');
 
-        // Strict content isolation
-        if (tabContentAgents) {
-          tabContentAgents.classList.remove('active');
-          tabContentAgents.style.display = 'none';
-          tabContentAgents.style.pointerEvents = 'none';
-        }
-        if (tabContentChat) {
-          tabContentChat.classList.remove('active');
-          tabContentChat.style.display = 'none';
-          tabContentChat.style.pointerEvents = 'none';
-        }
-        if (tabContentControls) {
-          tabContentControls.classList.remove('active');
-          tabContentControls.style.display = 'none';
-          tabContentControls.style.pointerEvents = 'none';
-        }
-        if (tabContentHub) {
-          tabContentHub.classList.remove('active');
-          tabContentHub.style.display = 'none';
-          tabContentHub.style.pointerEvents = 'none';
-          tabContentHub.setAttribute('inert', '');
-          tabContentHub.setAttribute('aria-hidden', 'true');
-        }
-        if (tabContentClipboard) {
-          tabContentClipboard.classList.remove('active');
-          tabContentClipboard.style.display = 'none';
-          tabContentClipboard.style.pointerEvents = 'none';
-          tabContentClipboard.setAttribute('inert', '');
-          tabContentClipboard.setAttribute('aria-hidden', 'true');
-        }
-        if (topBarClipboardTitle) topBarClipboardTitle.style.display = 'none';
-        closeClipboardTab();
+      // Strict content isolation
+      if (tabContentAgents) {
+        tabContentAgents.classList.remove('active');
+        tabContentAgents.style.display = 'none';
+        tabContentAgents.style.pointerEvents = 'none';
+      }
+      if (tabContentChat) {
+        tabContentChat.classList.remove('active');
+        tabContentChat.style.display = 'none';
+        tabContentChat.style.pointerEvents = 'none';
+      }
+      if (tabContentControls) {
+        tabContentControls.classList.remove('active');
+        tabContentControls.style.display = 'none';
+        tabContentControls.style.pointerEvents = 'none';
+      }
+      if (tabContentHub) {
+        tabContentHub.classList.remove('active');
+        tabContentHub.style.display = 'none';
+        tabContentHub.style.pointerEvents = 'none';
+        tabContentHub.setAttribute('inert', '');
+        tabContentHub.setAttribute('aria-hidden', 'true');
+      }
+      if (tabContentClipboard) {
+        tabContentClipboard.classList.remove('active');
+        tabContentClipboard.style.display = 'none';
+        tabContentClipboard.style.pointerEvents = 'none';
+        tabContentClipboard.setAttribute('inert', '');
+        tabContentClipboard.setAttribute('aria-hidden', 'true');
+      }
+      if (topBarClipboardTitle) topBarClipboardTitle.style.display = 'none';
+      closeClipboardTab();
 
-        // Keep icons fully inside pill: top edge must stay at least 6px below pill top edge; reduce shift automatically if needed
-        try {
-          const shiftVal = parseFloat(getComputedStyle(widget).getPropertyValue('--compact-topbar-shift'));
-          // Highest icon top edge in top-bar space is Sliders icon at 15.5px (center 27px, height 23px: 27 - 11.5 = 15.5px).
-          // Distance from pill top (0px) is 15.5px + shift.
-          // To ensure top edge >= 6px below pill top: 15.5 + shift >= 6 => shift >= -9.5px.
-          if (!isNaN(shiftVal) && shiftVal < -9.5) {
-            widget.style.setProperty('--compact-topbar-shift', '-9.5px');
-          }
-        } catch (_) {}
-
-        // Update mascot badge to needs_you (orange with '!')
-        setMascotBadgeState('needs_you');
-
-        // Mascot hop
-        triggerMascotHopReaction();
-
-        // Populate header row
-        const riskyTag = document.getElementById('compact-card-risky');
-        if (riskyTag) {
-          riskyTag.style.display = req.dangerous ? 'inline-block' : 'none';
+      // Keep icons fully inside pill: top edge must stay at least 6px below pill top edge; reduce shift automatically if needed
+      try {
+        const shiftVal = parseFloat(getComputedStyle(widget).getPropertyValue('--compact-topbar-shift'));
+        // Highest icon top edge in top-bar space is Sliders icon at 15.5px (center 27px, height 23px: 27 - 11.5 = 15.5px).
+        // Distance from pill top (0px) is 15.5px + shift.
+        // To ensure top edge >= 6px below pill top: 15.5 + shift >= 6 => shift >= -9.5px.
+        if (!isNaN(shiftVal) && shiftVal < -9.5) {
+          widget.style.setProperty('--compact-topbar-shift', '-9.5px');
         }
+      } catch (_) { }
 
-        // Populate command box: format "<shell> - <command>" if shell is present, else just command
-        const cmdTextEl = document.getElementById('compact-cmd-text');
-        const cmdBoxEl = document.getElementById('compact-cmd-box');
-        const rawCmd = req.command || '';
-        const shell = req.shell ? String(req.shell).trim() : '';
-        const cleanCmd = redactSecrets(rawCmd);
-        const displayText = shell ? `${shell} - ${cleanCmd}` : cleanCmd;
-        if (cmdTextEl) {
-          cmdTextEl.textContent = displayText;
-        }
-        if (cmdBoxEl) {
-          cmdBoxEl.removeAttribute('title');
-          cmdBoxEl.dataset.tooltip = cleanCmd.slice(0, 300);
-        }
+      // Update mascot badge to needs_you (orange with '!')
+      setMascotBadgeState('needs_you');
 
-        // Allow button handling: if dangerous, disabled (60% opacity) for first 1000ms
-        const allowBtn = document.getElementById('compact-btn-allow');
-        if (allowBtn) {
-          if (req.dangerous) {
-            allowBtn.disabled = true;
-            allowBtn.style.opacity = '0.6';
-            allowBtn.style.pointerEvents = 'none';
-            if (compactApprovalAllowTimer) clearTimeout(compactApprovalAllowTimer);
-            compactApprovalAllowTimer = setTimeout(() => {
-              if (activeApproval && activeApprovalMode === 'compact' && activeApproval.dangerous) {
-                allowBtn.disabled = false;
-                allowBtn.style.opacity = '1';
-                allowBtn.style.pointerEvents = 'auto';
-              }
-              compactApprovalAllowTimer = null;
-            }, 1000);
-          } else {
-            allowBtn.disabled = false;
-            allowBtn.style.opacity = '1';
-            allowBtn.style.pointerEvents = 'auto';
-          }
-        }
+      // Mascot hop
+      triggerMascotHopReaction();
 
-        // Anti-misclick timestamp: ignore Allow, Deny, Y, N for first 400ms
-        compactApprovalShownAt = Date.now();
-
-        // Timeout handling (40 seconds default, resolves "dismiss" -> "ask")
-        if (compactApprovalTimeout) {
-          clearTimeout(compactApprovalTimeout);
-          compactApprovalTimeout = null;
-        }
-        const timeoutMs = (typeof req.timeoutMs === 'number' && req.timeoutMs > 0)
-          ? req.timeoutMs
-          : 40000;
-        compactApprovalTimeout = setTimeout(() => {
-          finishActiveApproval('dismiss');
-        }, timeoutMs);
-
-        recordActivity();
-        updateEyeTracking();
-        monitorTransitionClickThrough();
+      // Populate header row
+      const riskyTag = document.getElementById('compact-card-risky');
+      if (riskyTag) {
+        riskyTag.style.display = req.dangerous ? 'inline-block' : 'none';
       }
 
-      switchCompactApprovalToAgentsTab = function() {
-        if (!activeApproval || activeApprovalMode !== 'compact') return false;
+      // Populate command box: format "<shell> - <command>" if shell is present, else just command
+      const cmdTextEl = document.getElementById('compact-cmd-text');
+      const cmdBoxEl = document.getElementById('compact-cmd-box');
+      const rawCmd = req.command || '';
+      const shell = req.shell ? String(req.shell).trim() : '';
+      const cleanCmd = redactSecrets(rawCmd);
+      const displayText = shell ? `${shell} - ${cleanCmd}` : cleanCmd;
+      if (cmdTextEl) {
+        cmdTextEl.textContent = displayText;
+      }
+      if (cmdBoxEl) {
+        cmdBoxEl.removeAttribute('title');
+        cmdBoxEl.dataset.tooltip = cleanCmd.slice(0, 300);
+      }
 
-        if (compactApprovalTimeout) {
-          clearTimeout(compactApprovalTimeout);
-          compactApprovalTimeout = null;
+      // Allow button handling: if dangerous, disabled (60% opacity) for first 1000ms
+      const allowBtn = document.getElementById('compact-btn-allow');
+      if (allowBtn) {
+        if (req.dangerous) {
+          allowBtn.disabled = true;
+          allowBtn.style.opacity = '0.6';
+          allowBtn.style.pointerEvents = 'none';
+          if (compactApprovalAllowTimer) clearTimeout(compactApprovalAllowTimer);
+          compactApprovalAllowTimer = setTimeout(() => {
+            if (activeApproval && activeApprovalMode === 'compact' && activeApproval.dangerous) {
+              allowBtn.disabled = false;
+              allowBtn.style.opacity = '1';
+              allowBtn.style.pointerEvents = 'auto';
+            }
+            compactApprovalAllowTimer = null;
+          }, 1000);
+        } else {
+          allowBtn.disabled = false;
+          allowBtn.style.opacity = '1';
+          allowBtn.style.pointerEvents = 'auto';
         }
-        if (compactApprovalAllowTimer) {
-          clearTimeout(compactApprovalAllowTimer);
-          compactApprovalAllowTimer = null;
-        }
-
-        widget.classList.remove('approval-compact');
-        widget.style.removeProperty('--compact-topbar-shift');
-        activeApprovalMode = 'agents';
-        renderAgentsApproval(activeApproval);
-        return true;
-      };
-
-      function showCompactApproval({ id, conversationId, command, shell, dangerous, timeoutMs }) {
-        return showApproval({
-          id,
-          conversationId,
-          command,
-          shell,
-          dangerous,
-          timeoutMs,
-          forceCompact: true
-        });
       }
 
-      window.showCompactApproval = showCompactApproval;
+      // Anti-misclick timestamp: ignore Allow, Deny, Y, N for first 400ms
+      compactApprovalShownAt = Date.now();
 
-      // Compact Approval Button Listeners
-      const compactBtnAllow = document.getElementById('compact-btn-allow');
-      if (compactBtnAllow) {
-        compactBtnAllow.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (!activeApproval || activeApprovalMode !== 'compact') return;
-          if (Date.now() - compactApprovalShownAt < 400) return;
-          if (compactBtnAllow.disabled) return;
-          finishActiveApproval('once');
-        });
-        compactBtnAllow.addEventListener('mousedown', (e) => e.stopPropagation());
+      // Timeout handling (40 seconds default, resolves "dismiss" -> "ask")
+      if (compactApprovalTimeout) {
+        clearTimeout(compactApprovalTimeout);
+        compactApprovalTimeout = null;
+      }
+      const timeoutMs = (typeof req.timeoutMs === 'number' && req.timeoutMs > 0)
+        ? req.timeoutMs
+        : 40000;
+      compactApprovalTimeout = setTimeout(() => {
+        finishActiveApproval('dismiss');
+      }, timeoutMs);
+
+      recordActivity();
+      updateEyeTracking();
+      monitorTransitionClickThrough();
+    }
+
+    switchCompactApprovalToAgentsTab = function () {
+      if (!activeApproval || activeApprovalMode !== 'compact') return false;
+
+      if (compactApprovalTimeout) {
+        clearTimeout(compactApprovalTimeout);
+        compactApprovalTimeout = null;
+      }
+      if (compactApprovalAllowTimer) {
+        clearTimeout(compactApprovalAllowTimer);
+        compactApprovalAllowTimer = null;
       }
 
-      const compactBtnDeny = document.getElementById('compact-btn-deny');
-      if (compactBtnDeny) {
-        compactBtnDeny.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (!activeApproval || activeApprovalMode !== 'compact') return;
-          if (Date.now() - compactApprovalShownAt < 400) return;
-          finishActiveApproval('deny');
-        });
-        compactBtnDeny.addEventListener('mousedown', (e) => e.stopPropagation());
-      }
+      widget.classList.remove('approval-compact');
+      widget.style.removeProperty('--compact-topbar-shift');
+      activeApprovalMode = 'agents';
+      renderAgentsApproval(activeApproval);
+      return true;
+    };
 
-      const compactApprovalCardEl = document.getElementById('compact-approval-card');
-      if (compactApprovalCardEl) {
-        compactApprovalCardEl.addEventListener('click', (e) => e.stopPropagation());
-        compactApprovalCardEl.addEventListener('mousedown', (e) => e.stopPropagation());
-      }
+    function showCompactApproval({ id, conversationId, command, shell, dangerous, timeoutMs }) {
+      return showApproval({
+        id,
+        conversationId,
+        command,
+        shell,
+        dangerous,
+        timeoutMs,
+        forceCompact: true
+      });
+    }
 
-      // Compact Approval Keyboard Interaction
-      // Rule 4: No auto-focus; Y and N only work if the pill already has focus.
-      window.addEventListener('keydown', (e) => {
+    window.showCompactApproval = showCompactApproval;
+
+    // Compact Approval Button Listeners
+    const compactBtnAllow = document.getElementById('compact-btn-allow');
+    if (compactBtnAllow) {
+      compactBtnAllow.addEventListener('click', (e) => {
+        e.stopPropagation();
         if (!activeApproval || activeApprovalMode !== 'compact') return;
-        if (e.isComposing || e.keyCode === 229) return;
-        if (!document.hasFocus()) return;
+        if (Date.now() - compactApprovalShownAt < 400) return;
+        if (compactBtnAllow.disabled) return;
+        finishActiveApproval('once');
+      });
+      compactBtnAllow.addEventListener('mousedown', (e) => e.stopPropagation());
+    }
 
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          finishActiveApproval('dismiss');
-          return;
-        }
+    const compactBtnDeny = document.getElementById('compact-btn-deny');
+    if (compactBtnDeny) {
+      compactBtnDeny.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!activeApproval || activeApprovalMode !== 'compact') return;
+        if (Date.now() - compactApprovalShownAt < 400) return;
+        finishActiveApproval('deny');
+      });
+      compactBtnDeny.addEventListener('mousedown', (e) => e.stopPropagation());
+    }
 
-        if (e.key === 'y' || e.key === 'Y') {
-          e.preventDefault();
-          if (Date.now() - compactApprovalShownAt < 400) return;
-          if (activeApproval.dangerous && Date.now() - compactApprovalShownAt < 1000) return;
-          finishActiveApproval('once');
-          return;
-        }
+    const compactApprovalCardEl = document.getElementById('compact-approval-card');
+    if (compactApprovalCardEl) {
+      compactApprovalCardEl.addEventListener('click', (e) => e.stopPropagation());
+      compactApprovalCardEl.addEventListener('mousedown', (e) => e.stopPropagation());
+    }
 
-        if (e.key === 'n' || e.key === 'N') {
+    // Compact Approval Keyboard Interaction
+    // Rule 4: No auto-focus; Y and N only work if the pill already has focus.
+    window.addEventListener('keydown', (e) => {
+      if (!activeApproval || activeApprovalMode !== 'compact') return;
+      if (e.isComposing || e.keyCode === 229) return;
+      if (!document.hasFocus()) return;
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        finishActiveApproval('dismiss');
+        return;
+      }
+
+      if (e.key === 'y' || e.key === 'Y') {
+        e.preventDefault();
+        if (Date.now() - compactApprovalShownAt < 400) return;
+        if (activeApproval.dangerous && Date.now() - compactApprovalShownAt < 1000) return;
+        finishActiveApproval('once');
+        return;
+      }
+
+      if (e.key === 'n' || e.key === 'N') {
+        e.preventDefault();
+        if (Date.now() - compactApprovalShownAt < 400) return;
+        finishActiveApproval('deny');
+        return;
+      }
+    });
+
+    // Rule 12: DEBUG keyboard triggers (C, X while collapsed)
+    if (import.meta.env.DEV) {
+      window.addEventListener('keydown', (e) => {
+        if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+
+        // while the pill is collapsed:
+        if (!isPillCollapsed()) return;
+
+        if (e.key === 'c' || e.key === 'C') {
           e.preventDefault();
-          if (Date.now() - compactApprovalShownAt < 400) return;
-          finishActiveApproval('deny');
-          return;
+          showCompactApproval({
+            id: 'sample-' + Date.now(),
+            conversationId: 'sample-conv',
+            shell: 'PowerShell',
+            command: 'node app.js',
+            dangerous: false,
+            timeoutMs: 40000
+          }).then((res) => {
+            console.log('[DEBUG Compact Approval Result]:', res);
+          });
+        } else if (e.key === 'x' || e.key === 'X') {
+          e.preventDefault();
+          showCompactApproval({
+            id: 'sample-risky-' + Date.now(),
+            conversationId: 'sample-conv',
+            shell: 'PowerShell',
+            command: 'Remove-Item -Recurse -Force .\\build',
+            dangerous: true,
+            timeoutMs: 40000
+          }).then((res) => {
+            console.log('[DEBUG Compact Risky Approval Result]:', res);
+          });
         }
       });
+    }
 
-      // Rule 12: DEBUG keyboard triggers (C, X while collapsed)
-      if (import.meta.env.DEV) {
-        window.addEventListener('keydown', (e) => {
-          if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
-          if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
-
-          // while the pill is collapsed:
-          if (!isPillCollapsed()) return;
-
-          if (e.key === 'c' || e.key === 'C') {
-            e.preventDefault();
-            showCompactApproval({
-              id: 'sample-' + Date.now(),
-              conversationId: 'sample-conv',
-              shell: 'PowerShell',
-              command: 'node app.js',
-              dangerous: false,
-              timeoutMs: 40000
-            }).then((res) => {
-              console.log('[DEBUG Compact Approval Result]:', res);
-            });
-          } else if (e.key === 'x' || e.key === 'X') {
-            e.preventDefault();
-            showCompactApproval({
-              id: 'sample-risky-' + Date.now(),
-              conversationId: 'sample-conv',
-              shell: 'PowerShell',
-              command: 'Remove-Item -Recurse -Force .\\build',
-              dangerous: true,
-              timeoutMs: 40000
-            }).then((res) => {
-              console.log('[DEBUG Compact Risky Approval Result]:', res);
-            });
-          }
-        });
-      }
-
-      window.handleApprovalRequest = handleApprovalRequest;
+    window.handleApprovalRequest = handleApprovalRequest;
 
     // --- Control Center Real Windows Integration ---
     let controlCenterInterval = null;
@@ -14764,7 +15342,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         if (media) {
           updateMusicCardUI(media);
         }
-      } catch (_) {}
+      } catch (_) { }
     }
 
     function startControlCenterPolling() {
@@ -14793,7 +15371,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           const b = await invokeTauri('get_brightness_status');
           if (currentTab !== 'controls') return;
           if (b) updateBrightnessUI(b, false);
-        } catch (_) {}
+        } catch (_) { }
       }, 3000);
 
       volumePollingInterval = setInterval(async () => {
@@ -14805,7 +15383,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           ]);
           if (currentTab !== 'controls') return;
           updateVolumeUI(vol, muted, false);
-        } catch (_) {}
+        } catch (_) { }
       }, 1000);
 
       startMusicProgressLoop();
@@ -14918,8 +15496,8 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       sendValue,
       isEnabled = () => true,
       ignorePointerDown = () => false,
-      onDragStart = () => {},
-      onDragEnd = () => {}
+      onDragStart = () => { },
+      onDragEnd = () => { }
     }) {
       if (!capsuleEl || !fillEl) return null;
 
@@ -15028,7 +15606,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
         isDragging = true;
         capsuleEl.classList.add('dragging');
-        try { capsuleEl.setPointerCapture(e.pointerId); } catch (_) {}
+        try { capsuleEl.setPointerCapture(e.pointerId); } catch (_) { }
 
         fillEl.style.transition = 'none';
         const val = computeValue(e);
@@ -15051,7 +15629,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         e.stopPropagation();
         isDragging = false;
         capsuleEl.classList.remove('dragging');
-        try { capsuleEl.releasePointerCapture(e.pointerId); } catch (_) {}
+        try { capsuleEl.releasePointerCapture(e.pointerId); } catch (_) { }
 
         lastInteractionTime = performance.now();
         queueValue(currentValue, true);
@@ -15223,7 +15801,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         if (ccProgressFill) ccProgressFill.style.transition = 'none';
         try {
           ccProgressContainer.setPointerCapture(e.pointerId);
-        } catch (_) {}
+        } catch (_) { }
 
         const fraction = getSeekFraction(e);
         const target = fraction * musicProgressState.durationMs;
@@ -15246,7 +15824,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
         try {
           ccProgressContainer.releasePointerCapture(e.pointerId);
-        } catch (_) {}
+        } catch (_) { }
 
         musicProgressState.dragging = false;
         ccProgressContainer.classList.remove('scrubbing');
@@ -15350,19 +15928,20 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
       // Clicks inside interactive components across tabs and top bar must not toggle widget
       if ((isTopBarVisible() && e.target.closest('#shared-top-bar')) ||
-          e.target.closest('#tab-content-hub') ||
-          e.target.closest('#compact-approval-card') ||
-          e.target.closest('.agents-dark-panel') ||
-          e.target.closest('#chat-tab-panel') ||
-          e.target.closest('.chat-top-controls') ||
-          e.target.closest('.chat-action-btn') ||
-          e.target.closest('#chat-input-bar') ||
-          e.target.closest('#chat-answer-box') ||
-          e.target.closest('.cc-music-card') ||
-          e.target.closest('.cc-tile') ||
-          e.target.closest('.cc-slider-capsule') ||
-          e.target.closest('.cc-theme-bar') ||
-          e.target.closest('.cc-battery-track')) {
+        e.target.closest('#tab-content-hub') ||
+        e.target.closest('#tab-content-dropvault') ||
+        e.target.closest('#compact-approval-card') ||
+        e.target.closest('.agents-dark-panel') ||
+        e.target.closest('#chat-tab-panel') ||
+        e.target.closest('.chat-top-controls') ||
+        e.target.closest('.chat-action-btn') ||
+        e.target.closest('#chat-input-bar') ||
+        e.target.closest('#chat-answer-box') ||
+        e.target.closest('.cc-music-card') ||
+        e.target.closest('.cc-tile') ||
+        e.target.closest('.cc-slider-capsule') ||
+        e.target.closest('.cc-theme-bar') ||
+        e.target.closest('.cc-battery-track')) {
         return;
       }
 
@@ -15501,7 +16080,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               monH = monitor.size.height;
             }
           }
-        } catch (_) {}
+        } catch (_) { }
 
         // Screen cursor position in physical pixels
         let physCursorX = null;
@@ -15520,7 +16099,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               physCursorX = pos.x;
               physCursorY = pos.y;
             }
-          } catch (_) {}
+          } catch (_) { }
         }
 
         if (physCursorX === null) {
@@ -15686,7 +16265,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               await menu.hide();
             }
           }
-        } catch (_) {}
+        } catch (_) { }
       }
     });
 
@@ -15708,7 +16287,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             leftPupil.classList.remove('blinking');
             rightPupil.classList.remove('blinking');
             if (typeof onComplete === 'function') onComplete();
-          } catch (_) {}
+          } catch (_) { }
         }, 160);
       } catch (err) {
         console.warn('triggerBlink error:', err);
@@ -15748,7 +16327,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
                     triggerBlink(() => {
                       scheduleNextBlink();
                     });
-                  } catch (_) {}
+                  } catch (_) { }
                 }, 80);
               });
             } else {
@@ -15769,10 +16348,10 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
     scheduleNextBlink(1000);
 
     // --- 2. Smile Morph Animation ---
-    const SMILE_NORMAL  = [5, 9, 76, 62, 147, 9, 76, 62, 5, 9];
-    const SMILE_WIDE    = [-2, 7, 76, 64, 154, 7, 76, 64, -2, 7];
+    const SMILE_NORMAL = [5, 9, 76, 62, 147, 9, 76, 62, 5, 9];
+    const SMILE_WIDE = [-2, 7, 76, 64, 154, 7, 76, 64, -2, 7];
     const SMILE_RELAXED = [12, 14, 76, 48, 140, 14, 76, 48, 12, 14];
-    const MOUTH_O       = [62, 24, 76, 42, 90, 24, 76, 6, 62, 24];
+    const MOUTH_O = [62, 24, 76, 42, 90, 24, 76, 6, 62, 24];
 
     let currentPathPoints = [...SMILE_NORMAL];
     let targetPathPoints = [...SMILE_NORMAL];
@@ -15887,7 +16466,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           try {
             leftPupil.classList.remove('waking-up');
             rightPupil.classList.remove('waking-up');
-          } catch (_) {}
+          } catch (_) { }
         }, 350);
 
         // Return smile to normal or wide
@@ -15956,7 +16535,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             return;
           }
         }
-      } catch (e) {}
+      } catch (e) { }
 
       // Fallback to screen coordinates
       const dpr = window.devicePixelRatio || 1;
@@ -15983,7 +16562,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             value: { Logical: { width: 640, height: 420 } }
           });
         }
-      } catch (_) {}
+      } catch (_) { }
     }
     ensureWindowSize();
 
@@ -15998,7 +16577,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           } else if (window.__TAURI__?.core?.invoke) {
             pos = await window.__TAURI__.core.invoke('plugin:window|cursor_position');
           }
-        } catch (_) {}
+        } catch (_) { }
 
         if (pos && typeof pos.x === 'number') {
           try {
@@ -16072,7 +16651,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             if (ENABLE_FILE_DROP && window.__TAURI__?.core?.invoke) {
               try {
                 lButtonDown = await window.__TAURI__.core.invoke('is_lbutton_down');
-              } catch (_) {}
+              } catch (_) { }
             }
 
             if (ENABLE_FILE_DROP && lButtonDown && isInsideDropRect && !widget.classList.contains('approval-state')) {
@@ -16155,7 +16734,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             if (win && (await win.isVisible?.())) {
               maybePlayStartupAnimation();
             }
-          } catch (_) {}
+          } catch (_) { }
         }
       }
     }
@@ -16175,7 +16754,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             recordActivity();
           }
           mouseScreenPos = pos;
-        } catch (_) {}
+        } catch (_) { }
 
         try {
           if (!isAsleep) {
@@ -16204,7 +16783,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             if (approvalBox) {
               const abRect = approvalBox.getBoundingClientRect();
               if (e.clientX >= abRect.left && e.clientX <= abRect.right &&
-                  e.clientY >= abRect.top && e.clientY <= abRect.bottom) {
+                e.clientY >= abRect.top && e.clientY <= abRect.bottom) {
                 isOverPill = true;
               }
             }
@@ -16220,8 +16799,8 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               }
             }
           }
-        } catch (_) {}
-      } catch (_) {}
+        } catch (_) { }
+      } catch (_) { }
     });
 
     function updateEyeTracking() {
@@ -16364,7 +16943,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       if (!scaleFactor && win) {
         try {
           scaleFactor = await win.scaleFactor?.();
-        } catch (_) {}
+        } catch (_) { }
       }
       if (!scaleFactor) {
         scaleFactor = window.devicePixelRatio || 1;
@@ -16394,7 +16973,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             winWidth = outerSize.width / scaleFactor;
             winHeight = outerSize.height / scaleFactor;
           }
-        } catch (_) {}
+        } catch (_) { }
       }
 
       return {
@@ -16459,7 +17038,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               if (actualPos && typeof actualPos.x === 'number') {
                 winPos = actualPos;
               }
-            } catch (_) {}
+            } catch (_) { }
           }
         } else {
           // Top-left and Custom: keep EXACTLY as it works now
@@ -16500,7 +17079,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               if (actualPos && typeof actualPos.x === 'number') {
                 winPos = actualPos;
               }
-            } catch (_) {}
+            } catch (_) { }
           }
         }
 
@@ -16531,7 +17110,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         const img = new Image();
         img.src = src;
       });
-    } catch (_) {}
+    } catch (_) { }
 
     let currentDudeColor = 'cream';
     let mascotCrossfadeTimer = null;
@@ -16762,7 +17341,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       try {
         if (prevBehavior.soundEnabled && !behavior.soundEnabled) {
           if (window.__TAURI__?.core?.invoke) {
-            window.__TAURI__.core.invoke('stop_all_sounds').catch(() => {});
+            window.__TAURI__.core.invoke('stop_all_sounds').catch(() => { });
           }
         }
       } catch (e) {
@@ -16800,7 +17379,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       try {
         const local = localStorage.getItem('dude_store_behavior');
         if (local) return JSON.parse(local);
-      } catch (_) {}
+      } catch (_) { }
       return undefined;
     }
 
@@ -16821,7 +17400,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       try {
         const local = localStorage.getItem('dude_store_startup');
         if (local) return JSON.parse(local);
-      } catch (_) {}
+      } catch (_) { }
       return undefined;
     }
 
@@ -16842,7 +17421,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       try {
         const local = localStorage.getItem('dude_appearance_settings');
         if (local) return JSON.parse(local);
-      } catch (_) {}
+      } catch (_) { }
       return undefined;
     }
 
@@ -16885,7 +17464,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           const parsed = JSON.parse(local);
           if (parsed && parsed.playStartupAnimation === false) return false;
         }
-      } catch (_) {}
+      } catch (_) { }
       return true;
     }
 
@@ -16981,9 +17560,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               }
             });
           }
-        }).catch(() => {});
+        }).catch(() => { });
       }
-    } catch (_) {}
+    } catch (_) { }
 
     // Trigger on first window focus if mascot was hidden on startup
     window.addEventListener('focus', () => {
@@ -17001,7 +17580,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           }
         });
       }
-    } catch (_) {}
+    } catch (_) { }
 
     // Startup: load saved values and apply before showing the window
     async function initAppearanceOnStartup() {
@@ -17027,13 +17606,13 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           if (window.__TAURI__?.core?.invoke) {
             settings = await window.__TAURI__.core.invoke('get_settings');
           }
-        } catch (_) {}
+        } catch (_) { }
       }
       if (!settings) {
         try {
           const local = localStorage.getItem('dude_appearance_settings');
           if (local) settings = JSON.parse(local);
-        } catch (_) {}
+        } catch (_) { }
       }
 
       if (settings) {
@@ -17060,14 +17639,14 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           if (win) {
             await win.show();
           }
-        } catch (_) {}
+        } catch (_) { }
 
         // Trigger startup chime after window is shown and ready (for verified manual launch only)
         try {
           if (window.__TAURI__?.core?.invoke) {
             await window.__TAURI__.core.invoke('play_startup_sound_if_manual');
           }
-        } catch (_) {}
+        } catch (_) { }
 
         // Play startup animation once settings, appearance, and mascot images are loaded & applied
         await maybePlayStartupAnimation();
@@ -17082,7 +17661,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             await window.__TAURI__.core.invoke('open_dude_settings', { view: 'welcome' });
           }
         }
-      } catch (_) {}
+      } catch (_) { }
     }
 
     initAppearanceOnStartup();
@@ -17101,10 +17680,10 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             if (window.__TAURI__?.core?.invoke) {
               await window.__TAURI__.core.invoke('play_startup_sound_if_manual');
             }
-          } catch (_) {}
+          } catch (_) { }
           await maybePlayStartupAnimation();
         }
-      } catch (_) {}
+      } catch (_) { }
     }, 350);
 
     loadAgentsSettingsFromStore();
@@ -17164,13 +17743,13 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       if (!payload || typeof payload !== 'object') return;
       // Deduplicate: ignore identical appearance payload
       if (lastAppliedAppearance &&
-          lastAppliedAppearance.dudeColor === payload.dudeColor &&
-          lastAppliedAppearance.pillColor === payload.pillColor &&
-          lastAppliedAppearance.opacity === payload.opacity &&
-          lastAppliedAppearance.roundness === payload.roundness &&
-          lastAppliedAppearance.position === payload.position &&
-          lastAppliedAppearance.position_x === payload.position_x &&
-          lastAppliedAppearance.position_y === payload.position_y) {
+        lastAppliedAppearance.dudeColor === payload.dudeColor &&
+        lastAppliedAppearance.pillColor === payload.pillColor &&
+        lastAppliedAppearance.opacity === payload.opacity &&
+        lastAppliedAppearance.roundness === payload.roundness &&
+        lastAppliedAppearance.position === payload.position &&
+        lastAppliedAppearance.position_x === payload.position_x &&
+        lastAppliedAppearance.position_y === payload.position_y) {
         return;
       }
 
@@ -17381,7 +17960,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           try {
             if (!merged.soundEnabled) {
               if (window.__TAURI__?.core?.invoke) {
-                window.__TAURI__.core.invoke('stop_all_sounds').catch(() => {});
+                window.__TAURI__.core.invoke('stop_all_sounds').catch(() => { });
               }
             }
           } catch (e) {
@@ -17435,7 +18014,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             await win.show();
             await win.setFocus();
           }
-        } catch (_) {}
+        } catch (_) { }
         try {
           await switchTab('chat');
         } catch (err) {
@@ -17479,7 +18058,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             await applyPositionSetting(lastAppliedPosSettings.position, lastAppliedPosSettings.customX, lastAppliedPosSettings.customY);
           }
         }
-      } catch (_) {}
+      } catch (_) { }
     }, 1500);
 
     // Also listen to window resize and scale-change events if available
@@ -17499,7 +18078,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           }
         });
       }
-    } catch (_) {}
+    } catch (_) { }
 
     window.addEventListener('resize', () => {
       if (lastAppliedPosSettings) {
@@ -17533,14 +18112,14 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
                 const msg = `[SMOKE TEST] Mascot Window Pill (ignore-cursor-events: ${!isIgnoringCursor}, click-toggle: ${toggledOnce}): ${pass ? 'PASS' : 'FAIL'}`;
                 console.log(msg);
                 try {
-                  window.__TAURI__.core.invoke('log_perf_metric', { message: msg }).catch(() => {});
-                } catch (_) {}
+                  window.__TAURI__.core.invoke('log_perf_metric', { message: msg }).catch(() => { });
+                } catch (_) { }
               } catch (err) {
                 const failMsg = `[SMOKE TEST] Mascot Window Pill: FAIL (${err})`;
                 console.log(failMsg);
                 try {
-                  window.__TAURI__.core.invoke('log_perf_metric', { message: failMsg }).catch(() => {});
-                } catch (_) {}
+                  window.__TAURI__.core.invoke('log_perf_metric', { message: failMsg }).catch(() => { });
+                } catch (_) { }
               }
             };
 
@@ -17573,10 +18152,10 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
               }
             });
           }
-        }).catch(() => {});
+        }).catch(() => { });
       }
-    } catch (_) {}
-  
+    } catch (_) { }
+
     /* DEBUG-ONLY alignment audit for Chat Tab (Ctrl+Alt+A) */
     function runChatAlignmentAudit() {
       const k = 1.0;
@@ -18233,7 +18812,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           if (window.__TAURI__?.core?.invoke) {
             await window.__TAURI__.core.invoke('toggle_clipboard_debug_preview');
           }
-        } catch (_) {}
+        } catch (_) { }
 
         const pill = widget;
 
@@ -18641,4 +19220,5 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
   </script>
 </body>
+
 </html>

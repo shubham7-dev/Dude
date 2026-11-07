@@ -4457,7 +4457,18 @@ pub fn run() {
             dropvault::vault_show,
             dropvault::open_vault_folder,
             dropvault::start_vault_watcher,
-            dropvault::stop_vault_watcher
+            dropvault::stop_vault_watcher,
+            dropvault::vault_stats,
+            dropvault::vault_pick_location,
+            dropvault::vault_apply_location,
+            dropvault::vault_cancel_location,
+            dropvault::vault_cancel_move,
+            dropvault::vault_open_old_folder,
+            dropvault::vault_clean_preview,
+            dropvault::vault_clean_apply,
+            dropvault::vault_clean_cancel,
+            dropvault::vault_clean_discard,
+            dropvault::seed_vault_test_files
         ])
         .setup(|app| {
             // Procedurally generate sound buffers in memory at startup
