@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.3] - 2026-11-08
+
+### Added
+- **DropVault Desktop Intake**:
+  - Drag-and-drop file ingestion directly onto the floating Dude notch.
+  - Automatic intake, collision resolution, and metadata tracking in `~/DropVault`.
+  - Native Windows Recycle Bin deletion via COM `IFileOperation`.
+  - Executable blocking (`.exe`, `.bat`, `.cmd`, `.vbs`, `.ps1`) and sensitive file detection (`.env`, private keys).
+  - Dedicated DropVault settings panel for custom directories, storage metrics, and cleanup policies.
+- **Dynamic Island Multi-Card Hub Carousel**:
+  - Expanded island navigation cycling through Agents, Controls/Media, and DropVault/Clipboard with keyboard arrows and swipe gestures.
+  - Dynamic cards with perspective scaling, dimming, and depth effects.
+- **Agent Task Completion State**:
+  - Centered glowing checkmark in collapsed pill upon Antigravity IDE task completion (`.widget.agent-completed`).
+  - Bundled victory completion chime (`agent-complete.mp3`) with procedural fallback.
+  - Clicking the completed pill opens Hub view immediately.
+- **Streaming Chat & Secure File Attachments**:
+  - Real-time Server-Sent Events (SSE) token streaming for Gemini chat with live markdown rendering.
+  - Multi-attachment staging pipeline (up to 4 attachments, max 10MB/image) with secret token scanning.
+
+### Changed
+- **Animation Engine**: Upgraded dynamic island transitions to ultra-smooth `cubic-bezier(0.16, 1, 0.3, 1)` easing.
+- **Mascot Natural Idling**: Added organic 4-second idling respiration animation and damped fur wiggle physics.
+- **Audio Control**: Silenced touch, tap, collapse, and expand interaction sounds for an unobtrusive experience, while retaining functional alerts.
+- **Agent Hook Protocol**: Optimized response framing for Antigravity IDE tool approvals (`{"decision": "allow"}`) and line-delimited message framing on local IPC Named Pipes.
+
+### Fixed
+- Resolved blank widget rendering issue on pill collapse/click.
+- Fixed unhandled ReferenceError in agent completion click handlers.
+- Blocked sensitive files and credentials from accidental inclusion in chat attachments.
+
+---
+
+## [0.3.2] - 2026-11-02
+
+### Added
+- Real-time audio visualizer integration with Windows System Media Transport Controls.
+- Clipboard history manager with persistent SQLite/JSON store and sensitive string masking.
+- Procedural startup sound synthesis and volume calibration in Settings.
+
+### Changed
+- Updated release build automation and workflow permissions in `.github/workflows/release.yml`.
+- Standardized package versions across frontend and Rust crates.
+
+---
+
 ## [0.3.1] - 2026-10-25
 
 ### Added
