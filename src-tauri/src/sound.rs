@@ -128,15 +128,22 @@ impl SoundEngine {
         // 10. "startup": loaded from assets/sounds/startup.mp3 (with procedural fallback)
         sounds.insert("startup", load_startup_sound());
 
+        // 11. "agent-complete": loaded from assets/sounds/agent-complete.mp3 (with procedural fallback)
+        sounds.insert("agent-complete", load_agent_complete_sound());
+
         Self { sounds }
     }
 
     pub fn get_sound(&self, id: &str) -> Option<&SoundData> {
-        self.sounds.get(id)
+        if id == "agent_complete" {
+            self.sounds.get("agent-complete")
+        } else {
+            self.sounds.get(id)
+        }
     }
 
     pub fn list_sounds(&self) -> Vec<(&'static str, usize, f32, f32)> {
-        let order = ["expand", "collapse", "tab", "poke", "send", "reply", "error", "stop", "copy", "startup"];
+        let order = ["expand", "collapse", "tab", "poke", "send", "reply", "error", "stop", "copy", "startup", "agent-complete"];
         order.iter().filter_map(|&id| {
             self.sounds.get(id).map(|s| (id, s.samples.len(), s.duration_ms, s.peak_amplitude))
         }).collect()
@@ -268,6 +275,45 @@ fn generate_startup_chime() -> SoundData {
         duration_ms,
         peak_amplitude: actual_peak,
     }
+}
+
+/// Loads the agent-complete sound from assets/sounds/agent-complete.mp3 (or resources/agent-complete.mp3),
+/// with guaranteed zero-latency fallback to embedded bytes and procedural chime.
+fn load_agent_complete_sound() -> SoundData {
+    // 1. Try file from disk first (useful for testing or customization)
+    let candidate_paths = [
+        std::path::PathBuf::from("assets/sounds/agent-complete.mp3"),
+        std::path::PathBuf::from("assets/sounds/agent-complete.mp3.mp3"),
+        std::path::PathBuf::from("../assets/sounds/agent-complete.mp3"),
+        std::path::PathBuf::from("../assets/sounds/agent-complete.mp3.mp3"),
+        std::path::PathBuf::from("resources/agent-complete.mp3"),
+        std::path::PathBuf::from("src-tauri/resources/agent-complete.mp3"),
+    ];
+
+    for path in &candidate_paths {
+        if let Ok(bytes) = std::fs::read(path) {
+            if let Some(sound) = decode_audio_bytes("agent-complete", &bytes) {
+                return sound;
+            }
+        }
+    }
+
+    // 2. Try embedded bytes from assets/sounds/agent-complete.mp3
+    let embedded_bytes = include_bytes!("../../assets/sounds/agent-complete.mp3");
+    if let Some(sound) = decode_audio_bytes("agent-complete", embedded_bytes) {
+        return sound;
+    }
+
+    // 3. Fallback procedural completion chime if decoding fails
+    generate_agent_complete_chime()
+}
+
+/// Generates a pleasant procedural completion chime as fallback (C6 then G6 arpeggio).
+fn generate_agent_complete_chime() -> SoundData {
+    generate_sound("agent-complete", &[
+        Note { start_freq: 1046.5, end_freq: 1046.5, duration_ms: 100.0, waveform: Waveform::Sine },
+        Note { start_freq: 1568.0, end_freq: 1568.0, duration_ms: 150.0, waveform: Waveform::Sine },
+    ])
 }
 
 fn generate_sound(id: &'static str, notes: &[Note]) -> SoundData {
@@ -649,48 +695,67 @@ pub fn play_startup_sound_if_manual_internal(app: &tauri::AppHandle) {
 pub fn play_sound_internal(app: &tauri::AppHandle, sound_id: &str) {
     if sound_id == "startup" {
         play_startup_sound_if_manual_internal(app);
-    } else if sound_id == "copy" {
-        if !is_sound_effects_enabled(app) {
-            return;
-        }
-        let volume = get_sound_volume(app);
-        if volume <= 0.0 {
-            return;
-        }
-        let engine = get_sound_engine();
-        let sound = match engine.get_sound("copy") {
-            Some(s) => s,
-            None => return,
-        };
-        let now = Instant::now();
-        {
-            let mut limiter = match get_rate_limiter().lock() {
-                Ok(l) => l,
-                Err(p) => p.into_inner(),
-            };
-            if let Some(last) = limiter.last_any_sound {
-                if now.duration_since(last) < Duration::from_millis(40) {
-                    return;
-                }
-            }
-            if let Some(last) = limiter.last_by_id.get("copy") {
-                if now.duration_since(*last) < Duration::from_millis(80) {
-                    return;
-                }
-            }
-            limiter.last_any_sound = Some(now);
-            limiter.last_by_id.insert("copy", now);
-        }
-        let sender = get_audio_sender();
-        let _ = sender.try_send(AudioCommand::Play {
-            id: sound.id,
-            samples: sound.samples.clone(),
-            channels: sound.channels,
-            sample_rate: sound.sample_rate,
-            volume,
-            call_time: now,
-        });
+        return;
     }
+
+    // Touch and interaction sounds (poke, tab, collapse, expand) disabled per user request
+    if sound_id == "poke" || sound_id == "tab" || sound_id == "collapse" || sound_id == "expand" {
+        return;
+    }
+
+    if !is_sound_effects_enabled(app) {
+        return;
+    }
+
+    let volume = get_sound_volume(app);
+    if volume <= 0.0 {
+        return;
+    }
+
+    let engine = get_sound_engine();
+    let sound = match engine.get_sound(sound_id) {
+        Some(s) => s,
+        None => return,
+    };
+
+    let now = Instant::now();
+    {
+        let mut limiter = match get_rate_limiter().lock() {
+            Ok(l) => l,
+            Err(p) => p.into_inner(),
+        };
+
+        if let Some(last) = limiter.last_any_sound {
+            if now.duration_since(last) < Duration::from_millis(40) {
+                return;
+            }
+        }
+
+        let min_interval = match sound.id {
+            "agent-complete" => Duration::from_millis(1000),
+            "copy" => Duration::from_millis(80),
+            _ => Duration::from_millis(60),
+        };
+
+        if let Some(last) = limiter.last_by_id.get(sound.id) {
+            if now.duration_since(*last) < min_interval {
+                return;
+            }
+        }
+
+        limiter.last_any_sound = Some(now);
+        limiter.last_by_id.insert(sound.id, now);
+    }
+
+    let sender = get_audio_sender();
+    let _ = sender.try_send(AudioCommand::Play {
+        id: sound.id,
+        samples: sound.samples.clone(),
+        channels: sound.channels,
+        sample_rate: sound.sample_rate,
+        volume,
+        call_time: now,
+    });
 }
 
 pub fn stop_all_sounds_internal() {
@@ -776,6 +841,13 @@ mod tests {
         assert_eq!(startup.sample_rate, 44100, "Startup sound expected 44100 Hz");
         assert!(startup.samples.len() > 0, "Startup sound has no samples");
         assert!(startup.peak_amplitude > 0.0, "Startup peak amplitude must be positive");
+
+        // Dedicated assertion for agent-complete sound loaded from agent-complete.mp3
+        let agent_complete = engine.get_sound("agent-complete").expect("Missing agent-complete sound");
+        assert_eq!(agent_complete.id, "agent-complete");
+        assert!(agent_complete.duration_ms > 0.0, "agent-complete duration must be positive");
+        assert!(agent_complete.samples.len() > 0, "agent-complete must have samples");
+        assert!(agent_complete.peak_amplitude > 0.0, "agent-complete peak amplitude must be positive");
     }
 
     #[test]
@@ -1005,6 +1077,27 @@ mod tests {
         let peak = samples.iter().map(|s| s.abs()).fold(0.0f32, f32::max);
         println!("Total samples: {}, Duration: {:.3}s, Peak: {:.4}", samples.len(), dur_sec, peak);
         println!("========================\n");
+    }
+
+    #[test]
+    fn test_decode_agent_complete_file() {
+        use rodio::Decoder;
+        use rodio::Source;
+        use std::io::Cursor;
+
+        let bytes = include_bytes!("../../assets/sounds/agent-complete.mp3");
+        let cursor = Cursor::new(bytes.as_ref());
+        let decoder = Decoder::new(cursor).expect("failed to decode agent-complete.mp3");
+
+        let sr = decoder.sample_rate().get();
+        let ch = decoder.channels().get();
+        let samples: Vec<f32> = decoder.collect();
+        let dur_sec = samples.len() as f32 / (sr as f32 * ch as f32);
+        let peak = samples.iter().map(|s| s.abs()).fold(0.0f32, f32::max);
+        println!("\n=== AGENT-COMPLETE.MP3 INFO ===");
+        println!("Sample rate: {}, Channels: {}, Duration: {:.3}s, Peak: {:.4}", sr, ch, dur_sec, peak);
+        println!("================================\n");
+        assert!(samples.len() > 0);
     }
 }
 

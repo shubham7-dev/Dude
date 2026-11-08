@@ -18,6 +18,9 @@
     }
 
     :root {
+      --speed: 1;
+      --island-ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --island-dur: calc(380ms / var(--speed, 1));
       --glow-strength: 1;
       --chat-link: #8CC8FF;
       --badge-ratio: 0.24;
@@ -60,11 +63,14 @@
       cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
-      transition: width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+      transition: width var(--island-dur) var(--island-ease),
+        height var(--island-dur) var(--island-ease),
+        border-radius var(--island-dur) var(--island-ease),
         background-color 200ms ease,
-        border-radius 200ms ease;
-      will-change: width, height;
+        box-shadow 250ms ease;
+      will-change: width, height, border-radius;
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     .widget.pos-top-center {
@@ -83,7 +89,7 @@
 
     /* --- Startup Animation (3000ms) --- */
     .widget.startup-animating {
-      animation: startupPillEntrance 450ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      animation: startupPillEntrance 450ms var(--island-ease) forwards;
       transform-origin: center center;
       overflow: visible !important;
     }
@@ -343,14 +349,15 @@
       display: block;
       pointer-events: none;
       font-size: 9px;
-      transform: scale(1);
+      transform: scale(1) translateZ(0);
       transform-origin: center center;
-      transition: width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        left calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        top calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        transform 200ms ease,
-        opacity 150ms ease;
+      transition: width var(--island-dur) var(--island-ease),
+        left var(--island-dur) var(--island-ease),
+        top var(--island-dur) var(--island-ease),
+        transform var(--island-dur) var(--island-ease),
+        opacity 180ms ease;
       will-change: width, left, top, transform, opacity;
+      backface-visibility: hidden;
     }
 
     .widget.expanded .mascot-wrapper {
@@ -432,7 +439,7 @@
       transform: translateY(0);
       transition: opacity 120ms ease,
         visibility 0s linear 120ms,
-        transform calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+        transform var(--island-dur) var(--island-ease);
       container-type: inline-size;
     }
 
@@ -442,9 +449,9 @@
       visibility: visible;
       pointer-events: auto;
       transform: translateY(0);
-      transition: opacity 150ms ease 150ms,
+      transition: opacity 150ms ease 100ms,
         visibility 0s linear 0s,
-        transform calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+        transform var(--island-dur) var(--island-ease);
     }
 
     /* Shared Top-Bar Icon Dimensions & Spacing */
@@ -479,8 +486,8 @@
       align-items: center;
       justify-content: center;
       transition: color 100ms ease,
-        height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        top calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+        height var(--island-dur) var(--island-ease),
+        top var(--island-dur) var(--island-ease);
       user-select: none;
       -webkit-user-select: none;
       pointer-events: none;
@@ -780,8 +787,8 @@
       transform: translateX(calc(var(--offset) * var(--hub-card-offset, 109px))) scale(var(--card-scale));
       opacity: 0.85;
       z-index: 2;
-      transition: transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1),
-        opacity 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 380ms var(--island-ease),
+        opacity 250ms ease;
       overflow: hidden;
     }
 
@@ -1868,8 +1875,8 @@
       user-select: none;
       -webkit-user-select: none;
       z-index: 1;
-      transition: width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: width var(--island-dur) var(--island-ease),
+        height var(--island-dur) var(--island-ease);
     }
 
     .widget.expanded.panel-open.tab-agents.approval-state .agents-dark-panel {
@@ -2624,7 +2631,7 @@
     }
 
     .drop-folder-container.anim-enter {
-      animation: dropFolderEnter 220ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      animation: dropFolderEnter 220ms var(--island-ease) forwards;
     }
 
     @keyframes dropFolderLeave {
@@ -2658,7 +2665,7 @@
     }
 
     .drop-folder-container.anim-pulse {
-      animation: dropFolderPulse 260ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      animation: dropFolderPulse 260ms var(--island-ease) forwards;
     }
 
     @keyframes dropFolderExit {
@@ -2847,9 +2854,9 @@
       visibility: visible;
       pointer-events: auto;
       transform: translateY(var(--compact-topbar-shift));
-      transition: opacity 150ms ease 150ms,
+      transition: opacity 150ms ease 100ms,
         visibility 0s linear 0s,
-        transform calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+        transform var(--island-dur) var(--island-ease);
     }
 
     /* Hit areas move with icons; clickable height limited to 32px so no hit area overlaps the card */
@@ -3079,12 +3086,12 @@
       pointer-events: auto;
     }
 
-    /* Approval box: relative to panel's top-left: left 110px, top 10px, 329 x 179px, background #000000, radius 6px, border 1.5px solid #2AA5E0 */
+    /* Approval box: relative to panel's top-left: left 109px, top 10px, 411 x 179px, background #000000, radius 6px, border 1.5px solid #2AA5E0 */
     .agent-approval-box {
       position: absolute;
-      left: 110px;
+      left: 109px;
       top: 10px;
-      width: 329px;
+      width: 411px;
       height: 179px;
       background-color: #000000;
       border-radius: 6px;
@@ -3095,12 +3102,12 @@
       z-index: 2;
     }
 
-    /* Title row: Inter bold 12px, white at left 24px, vertically centered about 15px from box top */
+    /* Title row: Inter bold 12px, white at left 12px, vertically centered about 15px from box top */
     .agent-approval-header {
       position: absolute;
-      left: 24px;
+      left: 12px;
       right: 12px;
-      top: 6px;
+      top: 8px;
       height: 18px;
       display: flex;
       align-items: center;
@@ -3141,16 +3148,17 @@
       display: inline;
     }
 
-    /* Command block: left 6px, top 26px inside box, 270px wide, up to 42px tall, bg #373764, radius 5px, padding 6px 8px, text white 11px monospace */
+    /* Command block: left 10px, right 10px, top 30px inside box, max-height 42px, bg #373764, radius 5px, padding 6px 10px, text white 11px monospace */
     .agent-approval-command {
       position: absolute;
-      left: 6px;
-      top: 26px;
-      width: 270px;
+      left: 10px;
+      right: 10px;
+      top: 30px;
+      width: calc(100% - 20px);
       max-height: 42px;
       background-color: #373764;
       border-radius: 5px;
-      padding: 6px 8px;
+      padding: 6px 10px;
       box-sizing: border-box;
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
@@ -3184,14 +3192,15 @@
       height: 0;
     }
 
-    /* Options list: left 9px, top 70px, 311px wide, down to box bottom; scrollable */
+    /* Options list: left 10px, right 10px, top 76px, width calc(100% - 20px), height 96px; scrollable */
     .agent-approval-options {
       position: absolute;
-      left: 9px;
-      top: 70px;
-      width: 311px;
-      height: 106px;
-      max-height: 106px;
+      left: 10px;
+      right: 10px;
+      top: 76px;
+      width: calc(100% - 20px);
+      height: 96px;
+      max-height: 96px;
       min-height: 0;
       overflow-y: auto;
       overflow-x: hidden;
@@ -3242,13 +3251,13 @@
       background-color: #666666;
     }
 
-    /* Submit button: left 375px, top 197px inside panel, 62 x 21px, bg #0A78D6, radius 4px, text "Submit" bold white 11px + small enter-arrow icon */
+    /* Submit button: left 458px, top 196px inside panel, 62 x 22px, bg #0A78D6, radius 4px, text "Submit" bold white 11px + small enter-arrow icon */
     .agent-approval-submit-btn {
       position: absolute;
-      left: 375px;
-      top: 197px;
+      left: 458px;
+      top: 196px;
       width: 62px;
-      height: 21px;
+      height: 22px;
       background-color: #0A78D6;
       border-radius: 4px;
       border: none;
@@ -3436,7 +3445,7 @@
     }
 
     .mascot-agent-badge.badge-entering {
-      animation: badgeEnter 220ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      animation: badgeEnter 220ms var(--island-ease) both;
     }
 
     /* Leaving animation: fade out 200ms */
@@ -3786,6 +3795,93 @@
       }
     }
 
+    /* ============================================================
+       AGENT COMPLETED STATE FOR COLLAPSED PILL
+       Shown upon agent completion (Antigravity Stop event)
+       Matches user specification (170px x 42px with centered green circle-check)
+       ============================================================ */
+
+    .widget.agent-completed:not(.expanded):not(.panel-open) {
+      width: 170px !important;
+      height: 42px !important;
+      will-change: auto !important;
+      border-radius: var(--pill-radius, 8px);
+      background-color: #000000;
+    }
+
+    .widget.agent-completed:not(.expanded):not(.panel-open) .shared-top-bar {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    .widget.agent-completed:not(.expanded):not(.panel-open) .mascot-wrapper {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      transition: opacity 150ms ease;
+    }
+
+    .widget.agent-completed:not(.expanded):not(.panel-open) .now-playing-container {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    .widget.agent-completed:not(.expanded):not(.panel-open) .collapsed-agent-dot {
+      display: none !important;
+    }
+
+    .agent-completed-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 200ms ease, visibility 0s linear 200ms;
+      z-index: 25;
+      overflow: hidden;
+    }
+
+    .widget.agent-completed:not(.expanded):not(.panel-open) .agent-completed-container {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition: opacity 200ms ease, visibility 0s linear 0s;
+    }
+
+    .agent-completed-check-icon {
+      width: 22px;
+      height: 22px;
+      display: block;
+      color: #4CD800;
+      filter: drop-shadow(0 0 5px rgba(76, 216, 0, 0.45));
+      animation: completeCheckEntrance 380ms var(--island-ease) forwards;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    @keyframes completeCheckEntrance {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      75% {
+        transform: scale(1.12);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.0);
+        opacity: 1;
+      }
+    }
 
     /* ============================================================
        CHAT TAB: Pill 542 x 223 px
@@ -3815,10 +3911,10 @@
       box-sizing: border-box;
       overflow: hidden;
       z-index: 10;
-      transition: left calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        top calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+      transition: left var(--island-dur) var(--island-ease),
+        top var(--island-dur) var(--island-ease),
+        width var(--island-dur) var(--island-ease),
+        height var(--island-dur) var(--island-ease),
         background-color 200ms ease,
         border-color 200ms ease,
         border-radius 200ms ease;
@@ -4181,11 +4277,11 @@
       padding: 0 8px 0 10px;
       box-sizing: border-box;
       z-index: 10;
-      transition: left calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        bottom calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        height calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        border-radius calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
+      transition: left var(--island-dur) var(--island-ease),
+        bottom var(--island-dur) var(--island-ease),
+        width var(--island-dur) var(--island-ease),
+        height var(--island-dur) var(--island-ease),
+        border-radius var(--island-dur) var(--island-ease),
         background 200ms ease,
         border-color 200ms ease;
     }
@@ -4334,9 +4430,9 @@
       -ms-overflow-style: none;
       z-index: 12;
       box-sizing: border-box;
-      transition: left calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        bottom calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1),
-        width calc(500ms / var(--speed, 1)) cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: left var(--island-dur) var(--island-ease),
+        bottom var(--island-dur) var(--island-ease),
+        width var(--island-dur) var(--island-ease);
     }
 
     .widget.chat-max .chat-attachments-row {
@@ -5598,30 +5694,39 @@
       will-change: transform;
     }
 
+    @keyframes mascotBreathe {
+      0%, 100% {
+        transform: translateY(0) scale(1, 1);
+      }
+      50% {
+        transform: translateY(-0.8px) scale(1.008, 0.992);
+      }
+    }
+
+    .mascot-body:not(.wiggling):not(.happy-bounce) {
+      animation: mascotBreathe 4s ease-in-out infinite;
+    }
+
     @keyframes furWiggle {
       0% {
         transform: scale(1, 1) rotate(0deg);
       }
-
-      25% {
-        transform: scale(1.08, 0.92) rotate(-2deg);
+      20% {
+        transform: scale(1.06, 0.94) rotate(-1.5deg);
       }
-
-      50% {
-        transform: scale(0.96, 1.05) rotate(2deg);
+      45% {
+        transform: scale(0.97, 1.03) rotate(1.2deg);
       }
-
-      75% {
-        transform: scale(1.01, 0.99) rotate(-0.5deg);
+      70% {
+        transform: scale(1.015, 0.985) rotate(-0.4deg);
       }
-
       100% {
         transform: scale(1, 1) rotate(0deg);
       }
     }
 
     .mascot-body.wiggling {
-      animation: furWiggle 400ms ease-out;
+      animation: furWiggle 420ms var(--island-ease);
     }
 
     .mascot-base {
@@ -5941,6 +6046,13 @@
           <span class="now-playing-bar bar-14"></span>
         </div>
       </div>
+    </div>
+    <!-- Agent Completed Centered Checkmark State for Collapsed Pill -->
+    <div class="agent-completed-container" id="agent-completed-container" aria-label="Task Completed">
+      <svg class="agent-completed-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="10" cy="10" r="8" />
+        <path d="M6.5 10.2 L8.8 12.5 L13.5 7.5" />
+      </svg>
     </div>
     <div class="mascot-wrapper" id="mascot-wrapper">
       <!-- Mascot Agent reaction badge -->
@@ -6827,13 +6939,14 @@
     const behavior = { ...BEHAVIOR_DEFAULTS };
 
     function playSound(id) {
-      if (id === 'copy') {
-        try {
-          if (window.__TAURI__?.core?.invoke) {
-            window.__TAURI__.core.invoke('play_sound', { id: 'copy' }).catch(() => { });
-          }
-        } catch (_) { }
-      }
+      if (!id) return;
+      // Touch and interaction sounds disabled per user request
+      if (id === 'poke' || id === 'tab' || id === 'collapse' || id === 'expand') return;
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          window.__TAURI__.core.invoke('play_sound', { id }).catch(() => { });
+        }
+      } catch (_) { }
     }
 
     const chatAnswerBox = document.getElementById('chat-answer-box');
@@ -7027,19 +7140,78 @@
       updateEyeTracking();
     }
 
+    // --- Agent Completed Pill State (for Collapsed Pill) ---
+    let agentCompletedTimer = null;
+    let pendingAgentCompletedOnCollapse = false;
+
+    function enterAgentCompletedState(durationMs = 8000) {
+      if (!widget) return;
+
+      // If panel is currently open, remember that a task completed so when
+      // the panel closes, the closed pill will show the checkmark.
+      if (isPanelOpen() || widget.classList.contains('expanded')) {
+        pendingAgentCompletedOnCollapse = true;
+        return;
+      }
+
+      pendingAgentCompletedOnCollapse = false;
+
+      if (typeof exitNowPlayingState === 'function') {
+        exitNowPlayingState(true);
+      }
+
+      widget.classList.add('agent-completed');
+
+      if (agentCompletedTimer) {
+        clearTimeout(agentCompletedTimer);
+        agentCompletedTimer = null;
+      }
+
+      agentCompletedTimer = setTimeout(() => {
+        exitAgentCompletedState();
+      }, durationMs);
+
+      recordActivity();
+      updateEyeTracking();
+      monitorTransitionClickThrough();
+    }
+    window.enterAgentCompletedState = enterAgentCompletedState;
+
+    function exitAgentCompletedState() {
+      if (agentCompletedTimer) {
+        clearTimeout(agentCompletedTimer);
+        agentCompletedTimer = null;
+      }
+      pendingAgentCompletedOnCollapse = false;
+      if (!widget) return;
+      if (!widget.classList.contains('agent-completed')) return;
+      widget.classList.remove('agent-completed');
+      if (isPlainCollapsed() && typeof onPillReturnedToCollapsed === 'function') {
+        onPillReturnedToCollapsed();
+      }
+      updateEyeTracking();
+      monitorTransitionClickThrough();
+    }
+    window.exitAgentCompletedState = exitAgentCompletedState;
+
     function onPillReturnedToCollapsed() {
       lastActiveHubCardIndex = 1;
       if (playingStatusTimer) {
         clearTimeout(playingStatusTimer);
         playingStatusTimer = null;
       }
-      if (!isPlainCollapsed() || !isMascotWindowVisible() || behavior.nowPlayingPill === false) {
+      if (pendingAgentCompletedOnCollapse) {
+        pendingAgentCompletedOnCollapse = false;
+        enterAgentCompletedState(8000);
+        return;
+      }
+      if (!isPlainCollapsed() || !isMascotWindowVisible() || behavior.nowPlayingPill === false || widget.classList.contains('agent-completed')) {
         return;
       }
       if (currentMediaSession.status === 'playing') {
         playingStatusTimer = setTimeout(() => {
           playingStatusTimer = null;
-          if (isPlainCollapsed() && isMascotWindowVisible() && behavior.nowPlayingPill !== false && currentMediaSession.status === 'playing') {
+          if (isPlainCollapsed() && isMascotWindowVisible() && behavior.nowPlayingPill !== false && currentMediaSession.status === 'playing' && !widget.classList.contains('agent-completed')) {
             enterNowPlayingState();
           }
         }, 1500);
@@ -10471,7 +10643,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
     }
 
     function closePanel(animate = true) {
-      if (!isPanelOpen() && !widget.classList.contains('chat-open') && !widget.classList.contains('control-center-open')) return;
+      if (!isPanelOpen() && !widget.classList.contains('chat-open') && !widget.classList.contains('control-center-open') && !widget.classList.contains('expanded')) return;
 
       if (typeof isChatMaximized !== 'undefined' && isChatMaximized) {
         setChatMaximized(false);
@@ -10537,9 +10709,9 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       if (isChatMaximized) {
         setChatMaximized(false);
       }
-      widget.classList.remove('panel-open', 'tab-agents', 'tab-chat', 'tab-controls', 'tab-hub', 'tab-clipboard', 'tab-dropvault', 'chat-open', 'control-center-open', 'approval-compact', 'chat-max');
+      widget.classList.remove('panel-open', 'tab-agents', 'tab-chat', 'tab-controls', 'tab-hub', 'tab-clipboard', 'tab-dropvault', 'chat-open', 'control-center-open', 'approval-compact', 'chat-max', 'expanded');
 
-      if (animate && widget.classList.contains('expanded')) {
+      if (animate) {
         widget.classList.add('chat-closing');
         monitorTransitionClickThrough();
         const mult = getSpeedMultiplier();
@@ -10549,7 +10721,14 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           chatClosingTimeout = null;
           updateEyeTracking();
           resetAutoCollapseTimer();
+          if (typeof onPillReturnedToCollapsed === 'function') {
+            onPillReturnedToCollapsed();
+          }
         }, closingDuration);
+      } else {
+        if (typeof onPillReturnedToCollapsed === 'function') {
+          onPillReturnedToCollapsed();
+        }
       }
 
       recordActivity();
@@ -14625,6 +14804,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
 
         // 1. SessionStart / PreInvocation (New Turn)
         if (eventName === 'SessionStart' || (eventName === 'PreInvocation' && (conv.status === 'idle' || conv.status === 'done'))) {
+          exitAgentCompletedState();
           conv.categories = { read: 'pending', edit: 'pending', bash: 'pending', done: 'pending' };
           conv.runningCategory = null;
           conv.status = 'thinking';
@@ -14640,6 +14820,7 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
         }
         // 2. PreToolUse
         else if (eventName === 'PreToolUse') {
+          exitAgentCompletedState();
           const toolCall = payload.toolCall || {};
           const toolName = (toolCall.name || payload.tool_name || payload.tool || '').trim();
 
@@ -14693,6 +14874,8 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
           conv.status = 'done';
           agentsTabOpenedSinceNotification = false;
           triggerHappyReply();
+          playSound('agent-complete');
+          enterAgentCompletedState(8000);
         }
 
         // Active conversation switching rule:
@@ -14937,6 +15120,8 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
             // After 1.2s: Done is done (checked)
             agentDemoTimer = setTimeout(() => {
               setAgentStepStates({ read: 'done', edit: 'done', bash: 'done', done: 'done' });
+              playSound('agent-complete');
+              enterAgentCompletedState(5000);
 
               // After 1.2s: Reset back to initial placeholder state
               agentDemoTimer = setTimeout(() => {
@@ -15345,19 +15530,15 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       previousPillState = null;
 
       if (saved) {
-        if (saved.wasCollapsed) {
+        if (saved.wasCollapsed || saved.wasPlainExpanded) {
           closePanel(true);
-          widget.classList.remove('expanded');
-          triggerFurWiggle();
-          if (typeof onPillReturnedToCollapsed === 'function') {
-            onPillReturnedToCollapsed();
-          }
-        } else if (saved.wasPlainExpanded) {
-          closePanel(true);
-          widget.classList.add('expanded');
-        } else if (saved.wasPanelOpen && saved.prevTab && saved.prevTab !== 'agents') {
+        } else if (saved.wasPanelOpen && saved.prevTab) {
           switchTab(saved.prevTab);
+        } else {
+          closePanel(true);
         }
+      } else {
+        closePanel(true);
       }
 
       recordActivity();
@@ -17178,30 +17359,33 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       }
 
       // Inside a tab (Agents, Chat or Controls) or during compact approval, a single click on the pill's empty area or on the mascot
-      // must NOT collapse the pill (to avoid accidents while typing or dragging sliders); it only plays the mascot's click reaction.
+      // must NOT collapse the pill (to avoid accidents while typing or dragging sliders); it only plays the mascot's visual reaction.
       if (isPanelOpen() || widget.classList.contains('chat-closing') || widget.classList.contains('approval-compact')) {
         triggerFurWiggle();
         recordActivity();
         setTimeout(() => triggerBlink(), 100);
         updateEyeTracking();
-        playSound('poke');
+        return;
+      }
+
+      if (widget.classList.contains('agent-completed')) {
+        exitAgentCompletedState();
+        switchTab('hub');
         return;
       }
 
       // Collapsed <-> Expanded toggle (INSTANT, no delay)
-      const isExpanded = widget.classList.contains('expanded');
+      const isExpanded = widget.classList.contains('expanded') || isPanelOpen();
       if (isExpanded) {
-        widget.classList.remove('expanded');
-        playSound('collapse');
-        if (typeof onPillReturnedToCollapsed === 'function') {
-          onPillReturnedToCollapsed();
-        }
+        closePanel(true);
       } else {
         if (typeof exitNowPlayingState === 'function') {
           exitNowPlayingState(true);
         }
-        widget.classList.add('expanded');
-        playSound('expand');
+        if (typeof exitAgentCompletedState === 'function') {
+          exitAgentCompletedState();
+        }
+        switchTab('hub');
       }
 
       triggerFurWiggle();
