@@ -103,10 +103,10 @@ Engineered with **Tauri 2, Rust, TypeScript, and Vite**, Dude operates with near
 ## Features at a Glance
 
 ### 🤖 Animated Desktop Companion
-- **Living Character Engine**: Expressive states including idle blinking, curious eye-tracking following your cursor, smiling, thinking, speaking, and sleeping.
+- **Living Character Engine**: Expressive states including idle blinking, natural 4-second respiratory idling animation, curious eye-tracking following your cursor, smiling, thinking, speaking, and sleeping.
 - **Color Personalities**: Four collectible body themes — **Cream (Classic)**, **Blush Pink**, **Sky Blue**, and **Midnight Black**.
-- **Adaptive Floating Pill**: Smoothly expands on hover or click; customizable roundness, background opacity, blur, and placement presets (Top Center, Top Left, Top Right, or custom X/Y coordinates).
-- **Audio Expressions**: Procedural, ultra-low-latency chimes and ambient reaction audio powered by a native Rust audio engine.
+- **Adaptive Floating Pill**: Buttery smooth `cubic-bezier(0.16, 1, 0.3, 1)` expansion and collapse; customizable roundness, background opacity, blur, and placement presets (Top Center, Top Left, Top Right, or custom X/Y coordinates).
+- **Audio Expressions**: Procedural, ultra-low-latency chimes and ambient reaction audio powered by a native Rust audio engine, with silenced interaction clicks for an unobtrusive experience.
 
 ---
 
@@ -125,7 +125,7 @@ Engineered with **Tauri 2, Rust, TypeScript, and Vite**, Dude operates with near
   - 🟢 **Read**: Active during file reads, glob searches, codebase greps, and documentation queries.
   - ✏️ **Edit**: Live diff streaming during file rewrites, insertions, and multi-line edits.
   - 💻 **Bash**: Terminal command executions with live command-line display and exit code badges.
-  - ✅ **Done**: Turn completion status with celebration mascot feedback.
+  - ✅ **Done**: Turn completion status with celebration mascot feedback, centered glowing checkmark pill state, and dedicated victory chime (`agent-complete.mp3`).
 - **Multi-Tab File Diff Viewer**:
   - Independent tabs for every modified file during the current turn.
   - Color-coded diff syntax highlighting (`+` additions in green, `-` deletions in red).
@@ -193,7 +193,8 @@ Dude is distributed as both an automated NSIS installer and a standalone MSI pac
 
 | Version | Release Date | Highlights | Download Link |
 | :--- | :--- | :--- | :--- |
-| **v0.3.2** (Latest) | *Current* | Per-file multi-tab diff view, real-time agent lifecycle steps (Read/Edit/Bash/Done), native OS drag-out for DropVault | [Release v0.3.2](https://github.com/shubham7-dev/Dude/releases/tag/v0.3.2) |
+| **v0.3.3** (Latest) | 2026-11-08 | DropVault desktop intake & Recycle Bin cleanup, 3D Hub carousel, Antigravity completion checkmark & victory audio, ultra-smooth island easing | [Release v0.3.3](https://github.com/shubham7-dev/Dude/releases/tag/v0.3.3) |
+| **v0.3.2** | 2026-11-02 | Per-file multi-tab diff view, real-time agent lifecycle steps (Read/Edit/Bash/Done), native OS drag-out for DropVault | [Release v0.3.2](https://github.com/shubham7-dev/Dude/releases/tag/v0.3.2) |
 | **v0.3.1** | 2026-10-25 | Gemini 3.5 Flash upgrade, high-res icon set, Claude Code v0.2 hook compatibility | [Release v0.3.1](https://github.com/shubham7-dev/Dude/releases/tag/v0.3.1) |
 | **v0.3.0** | 2026-10-21 | Compact approval cards, Claude Code / Gemini Code Assist integration | [Release v0.3.0](https://github.com/shubham7-dev/Dude/releases/tag/v0.3.0) |
 | **v0.2.0** | 2026-10-18 | Standalone `dude-hook.exe`, Named Pipe IPC, tool decision approvals | [Release v0.2.0](https://github.com/shubham7-dev/Dude/releases/tag/v0.2.0) |
@@ -210,7 +211,7 @@ Full changelog history is maintained in [CHANGELOG.md](CHANGELOG.md).
 - **Runtime:** Microsoft Edge WebView2 (pre-installed by default on Windows 11).
 
 ### Setup Instructions
-1. Download the latest installer from the [Releases page](https://github.com/shubham7-dev/Dude/releases/latest) (`Dude_0.3.2_x64-setup.exe`).
+1. Download the latest installer from the [Releases page](https://github.com/shubham7-dev/Dude/releases/latest) (`Dude_0.3.3_x64-setup.exe`).
 2. Run the installer and launch Dude.
 3. **Configure AI Assistant**:
    - Get a free API key at [Google AI Studio](https://aistudio.google.com/apikey).
@@ -223,7 +224,7 @@ Full changelog history is maintained in [CHANGELOG.md](CHANGELOG.md).
 ### Cryptographic Checksum Verification
 To verify the integrity of your installer package:
 ```powershell
-Get-FileHash .\Dude_0.3.2_x64-setup.exe -Algorithm SHA256
+Get-FileHash .\Dude_0.3.3_x64-setup.exe -Algorithm SHA256
 ```
 Compare the resulting hash with the corresponding entry in `SHA256SUMS`.
 
