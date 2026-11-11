@@ -47,6 +47,12 @@ Clipboard history is off by default. When you turn it on, text you copy is kept 
 
 Files you drop on the island are copied into the DropVault folder on your PC (Documents\DropVault). Nothing is uploaded. A file goes to the chat only when you attach it yourself with the + button. You can change where DropVault lives in Settings, DropVault. Dude only works inside that folder. Clean-up only moves files to the Recycle Bin, only when you press the button, and only inside the DropVault folder.
 
+### 6. Dude Link
+
+Dude Link is off by default. Clipboard sharing is a separate switch that is also off by default. Everything stays on your local network. No external cloud servers or telemetry relays are used, and communication is encrypted with TLS 1.3 across your local Wi-Fi.
+
+With Dude Link on, a paired phone can see whether Antigravity is working, finished or waiting for you, and the name of the project folder. It never gets file names, code, commands or chats.
+
 ---
 
 ## Network Activity

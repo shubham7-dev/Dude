@@ -65,6 +65,9 @@ The following typefaces are utilized by the application interface:
 ### About Section Background (`assets/about-banner.webp`)
 - **source and license: to be filled by the owner**
 
+### Dude Link Section Background (`assets/dude-link-banner.webp`)
+- **source and license: to be filled by the owner**
+
 ### Character Artwork & Brand Assets ("Dude")
 - **Source**: `assets/` and `src-tauri/icons/`
 - **Copyright**: Copyright (c) 2026. All Rights Reserved.

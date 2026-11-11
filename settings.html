@@ -233,6 +233,20 @@
       --about-btn-color: #111111;
       --about-accordion-content-color: #7B7B88;
       --about-footer-color: #111111;
+
+      /* Dude Link Section - Light Theme Variables */
+      --dude-link-banner-border: #8E96AD;
+      --dude-link-divider-color: #DCDCDC;
+      --dude-link-card-bg: #ECE6C9;
+      --dude-link-tile-bg: #FFFFFF;
+      --dude-link-tile-border: transparent;
+      --dude-link-card-shadow: 0 4px 0 rgba(0, 0, 0, 0.75);
+      --dude-link-text-color: #111111;
+      --dude-link-subtext-color: #333333;
+      --dude-link-pill-bg: #FFFFFF;
+      --dude-link-btn-bg: #FFFFFF;
+      --dude-link-btn-border: #D0D0D0;
+      --dude-link-btn-color: #111111;
     }
 
     :root[data-theme="dark"] {
@@ -399,6 +413,20 @@
       --about-btn-color: #FFFFFF;
       --about-accordion-content-color: #D0D0D8;
       --about-footer-color: #FFFFFF;
+
+      /* Dude Link Section - Dark Theme Variables */
+      --dude-link-banner-border: rgba(200, 210, 235, 0.45);
+      --dude-link-divider-color: rgba(200, 210, 235, 0.35);
+      --dude-link-card-bg: #3A3830;
+      --dude-link-tile-bg: rgba(255, 255, 255, 0.08);
+      --dude-link-tile-border: 1px solid rgba(255, 255, 255, 0.18);
+      --dude-link-card-shadow: 0 4px 0 rgba(0, 0, 0, 0.75);
+      --dude-link-text-color: #FFFFFF;
+      --dude-link-subtext-color: #CCCCCC;
+      --dude-link-pill-bg: rgba(255, 255, 255, 0.12);
+      --dude-link-btn-bg: rgba(255, 255, 255, 0.12);
+      --dude-link-btn-border: rgba(255, 255, 255, 0.25);
+      --dude-link-btn-color: #FFFFFF;
     }
 
     /* Smooth theme transition on interactive toggle (runs only while temporary class is present) */
@@ -821,12 +849,12 @@
 
     .nav-item {
       width: 276px;
-      height: 56px;
+      height: 50px;
       display: flex;
       align-items: center;
       padding-left: 16px;
       font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 400;
       color: var(--color-sidebar-text);
       cursor: pointer;
@@ -4244,6 +4272,821 @@
       color: var(--dropvault-error-color, #DC2626);
       user-select: none;
     }
+
+    /* ======================================================================
+       DUDE LINK SECTION (Figma Redesign)
+       ====================================================================== */
+    .dude-link-panel {
+      position: absolute;
+      left: 362px;
+      top: 20px;
+      width: 619px;
+      height: 585px;
+      background-color: var(--panel-bg);
+      border-radius: 16px;
+      box-shadow: 0 0 12px rgba(112, 110, 250, 0.4);
+      overflow: hidden;
+      box-sizing: border-box;
+      display: none;
+      -webkit-app-region: no-drag !important;
+    }
+
+    /* Fixed Banner: left 29px, top 29px, 561 x 124px, radius var(--banner-radius) */
+    .dude-link-banner {
+      position: absolute;
+      left: var(--section-banner-left, 29px);
+      top: var(--section-banner-top, 29px);
+      width: var(--section-banner-width, 561px);
+      height: var(--section-banner-height, 124px);
+      border-radius: var(--banner-radius, 10px);
+      border: none;
+      background: url('assets/dude-link-banner.webp') center / 100% 100% no-repeat;
+      box-sizing: border-box;
+      -webkit-app-region: drag;
+      z-index: 10;
+    }
+
+    .dude-link-window-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 15;
+      -webkit-app-region: no-drag;
+    }
+
+    .dude-link-window-controls .win-btn {
+      color: #E8E8EE;
+    }
+
+    .dude-link-window-controls .win-btn-minimize:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #FFFFFF;
+    }
+
+    .dude-link-window-controls .win-btn-close:hover {
+      background-color: #FF5C5C;
+      color: #FFFFFF;
+    }
+
+    /* Divider: top 177px, left 29px, 561px wide, thickness 3px */
+    .dude-link-divider {
+      position: absolute;
+      left: 29px;
+      top: 177px;
+      width: 561px;
+      height: 3px;
+      background-color: var(--dude-link-divider-color, #DCDCDC);
+      border-radius: 1.5px;
+      z-index: 5;
+    }
+
+    /* Scroll Area: top 180px, left 3px, right 3px, bottom 3px, border-radius 0 0 13px 13px */
+    .dude-link-scroll-area {
+      position: absolute;
+      left: 3px;
+      right: 3px;
+      top: 180px;
+      bottom: 3px;
+      border-radius: 0 0 13px 13px;
+      overflow-y: scroll !important;
+      overflow-x: hidden !important;
+      padding: 20px 26px 34px;
+      box-sizing: border-box;
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      outline: none;
+      min-height: 0;
+      -webkit-app-region: no-drag !important;
+    }
+
+    .dude-link-scroll-area::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    .dude-link-scroll-content {
+      width: 561px;
+      min-height: min-content;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-sizing: border-box;
+      position: relative;
+      -webkit-app-region: no-drag !important;
+    }
+
+    /* Bottom Fade Indicator: height 24px */
+    .dude-link-scroll-fade {
+      position: absolute;
+      left: 3px;
+      right: 3px;
+      bottom: 3px;
+      height: 24px;
+      border-radius: 0 0 13px 13px;
+      background: linear-gradient(to bottom, transparent, var(--panel-bg));
+      pointer-events: none;
+      z-index: 25;
+      opacity: 1;
+      transition: opacity 150ms ease;
+    }
+
+    /* Cards: width 561px, radius 10px, static black bottom shadow */
+    .dude-link-card {
+      width: 561px;
+      border-radius: 10px;
+      background-color: var(--dude-link-card-bg);
+      box-shadow: var(--dude-link-card-shadow, 0 4px 0 rgba(0, 0, 0, 0.75));
+      box-sizing: border-box;
+      color: var(--dude-link-text-color);
+      position: relative;
+      user-select: none;
+      -webkit-app-region: no-drag !important;
+    }
+
+    /* CARD 1: LINK SERVER */
+    .dude-link-card-server {
+      padding: 14px 14px 12px 14px;
+      position: relative;
+    }
+
+    .dude-link-header-row {
+      display: flex;
+      align-items: center;
+      position: relative;
+      min-height: 40px;
+    }
+
+    .dude-link-server-icon {
+      width: 22px;
+      height: 22px;
+      color: var(--dude-link-text-color);
+      flex-shrink: 0;
+    }
+
+    .dude-link-title-block {
+      margin-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-width: 360px;
+    }
+
+    .dude-link-card-title {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--dude-link-text-color);
+      line-height: 1.2;
+    }
+
+    .dude-link-card-subtitle {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dude-link-subtext-color);
+      line-height: 1.2;
+    }
+
+    .dude-link-toggle-wrap {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 62px;
+      height: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .dude-link-toggle-wrap .toggle-track {
+      position: relative !important;
+      top: auto !important;
+      bottom: auto !important;
+      left: auto !important;
+      right: auto !important;
+      margin: 0 !important;
+    }
+
+    /* Status Tile */
+    .dude-link-status-tile {
+      margin-top: 12px;
+      height: 36px;
+      border-radius: 5px;
+      background-color: var(--dude-link-tile-bg);
+      border: var(--dude-link-tile-border);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .dude-link-status-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .dude-link-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #1FA81F;
+      flex-shrink: 0;
+    }
+
+    .dude-link-status-dot.off {
+      background-color: #777777;
+    }
+
+    .dude-link-status-dot.starting {
+      background-color: #D97706;
+    }
+
+    .dude-link-status-dot.error {
+      background-color: #DC2626;
+    }
+
+    .dude-link-status-text {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: #1FA81F;
+    }
+
+    .dude-link-status-text.off {
+      color: #777777;
+    }
+
+    .dude-link-status-text.starting {
+      color: #D97706;
+    }
+
+    .dude-link-status-text.error {
+      color: #DC2626;
+    }
+
+    .dude-link-status-ip {
+      position: absolute;
+      left: 144px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--dude-link-text-color);
+    }
+
+    .dude-link-ip-icon {
+      width: 16px;
+      height: 16px;
+      color: var(--dude-link-text-color);
+      flex-shrink: 0;
+    }
+
+    /* More Options Button & Chevron */
+    .dude-link-more-row {
+      margin-top: 10px;
+    }
+
+    .dude-link-more-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dude-link-text-color);
+      outline: none;
+    }
+
+    .dude-link-chevron {
+      width: 10px;
+      height: 6px;
+      transition: transform 180ms ease;
+    }
+
+    .dude-link-more-btn[aria-expanded="true"] .dude-link-chevron,
+    .dude-link-more-wrap.expanded .dude-link-chevron {
+      transform: rotate(180deg);
+    }
+
+    /* CSS Grid Collapsible Animation */
+    .dude-link-collapsible-grid {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 180ms ease;
+    }
+
+    .dude-link-collapsible-grid.expanded {
+      grid-template-rows: 1fr;
+    }
+
+    .dude-link-collapsible-inner {
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .dude-link-collapsible-grid.expanded .dude-link-collapsible-inner {
+      overflow: visible;
+    }
+
+    .dude-link-options-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .dude-link-option-tile {
+      min-height: 34px;
+      border-radius: 5px;
+      background-color: var(--dude-link-tile-bg);
+      border: var(--dude-link-tile-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dude-link-text-color);
+    }
+
+    .dude-link-option-tile.capabilities-tile {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 8px 12px;
+      gap: 8px;
+    }
+
+    .dude-link-cap-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 28px;
+      position: relative;
+    }
+
+    .dude-link-cap-row .toggle-track {
+      position: relative !important;
+      top: auto !important;
+      bottom: auto !important;
+      left: auto !important;
+      right: auto !important;
+      margin: 0 !important;
+      flex-shrink: 0;
+    }
+
+    .dude-link-cap-label-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .dude-link-cap-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dude-link-text-color);
+    }
+
+    .dude-link-cap-sub {
+      font-size: 9.5px;
+      font-weight: 500;
+      color: var(--dude-link-subtext-color);
+    }
+
+    .dude-link-tile-btn {
+      height: 24px;
+      padding: 0 10px;
+      border-radius: 4px;
+      background: var(--dude-link-btn-bg);
+      border: 1px solid var(--dude-link-btn-border);
+      color: var(--dude-link-btn-color);
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dude-link-tile-btn:hover {
+      opacity: 0.9;
+    }
+
+    .dude-link-tile-btn.btn-danger {
+      border-color: #DC2626;
+      color: #DC2626;
+      background: transparent;
+    }
+
+    .dude-link-tile-btn.btn-danger:hover {
+      background: rgba(220, 38, 38, 0.08);
+    }
+
+    /* CARD 2: PAIR A PHONE */
+    .dude-link-card-pair {
+      height: 137px;
+      padding: 8px;
+      display: flex;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .dude-link-qr-box {
+      width: 121px;
+      height: 121px;
+      border-radius: 6px;
+      background-color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .dude-link-qr-box svg {
+      width: 105px;
+      height: 105px;
+      display: block;
+    }
+
+    .dude-link-pair-right {
+      position: absolute;
+      left: 157px;
+      top: 8px;
+      right: 14px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dude-link-code-pill {
+      width: 232px;
+      height: 30px;
+      border-radius: 6px;
+      background-color: var(--dude-link-pill-bg);
+      border: var(--dude-link-tile-border);
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px 0 14px;
+      box-sizing: border-box;
+    }
+
+    .dude-link-code-val {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      color: var(--dude-link-text-color);
+    }
+
+    .dude-link-copy-icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--dude-link-text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      border-radius: 4px;
+      opacity: 0.8;
+      transition: opacity 120ms ease;
+    }
+
+    .dude-link-copy-icon-btn:hover {
+      opacity: 1;
+    }
+
+    .dude-link-expiry-row {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dude-link-subtext-color);
+    }
+
+    .dude-link-pair-overlay-msg {
+      position: absolute;
+      left: 157px;
+      bottom: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #1FA81F;
+      display: none;
+    }
+
+    /* CARD 3: PAIRED PHONES */
+    .dude-link-card-devices {
+      padding: 12px 14px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .dude-link-devices-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 28px;
+    }
+
+    .dude-link-devices-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dude-link-phone-icon {
+      width: 16px;
+      height: 16px;
+      color: var(--dude-link-text-color);
+      flex-shrink: 0;
+    }
+
+    .dude-link-devices-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dude-link-paired-count {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #888888;
+    }
+
+    .dude-link-devices-toggle-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      color: var(--dude-link-text-color);
+      outline: none;
+    }
+
+    .dude-link-devices-toggle-btn[aria-expanded="false"] .dude-link-chevron {
+      transform: rotate(-90deg);
+    }
+
+    .dude-link-devices-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 0 9px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .dude-link-devices-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .dude-link-device-row {
+      height: 36px;
+      border-radius: 5px;
+      background-color: var(--dude-link-tile-bg);
+      border: var(--dude-link-tile-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .dude-link-device-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .dude-link-device-name {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--dude-link-text-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 220px;
+    }
+
+    .dude-link-device-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .dude-link-device-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .dude-link-device-status.connected {
+      color: #1FA81F;
+    }
+
+    .dude-link-device-status.offline {
+      color: #888888;
+    }
+
+    .dude-link-device-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: currentColor;
+    }
+
+    .dude-link-device-menu-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .dude-link-device-menu-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--dude-link-text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      border-radius: 4px;
+      opacity: 0.75;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    .dude-link-device-menu-btn:hover {
+      opacity: 1;
+    }
+
+    .dude-link-device-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 4px);
+      background: var(--dude-link-tile-bg);
+      border: 1px solid var(--dude-link-btn-border);
+      border-radius: 6px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      min-width: 96px;
+      padding: 4px;
+      box-sizing: border-box;
+    }
+
+    .dude-link-device-menu.open {
+      display: flex;
+    }
+
+    .dude-link-menu-item {
+      display: flex;
+      align-items: center;
+      height: 26px;
+      padding: 0 10px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--dude-link-text-color);
+      background: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      box-sizing: border-box;
+      transition: background 120ms ease;
+    }
+
+    .dude-link-menu-item:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    :root[data-theme="dark"] .dude-link-menu-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .dude-link-rename-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .dude-link-rename-input {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--dude-link-text-color);
+      background: var(--dude-link-tile-bg);
+      border: 1.5px solid #8B5CF6;
+      border-radius: 4px;
+      padding: 2px 6px;
+      height: 24px;
+      outline: none;
+      max-width: 160px;
+      box-sizing: border-box;
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      -webkit-app-region: no-drag !important;
+    }
+
+    .dude-link-rename-action-btn {
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(0, 0, 0, 0.06);
+      color: var(--dude-link-text-color);
+      transition: background 120ms ease, opacity 120ms ease;
+    }
+
+    .dude-link-rename-action-btn:hover {
+      opacity: 0.9;
+    }
+
+    .dude-link-rename-action-btn.save {
+      background: #1FA81F;
+      color: #FFFFFF;
+    }
+
+    .dude-link-rename-action-btn.cancel {
+      background: rgba(0, 0, 0, 0.08);
+      color: var(--dude-link-subtext-color);
+    }
+
+    :root[data-theme="dark"] .dude-link-rename-action-btn.cancel {
+      background: rgba(255, 255, 255, 0.15);
+      color: #E0E0E0;
+    }
+
+    .dude-link-no-devices {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--dude-link-subtext-color);
+      text-align: center;
+      padding: 16px 0;
+    }
+
+    .dude-link-limit-banner {
+      background: rgba(220, 38, 38, 0.1);
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: #DC2626;
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+
+    .dude-link-qr-box.offline {
+      opacity: 0.35;
+    }
   </style>
 </head>
 
@@ -4287,6 +5130,7 @@
         <div class="nav-item" data-tab="startup">Startup</div>
         <div class="nav-item" data-tab="agents">Agents</div>
         <div class="nav-item" data-tab="dropvault">DropVault</div>
+        <div class="nav-item" data-tab="dude-link">Dude Link</div>
         <div class="nav-item" data-tab="about">About</div>
       </nav>
     </aside>
@@ -5028,6 +5872,242 @@
           <div class="dropvault-clean-error-msg" id="vault-clean-error-msg" style="display: none;"></div>
         </div>
       </div>
+    </section>
+
+    <!-- Right Content Panel (Dude Link section) -->
+    <section class="settings-subpanel dude-link-panel" id="dude-link-panel" style="display: none;">
+      <!-- Dude Link Banner: left 29px, top 29px, 561 x 124px, fixed -->
+      <div class="dude-link-banner" id="dude-link-banner" data-tauri-drag-region aria-label="Dude Link">
+        <div class="dude-link-window-controls">
+          <button type="button" class="win-btn win-btn-minimize" id="dude-link-minimize-btn" aria-label="Minimize">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <line x1="2" y1="7" x2="12" y2="7"></line>
+            </svg>
+          </button>
+          <button type="button" class="win-btn win-btn-close" id="dude-link-close-btn" aria-label="Close">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line>
+              <line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Divider: left 29px, 561px wide, top 177px, thickness 3px -->
+      <div class="dude-link-divider"></div>
+
+      <!-- Scroll Area below divider -->
+      <div class="dude-link-scroll-area" id="dude-link-scroll-area" tabindex="0">
+        <div class="dude-link-scroll-content">
+          <!-- CARD 1: LINK SERVER -->
+          <div class="dude-link-card dude-link-card-server" id="dude-link-server-card">
+            <div class="dude-link-header-row">
+              <svg class="dude-link-server-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4.93 19.07A10 10 0 0 1 4.93 4.93"/>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                <path d="M7.76 16.24a6 6 0 0 1 0-8.48"/>
+                <path d="M16.24 7.76a6 6 0 0 1 0 8.48"/>
+                <circle cx="12" cy="12" r="2" fill="currentColor"/>
+              </svg>
+              <div class="dude-link-title-block">
+                <div class="dude-link-card-title">Link Server</div>
+                <div class="dude-link-card-subtitle">Turn on to allow your phone to connect.</div>
+              </div>
+              <div class="dude-link-toggle-wrap">
+                <div class="toggle-track" id="dude-link-server-toggle" data-toggle="linkServer" role="switch" aria-checked="false" tabindex="0">
+                  <div class="toggle-knob"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Status Tile -->
+            <div class="dude-link-status-tile" id="dude-link-status-tile">
+              <div class="dude-link-status-left">
+                <div class="dude-link-status-dot off" id="dude-link-status-dot"></div>
+                <div class="dude-link-status-text off" id="dude-link-status-text">Off</div>
+              </div>
+              <div class="dude-link-status-ip" id="dude-link-status-ip">
+                <svg class="dude-link-ip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2"/>
+                  <line x1="8" y1="21" x2="16" y2="21"/>
+                  <line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+                <span id="dude-link-ip-text">IP: --</span>
+              </div>
+            </div>
+
+            <!-- More Options Collapsible -->
+            <div class="dude-link-more-wrap" id="dude-link-more-wrap">
+              <div class="dude-link-more-row">
+                <button type="button" class="dude-link-more-btn" id="dude-link-more-btn" aria-expanded="false">
+                  <span>More options</span>
+                  <svg class="dude-link-chevron" viewBox="0 0 10 6" fill="none">
+                    <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="dude-link-collapsible-grid" id="dude-link-more-grid">
+                <div class="dude-link-collapsible-inner">
+                  <div class="dude-link-options-list">
+                    <!-- Network Tile -->
+                    <div class="dude-link-option-tile" id="dude-link-network-tile">
+                      <span id="dude-link-network-label">Home network (Private)</span>
+                      <button type="button" class="dude-link-tile-btn" id="dude-link-wifi-settings-btn" style="display: none;">Open Wi-Fi settings</button>
+                    </div>
+
+                    <!-- Address Tile -->
+                    <div class="dude-link-option-tile" id="dude-link-address-tile">
+                      <span id="dude-link-address-text">Port 50432 · A1B2 C3D4 E5F6</span>
+                      <div style="display: flex; gap: 6px;">
+                        <button type="button" class="dude-link-tile-btn" id="dude-link-copy-addr-btn">Copy IP</button>
+                        <button type="button" class="dude-link-tile-btn" id="dude-link-copy-fp-btn">Copy Key</button>
+                      </div>
+                    </div>
+
+                    <!-- Auto-off Dropdown Tile -->
+                    <div class="dude-link-option-tile">
+                      <span>Turn off automatically</span>
+                      <div class="dropvault-select-wrap">
+                        <select class="dropvault-select" id="dude-link-auto-off-select" aria-label="Turn off automatically">
+                          <option value="0" selected>Never (default)</option>
+                          <option value="60">After 1 hour</option>
+                          <option value="480">After 8 hours</option>
+                          <option value="1440">After 24 hours</option>
+                        </select>
+                        <svg class="dropvault-select-chevron" viewBox="0 0 10 6" fill="none">
+                          <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </div>
+                    </div>
+
+                    <!-- Capabilities Tile -->
+                    <div class="dude-link-option-tile capabilities-tile">
+                      <div class="dude-link-cap-row">
+                        <span class="dude-link-cap-label">Show notifications</span>
+                        <div class="toggle-track active" id="dude-link-cap-notifications" data-cap="notifications" role="switch" aria-checked="true" tabindex="0">
+                          <div class="toggle-knob"></div>
+                        </div>
+                      </div>
+                      <div class="dude-link-cap-row">
+                        <span class="dude-link-cap-label">Send files to DropVault</span>
+                        <div class="toggle-track active" id="dude-link-cap-files" data-cap="files" role="switch" aria-checked="true" tabindex="0">
+                          <div class="toggle-knob"></div>
+                        </div>
+                      </div>
+                      <div class="dude-link-cap-row">
+                        <div class="dude-link-cap-label-group">
+                          <span class="dude-link-cap-label">Clipboard</span>
+                          <span class="dude-link-cap-sub">Shares text between your phone and this PC. Off by default.</span>
+                        </div>
+                        <div class="toggle-track" id="dude-link-cap-clipboard" data-cap="clipboard" role="switch" aria-checked="false" tabindex="0">
+                          <div class="toggle-knob"></div>
+                        </div>
+                      </div>
+                      <div class="dude-link-cap-row">
+                        <span class="dude-link-cap-label">Control music and volume</span>
+                        <div class="toggle-track active" id="dude-link-cap-media" data-cap="media" role="switch" aria-checked="true" tabindex="0">
+                          <div class="toggle-knob"></div>
+                        </div>
+                      </div>
+                      <div class="dude-link-cap-row">
+                        <div class="dude-link-cap-label-group">
+                          <span class="dude-link-cap-label">Show agent activity</span>
+                          <span class="dude-link-cap-sub">Lets your phone see if Antigravity is working, and the project's folder name.</span>
+                        </div>
+                        <div class="toggle-track active" id="dude-link-cap-agents" data-cap="agents" role="switch" aria-checked="true" tabindex="0">
+                          <div class="toggle-knob"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Server Actions Tile -->
+                    <div class="dude-link-option-tile">
+                      <span>Server actions</span>
+                      <div style="display: flex; gap: 8px;">
+                        <button type="button" class="dude-link-tile-btn" id="dude-link-restart-btn">Restart server</button>
+                        <button type="button" class="dude-link-tile-btn btn-danger" id="dude-link-forget-all-btn">Forget all phones</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 2: PAIR A PHONE -->
+          <div class="dude-link-card dude-link-card-pair" id="dude-link-pair-card">
+            <!-- Left: QR Code container -->
+            <div class="dude-link-qr-box offline" id="dude-link-qr-box">
+              <svg id="dude-link-qr-svg" viewBox="0 0 100 100" fill="none">
+                <rect width="100" height="100" fill="#FFFFFF"/>
+                <path d="M10 10h30v30h-30zM15 15h20v20h-20zM22 22h6v6h-6zM60 10h30v30h-30zM65 15h20v20h-20zM72 22h6v6h-6zM10 60h30v30h-30zM15 65h20v20h-20zM22 72h6v6h-6zM50 15h5v5h-5zM50 30h5v10h-5zM60 55h10v5h-10zM75 55h15v10h-15zM55 70h10v10h-10zM70 75h10v15h-10zM85 75h5v10h-5z" fill="#000000"/>
+              </svg>
+            </div>
+
+            <!-- Right Content -->
+            <div class="dude-link-pair-right">
+              <div class="dude-link-card-title">Pair a Phone</div>
+              <div class="dude-link-card-subtitle" id="dude-link-pair-subtitle">Turn on Link Server to allow your phone to connect.</div>
+
+              <!-- Pairing Code Pill -->
+              <div class="dude-link-code-pill" id="dude-link-code-pill" style="display: none;">
+                <span class="dude-link-code-val" id="dude-link-code-text">--------</span>
+                <button type="button" class="dude-link-copy-icon-btn" id="dude-link-copy-code-btn" aria-label="Copy code">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Expiry Countdown -->
+              <div class="dude-link-expiry-row" id="dude-link-expiry-row" style="display: none;">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <span id="dude-link-expiry-text">Expires in 02:00</span>
+              </div>
+
+              <div class="dude-link-pair-overlay-msg" id="dude-link-pair-msg"></div>
+              <div class="dude-link-limit-banner" id="dude-link-limit-banner" style="display: none;">Maximum 10 phones reached. Remove a paired phone below to connect a new one.</div>
+            </div>
+          </div>
+
+          <!-- CARD 3: PAIRED PHONES -->
+          <div class="dude-link-card dude-link-card-devices" id="dude-link-devices-card">
+            <div class="dude-link-devices-header">
+              <div class="dude-link-devices-title-group">
+                <svg class="dude-link-phone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                  <line x1="12" y1="18" x2="12.01" y2="18"/>
+                </svg>
+                <div class="dude-link-card-title">Paired Phones</div>
+              </div>
+              <div class="dude-link-devices-right">
+                <span class="dude-link-paired-count" id="dude-link-paired-count">0/10 paired</span>
+                <button type="button" class="dude-link-devices-toggle-btn" id="dude-link-devices-chevron-btn" aria-expanded="true">
+                  <svg class="dude-link-chevron" viewBox="0 0 10 6" fill="none">
+                    <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Collapsible Device Rows -->
+            <div class="dude-link-collapsible-grid expanded" id="dude-link-devices-grid">
+              <div class="dude-link-collapsible-inner">
+                <div class="dude-link-devices-list" id="dude-link-devices-list">
+                  <div class="dude-link-no-devices">No phones paired yet</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Fade -->
+      <div class="dude-link-scroll-fade" id="dude-link-scroll-fade"></div>
     </section>
 
     <!-- Right Content Panel (About section) -->
@@ -7216,7 +8296,7 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
     }
 
     // Minimize buttons
-    ['minimize-btn', 'appearance-minimize-btn', 'welcome-minimize-btn', 'behavior-minimize-btn', 'startup-minimize-btn', 'agents-minimize-btn', 'dropvault-minimize-btn', 'about-minimize-btn'].forEach((id) => {
+    ['minimize-btn', 'appearance-minimize-btn', 'welcome-minimize-btn', 'behavior-minimize-btn', 'startup-minimize-btn', 'agents-minimize-btn', 'dropvault-minimize-btn', 'about-minimize-btn', 'dude-link-minimize-btn'].forEach((id) => {
       const btn = document.getElementById(id);
       if (btn) {
         btn.addEventListener('mousedown', (e) => e.stopPropagation());
@@ -7229,7 +8309,7 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
     });
 
     // Close buttons
-    ['close-btn', 'appearance-close-btn', 'welcome-close-btn', 'behavior-close-btn', 'startup-close-btn', 'agents-close-btn', 'dropvault-close-btn', 'about-close-btn'].forEach((id) => {
+    ['close-btn', 'appearance-close-btn', 'welcome-close-btn', 'behavior-close-btn', 'startup-close-btn', 'agents-close-btn', 'dropvault-close-btn', 'about-close-btn', 'dude-link-close-btn'].forEach((id) => {
       const btn = document.getElementById(id);
       if (btn) {
         btn.addEventListener('mousedown', (e) => e.stopPropagation());
@@ -7252,6 +8332,7 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
     const agentsPanel = document.getElementById('agents-panel');
     const dropvaultPanel = document.getElementById('dropvault-panel');
     const aboutPanel = document.getElementById('about-panel');
+    const dudeLinkPanel = document.getElementById('dude-link-panel');
     const navItems = document.querySelectorAll('.nav-item');
 
     const initializedTabs = new Set();
@@ -7272,6 +8353,8 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
           loadAgentsSettings();
         } else if (tab === 'dropvault') {
           initDropVaultTab();
+        } else if (tab === 'dude-link') {
+          initDudeLinkSection();
         } else if (tab === 'about') {
           loadAboutSection();
         } else if (tab === 'welcome') {
@@ -7315,6 +8398,12 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
           resetAboutScroll();
         }
       }
+      if (dudeLinkPanel) {
+        dudeLinkPanel.style.display = (tab === 'dude-link') ? 'block' : 'none';
+        if (tab === 'dude-link' && typeof resetDudeLinkScroll === 'function') {
+          resetDudeLinkScroll();
+        }
+      }
 
       // Lazy-init section exactly ONCE
       ensureTabInitialized(tab);
@@ -7332,6 +8421,14 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
         startAgentsEventPolling();
       } else {
         stopAgentsEventPolling();
+      }
+
+      // Dude Link Section lifecycle
+      if (tab === 'dude-link') {
+        if (typeof preloadDudeLinkBanner === 'function') preloadDudeLinkBanner();
+        if (typeof onDudeLinkVisible === 'function') onDudeLinkVisible();
+      } else {
+        if (typeof onDudeLinkHidden === 'function') onDudeLinkHidden();
       }
 
       // Refresh cached mascot center without layout thrashing
@@ -10172,6 +11269,1301 @@ Inspired by the notch-companion idea and by Coucou (github.com/Louis-CFM/coucou,
       // 6. Start blink schedule
       scheduleSidebarBlink();
       refreshMascotCenterCache();
+    }
+
+    // ======================================================================
+    // DUDE LINK SECTION (Figma Redesign - Stage 1 Foundation)
+    // ======================================================================
+    // ======================================================================
+    // DUDE LINK SECTION (Stage 2: Backend Integration & Stage 3: Verification)
+    // ======================================================================
+    let dudeLinkInitialized = false;
+    let dudeLinkBannerPreloaded = false;
+    let dudeLinkScrollRafId = null;
+    let currentPhoneStatus = null;
+    let currentPairingSession = null;
+    let pairingCountdownTimer = null;
+    let pairingRemainingSeconds = 0;
+    let dudeLinkPollTimer = null;
+    let phoneEventDebounceTimer = null;
+    let forgetAllTimer = null;
+    let debugStateIndex = 0;
+
+    function invokeTauri(cmd, args = {}) {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          return window.__TAURI__.core.invoke(cmd, args);
+        } else if (window.__TAURI__?.invoke) {
+          return window.__TAURI__.invoke(cmd, args);
+        }
+      } catch (err) {
+        return Promise.reject(err);
+      }
+      return Promise.reject(new Error('Tauri IPC not available'));
+    }
+
+    function preloadDudeLinkBanner() {
+      if (dudeLinkBannerPreloaded) return;
+      dudeLinkBannerPreloaded = true;
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = 'assets/dude-link-banner.webp';
+      link.type = 'image/webp';
+      document.head.appendChild(link);
+    }
+
+    function updateDudeLinkScrollVisuals() {
+      const area = document.getElementById('dude-link-scroll-area');
+      const fade = document.getElementById('dude-link-scroll-fade');
+      if (!area || !fade) return;
+      const maxScroll = area.scrollHeight - area.clientHeight;
+      const atEnd = (maxScroll <= 0) || (area.scrollTop >= maxScroll - 2);
+      fade.style.opacity = atEnd ? '0' : '1';
+    }
+
+    function resetDudeLinkScroll() {
+      const area = document.getElementById('dude-link-scroll-area');
+      if (!area) return;
+      area.scrollTop = 0;
+      updateDudeLinkScrollVisuals();
+    }
+
+    function formatPairingCode(code) {
+      if (!code) return '--------';
+      const clean = String(code).replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      if (clean.length === 8) {
+        return clean.slice(0, 4).split('').join(' ') + ' - ' + clean.slice(4).split('').join(' ');
+      }
+      return String(code).split('').join(' ');
+    }
+
+    function formatRelativeTime(ts) {
+      if (!ts) return 'recently';
+      const diffSec = Math.max(0, Math.floor((Date.now() - Number(ts)) / 1000));
+      if (diffSec < 60) return 'just now';
+      if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+      if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
+      return `${Math.floor(diffSec / 86400)}d ago`;
+    }
+
+    function renderQRCodeSVG(container, qrModules, qrSize) {
+      if (!container) return;
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+      if (!qrModules || !qrSize || qrModules.length !== qrSize * qrSize) {
+        renderQRPlaceholder(container);
+        return;
+      }
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS, 'svg');
+      const margin = 2;
+      const total = qrSize + margin * 2;
+      svg.setAttribute('viewBox', `0 0 ${total} ${total}`);
+      svg.setAttribute('width', '100%');
+      svg.setAttribute('height', '100%');
+      svg.style.display = 'block';
+
+      const bg = document.createElementNS(svgNS, 'rect');
+      bg.setAttribute('width', String(total));
+      bg.setAttribute('height', String(total));
+      bg.setAttribute('fill', '#FFFFFF');
+      svg.appendChild(bg);
+
+      let d = '';
+      for (let r = 0; r < qrSize; r++) {
+        for (let c = 0; c < qrSize; c++) {
+          if (qrModules[r * qrSize + c]) {
+            d += `M${c + margin},${r + margin}h1v1h-1z `;
+          }
+        }
+      }
+      const path = document.createElementNS(svgNS, 'path');
+      path.setAttribute('d', d.trim());
+      path.setAttribute('fill', '#000000');
+      svg.appendChild(path);
+
+      container.appendChild(svg);
+    }
+
+    function renderQRPlaceholder(container) {
+      if (!container) return;
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('viewBox', '0 0 100 100');
+      svg.setAttribute('width', '100%');
+      svg.setAttribute('height', '100%');
+      svg.style.display = 'block';
+
+      const bg = document.createElementNS(svgNS, 'rect');
+      bg.setAttribute('width', '100');
+      bg.setAttribute('height', '100');
+      bg.setAttribute('fill', '#FFFFFF');
+      svg.appendChild(bg);
+
+      const path = document.createElementNS(svgNS, 'path');
+      path.setAttribute('d', 'M10 10h30v30h-30zM15 15h20v20h-20zM22 22h6v6h-6zM60 10h30v30h-30zM65 15h20v20h-20zM72 22h6v6h-6zM10 60h30v30h-30zM15 65h20v20h-20zM22 72h6v6h-6zM50 15h5v5h-5zM50 30h5v10h-5zM60 55h10v5h-10zM75 55h15v10h-15zM55 70h10v10h-10zM70 75h10v15h-10zM85 75h5v10h-5z');
+      path.setAttribute('fill', '#888888');
+      svg.appendChild(path);
+
+      container.appendChild(svg);
+    }
+
+    function updateCountdownDisplay() {
+      const expiryText = document.getElementById('dude-link-expiry-text');
+      if (!expiryText) return;
+      const m = Math.floor(Math.max(0, pairingRemainingSeconds) / 60);
+      const s = Math.max(0, pairingRemainingSeconds) % 60;
+      expiryText.textContent = `Expires in ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function startPairingCountdown(seconds) {
+      if (pairingCountdownTimer) {
+        clearInterval(pairingCountdownTimer);
+        pairingCountdownTimer = null;
+      }
+      pairingRemainingSeconds = typeof seconds === 'number' ? seconds : 120;
+      updateCountdownDisplay();
+
+      pairingCountdownTimer = setInterval(() => {
+        pairingRemainingSeconds--;
+        if (pairingRemainingSeconds > 0) {
+          updateCountdownDisplay();
+        } else {
+          clearInterval(pairingCountdownTimer);
+          pairingCountdownTimer = null;
+          const expiryText = document.getElementById('dude-link-expiry-text');
+          if (expiryText) expiryText.textContent = 'Expires in 00:00';
+          if (currentActiveTab === 'dude-link' && currentPhoneStatus?.running) {
+            refreshPairingSession();
+          }
+        }
+      }, 1000);
+    }
+
+    function applyPairingSession(session) {
+      if (!session) return;
+      currentPairingSession = session;
+      const qrBox = document.getElementById('dude-link-qr-box');
+      const codeText = document.getElementById('dude-link-code-text');
+      const codePill = document.getElementById('dude-link-code-pill');
+      const expiryRow = document.getElementById('dude-link-expiry-row');
+      const pairSubtitle = document.getElementById('dude-link-pair-subtitle');
+
+      const qrModules = session.qrModules || session.qr_modules;
+      const qrSize = session.qrSize || session.qr_size;
+      const expiresInSec = session.expiresInSec || session.expires_in_sec || 120;
+
+      if (codePill) codePill.style.display = 'flex';
+      if (expiryRow) expiryRow.style.display = 'flex';
+      if (pairSubtitle) pairSubtitle.textContent = 'Scan the QR code with Dude phone app.';
+
+      if (qrBox && qrModules && qrSize) {
+        qrBox.classList.remove('offline');
+        renderQRCodeSVG(qrBox, qrModules, qrSize);
+      }
+      if (codeText && session.code) {
+        codeText.textContent = formatPairingCode(session.code);
+      }
+      startPairingCountdown(expiresInSec);
+    }
+
+    async function startPairingSession() {
+      try {
+        const session = await invokeTauri('phone_start_pairing');
+        applyPairingSession(session);
+      } catch (err) {
+        console.warn('phone_start_pairing error:', err);
+        const limitBanner = document.getElementById('dude-link-limit-banner');
+        if (limitBanner && String(err).includes('Limit')) {
+          limitBanner.style.display = 'block';
+        }
+      }
+    }
+
+    async function refreshPairingSession() {
+      try {
+        const session = await invokeTauri('phone_refresh_pairing');
+        applyPairingSession(session);
+      } catch (err) {
+        console.warn('phone_refresh_pairing error:', err);
+      }
+    }
+
+    function createDeviceRow(device, onRename, onRemove) {
+      const row = document.createElement('div');
+      row.className = 'dude-link-device-row';
+      row.setAttribute('data-device-id', device.id);
+
+      const left = document.createElement('div');
+      left.className = 'dude-link-device-left';
+
+      const phoneSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      phoneSvg.setAttribute('class', 'dude-link-phone-icon');
+      phoneSvg.setAttribute('viewBox', '0 0 24 24');
+      phoneSvg.setAttribute('fill', 'none');
+      phoneSvg.setAttribute('stroke', 'currentColor');
+      phoneSvg.setAttribute('stroke-width', '2');
+      phoneSvg.setAttribute('stroke-linecap', 'round');
+      phoneSvg.setAttribute('stroke-linejoin', 'round');
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', '5');
+      rect.setAttribute('y', '2');
+      rect.setAttribute('width', '14');
+      rect.setAttribute('height', '20');
+      rect.setAttribute('rx', '2');
+      rect.setAttribute('ry', '2');
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', '12');
+      line.setAttribute('y1', '18');
+      line.setAttribute('x2', '12.01');
+      line.setAttribute('y2', '18');
+      phoneSvg.appendChild(rect);
+      phoneSvg.appendChild(line);
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'dude-link-device-name';
+      nameSpan.textContent = device.name || 'Unnamed Phone';
+
+      left.appendChild(phoneSvg);
+      left.appendChild(nameSpan);
+
+      const right = document.createElement('div');
+      right.className = 'dude-link-device-right';
+
+      const statusWrap = document.createElement('div');
+      statusWrap.className = 'dude-link-device-status ' + (device.connected ? 'connected' : 'offline');
+
+      const dot = document.createElement('div');
+      dot.className = 'dude-link-device-dot';
+
+      const statusText = document.createElement('span');
+      const lastSeen = device.lastSeen !== undefined ? device.lastSeen : device.last_seen;
+      statusText.textContent = device.connected ? 'Connected' : `Last seen ${formatRelativeTime(lastSeen)}`;
+
+      statusWrap.appendChild(dot);
+      statusWrap.appendChild(statusText);
+
+      const menuBtn = document.createElement('button');
+      menuBtn.type = 'button';
+      menuBtn.className = 'dude-link-device-menu-btn';
+      menuBtn.textContent = '···';
+      menuBtn.setAttribute('aria-label', 'Device options');
+
+      const menu = document.createElement('div');
+      menu.className = 'dude-link-device-menu';
+
+      const renameItem = document.createElement('button');
+      renameItem.type = 'button';
+      renameItem.className = 'dude-link-menu-item';
+      renameItem.textContent = 'Rename';
+
+      const removeItem = document.createElement('button');
+      removeItem.type = 'button';
+      removeItem.className = 'dude-link-menu-item';
+      removeItem.textContent = 'Remove';
+      removeItem.style.color = '#DC2626';
+
+      menu.appendChild(renameItem);
+      menu.appendChild(removeItem);
+
+      menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = menu.classList.contains('open');
+        document.querySelectorAll('.dude-link-device-menu.open').forEach(m => m.classList.remove('open'));
+        if (!isOpen) {
+          menu.classList.add('open');
+        }
+      });
+
+      renameItem.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menu.classList.remove('open');
+        startInlineRename(left, nameSpan, device.id, device.name, onRename);
+      });
+
+      let removeConfirmTimer = null;
+      removeItem.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (removeItem.getAttribute('data-confirm') === 'true') {
+          clearTimeout(removeConfirmTimer);
+          menu.classList.remove('open');
+          onRemove(device.id);
+        } else {
+          removeItem.setAttribute('data-confirm', 'true');
+          removeItem.textContent = 'Sure?';
+          removeConfirmTimer = setTimeout(() => {
+            removeItem.removeAttribute('data-confirm');
+            removeItem.textContent = 'Remove';
+          }, 3000);
+        }
+      });
+
+      const menuWrap = document.createElement('div');
+      menuWrap.className = 'dude-link-device-menu-wrap';
+      menuWrap.appendChild(menuBtn);
+      menuWrap.appendChild(menu);
+
+      right.appendChild(statusWrap);
+      right.appendChild(menuWrap);
+
+      row.appendChild(left);
+      row.appendChild(right);
+      return row;
+    }
+
+    function startInlineRename(container, nameSpan, deviceId, currentName, onSave) {
+      // Remove any existing inline rename forms first
+      document.querySelectorAll('.dude-link-rename-wrap').forEach(w => {
+        if (w.parentNode) {
+          const siblingSpan = w.parentNode.querySelector('.dude-link-device-name');
+          if (siblingSpan) siblingSpan.style.display = '';
+          w.parentNode.removeChild(w);
+        }
+      });
+
+      const wrap = document.createElement('div');
+      wrap.className = 'dude-link-rename-wrap';
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'dude-link-rename-input';
+      input.value = currentName || '';
+      input.maxLength = 40;
+
+      const saveBtn = document.createElement('button');
+      saveBtn.type = 'button';
+      saveBtn.className = 'dude-link-rename-action-btn save';
+      saveBtn.title = 'Save';
+      saveBtn.textContent = '✓';
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.type = 'button';
+      cancelBtn.className = 'dude-link-rename-action-btn cancel';
+      cancelBtn.title = 'Cancel';
+      cancelBtn.textContent = '✕';
+
+      wrap.appendChild(input);
+      wrap.appendChild(saveBtn);
+      wrap.appendChild(cancelBtn);
+
+      nameSpan.style.display = 'none';
+      container.appendChild(wrap);
+
+      wrap.addEventListener('click', (e) => e.stopPropagation());
+      wrap.addEventListener('mousedown', (e) => e.stopPropagation());
+
+      let committed = false;
+      const finish = (save) => {
+        if (committed) return;
+        committed = true;
+        const newVal = input.value.trim();
+        if (wrap.parentNode) {
+          wrap.parentNode.removeChild(wrap);
+        }
+        nameSpan.style.display = '';
+        if (save && newVal && newVal !== currentName) {
+          nameSpan.textContent = newVal;
+          onSave(deviceId, newVal);
+        }
+      };
+
+      saveBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        finish(true);
+      });
+
+      cancelBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        finish(false);
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          finish(true);
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          finish(false);
+        }
+      });
+
+      input.addEventListener('blur', () => {
+        setTimeout(() => {
+          if (!committed) {
+            if (document.activeElement !== saveBtn && document.activeElement !== cancelBtn) {
+              finish(true);
+            }
+          }
+        }, 120);
+      });
+
+      setTimeout(() => {
+        input.focus();
+        input.select();
+      }, 50);
+    }
+
+    async function copyToClipboard(text, btn, successLabel = 'Copied!') {
+      if (!text) return false;
+      try {
+        if (navigator?.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        if (btn) {
+          const orig = btn.textContent;
+          btn.textContent = successLabel;
+          btn.disabled = true;
+          setTimeout(() => {
+            btn.textContent = orig;
+            btn.disabled = false;
+          }, 1500);
+        }
+        return true;
+      } catch (err) {
+        console.warn('Failed to copy to clipboard:', err);
+        return false;
+      }
+    }
+
+    function renderPhoneStatus(status) {
+      if (!status) return;
+      currentPhoneStatus = status;
+
+      // 1. Server toggle
+      const serverToggle = document.getElementById('dude-link-server-toggle');
+      if (serverToggle) {
+        serverToggle.classList.toggle('active', !!status.running);
+        serverToggle.setAttribute('aria-checked', String(!!status.running));
+      }
+
+      // 2. Status dot & text
+      const dot = document.getElementById('dude-link-status-dot');
+      const text = document.getElementById('dude-link-status-text');
+      if (dot && text) {
+        dot.className = 'dude-link-status-dot';
+        text.className = 'dude-link-status-text';
+        if (status.error) {
+          dot.classList.add('error');
+          text.classList.add('error');
+          text.textContent = 'Error';
+        } else if (status.starting) {
+          dot.classList.add('starting');
+          text.classList.add('starting');
+          text.textContent = 'Starting...';
+        } else if (status.running) {
+          text.textContent = 'Running';
+        } else {
+          dot.classList.add('off');
+          text.classList.add('off');
+          text.textContent = 'Off';
+        }
+      }
+
+      // 3. Status IP
+      const ipText = document.getElementById('dude-link-ip-text');
+      if (ipText) {
+        if (status.running && status.addresses && status.addresses.length > 0) {
+          const primary = status.addresses[0];
+          const extra = status.addresses.length > 1 ? ` +${status.addresses.length - 1}` : '';
+          ipText.textContent = `IP: ${primary}${extra}`;
+        } else if (status.running) {
+          ipText.textContent = 'IP: 127.0.0.1';
+        } else {
+          ipText.textContent = 'IP: --';
+        }
+      }
+
+      // 4. Network profile
+      const networkLabel = document.getElementById('dude-link-network-label');
+      const wifiBtn = document.getElementById('dude-link-wifi-settings-btn');
+      const netProfile = status.networkProfile || status.network_profile;
+      if (networkLabel) {
+        if (netProfile === 'Public' || netProfile === 'public') {
+          networkLabel.textContent = 'Public network';
+          if (wifiBtn) wifiBtn.style.display = 'inline-flex';
+        } else {
+          networkLabel.textContent = 'Home network (Private)';
+          if (wifiBtn) wifiBtn.style.display = 'none';
+        }
+      }
+
+      // 5. Address tile
+      const addressText = document.getElementById('dude-link-address-text');
+      if (addressText) {
+        const portStr = status.port ? `Port ${status.port}` : 'Port 50432';
+        const fpStr = status.fingerprintShort || status.fingerprint_short || '--';
+        addressText.textContent = `${portStr} · ${fpStr}`;
+      }
+
+      // 6. Auto-off dropdown
+      const autoOffSelect = document.getElementById('dude-link-auto-off-select');
+      if (autoOffSelect) {
+        const autoOff = status.autoOffMinutes !== undefined ? status.autoOffMinutes : (status.auto_off_minutes || 0);
+        autoOffSelect.value = String(autoOff);
+      }
+
+      // 7. Capabilities
+      const capMap = [
+        ['dude-link-cap-notifications', status.capabilities?.notifications],
+        ['dude-link-cap-files', status.capabilities?.files],
+        ['dude-link-cap-clipboard', status.capabilities?.clipboard],
+        ['dude-link-cap-media', status.capabilities?.media],
+        ['dude-link-cap-agents', status.capabilities?.agents !== undefined ? status.capabilities.agents : true],
+      ];
+      capMap.forEach(([id, active]) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.classList.toggle('active', !!active);
+          el.setAttribute('aria-checked', String(!!active));
+        }
+      });
+
+      // 8. Paired phones count & rows
+      const devices = status.devices || [];
+      const pairedCount = document.getElementById('dude-link-paired-count');
+      if (pairedCount) {
+        pairedCount.textContent = `${devices.length}/10 paired`;
+      }
+
+      const devicesList = document.getElementById('dude-link-devices-list');
+      if (devicesList) {
+        while (devicesList.firstChild) {
+          devicesList.removeChild(devicesList.firstChild);
+        }
+        if (devices.length === 0) {
+          const empty = document.createElement('div');
+          empty.className = 'dude-link-no-devices';
+          empty.textContent = 'No phones paired yet';
+          devicesList.appendChild(empty);
+        } else {
+          devices.forEach(device => {
+            const row = createDeviceRow(device, handleRenameDevice, handleRemoveDevice);
+            devicesList.appendChild(row);
+          });
+        }
+      }
+
+      // 9. Pair a Phone Card state
+      const qrBox = document.getElementById('dude-link-qr-box');
+      const pairSubtitle = document.getElementById('dude-link-pair-subtitle');
+      const codePill = document.getElementById('dude-link-code-pill');
+      const expiryRow = document.getElementById('dude-link-expiry-row');
+      const limitBanner = document.getElementById('dude-link-limit-banner');
+
+      if (!status.running) {
+        if (pairingCountdownTimer) {
+          clearInterval(pairingCountdownTimer);
+          pairingCountdownTimer = null;
+        }
+        currentPairingSession = null;
+        if (qrBox) {
+          qrBox.classList.add('offline');
+          renderQRPlaceholder(qrBox);
+        }
+        if (pairSubtitle) pairSubtitle.textContent = 'Turn on Link Server to allow your phone to connect.';
+        if (codePill) codePill.style.display = 'none';
+        if (expiryRow) expiryRow.style.display = 'none';
+        if (limitBanner) limitBanner.style.display = 'none';
+      } else if (devices.length >= 10) {
+        if (pairingCountdownTimer) {
+          clearInterval(pairingCountdownTimer);
+          pairingCountdownTimer = null;
+        }
+        currentPairingSession = null;
+        if (qrBox) {
+          qrBox.classList.add('offline');
+          renderQRPlaceholder(qrBox);
+        }
+        if (pairSubtitle) pairSubtitle.textContent = 'Maximum 10 phones reached.';
+        if (codePill) codePill.style.display = 'none';
+        if (expiryRow) expiryRow.style.display = 'none';
+        if (limitBanner) limitBanner.style.display = 'block';
+      } else {
+        if (qrBox) qrBox.classList.remove('offline');
+        if (pairSubtitle) pairSubtitle.textContent = 'Scan the QR code with Dude phone app.';
+        if (codePill) codePill.style.display = 'flex';
+        if (expiryRow) expiryRow.style.display = 'flex';
+        if (limitBanner) limitBanner.style.display = 'none';
+
+        if (!currentPairingSession || pairingRemainingSeconds <= 0) {
+          startPairingSession();
+        }
+      }
+
+      updateDudeLinkScrollVisuals();
+    }
+
+    async function fetchPhoneStatus() {
+      try {
+        const status = await invokeTauri('phone_get_status');
+        renderPhoneStatus(status);
+      } catch (err) {
+        console.warn('phone_get_status error:', err);
+      }
+    }
+
+    async function toggleServer() {
+      const isCurrentlyRunning = currentPhoneStatus ? !!currentPhoneStatus.running : false;
+      const targetEnabled = !isCurrentlyRunning;
+      const toggle = document.getElementById('dude-link-server-toggle');
+      const dot = document.getElementById('dude-link-status-dot');
+      const text = document.getElementById('dude-link-status-text');
+
+      if (toggle) {
+        toggle.classList.toggle('active', targetEnabled);
+        toggle.setAttribute('aria-checked', String(targetEnabled));
+      }
+
+      if (targetEnabled) {
+        if (dot) dot.className = 'dude-link-status-dot starting';
+        if (text) {
+          text.className = 'dude-link-status-text starting';
+          text.textContent = 'Starting...';
+        }
+      } else {
+        if (dot) dot.className = 'dude-link-status-dot off';
+        if (text) {
+          text.className = 'dude-link-status-text off';
+          text.textContent = 'Stopping...';
+        }
+      }
+
+      try {
+        const status = await invokeTauri('phone_set_enabled', { enabled: targetEnabled });
+        renderPhoneStatus(status);
+        if (targetEnabled && status && status.running) {
+          await startPairingSession();
+        }
+      } catch (err) {
+        console.error('Failed to set phone server enabled:', err);
+        await fetchPhoneStatus();
+      }
+    }
+
+    async function restartServer() {
+      const btn = document.getElementById('dude-link-restart-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Restarting...';
+      }
+      try {
+        const status = await invokeTauri('phone_restart');
+        renderPhoneStatus(status);
+      } catch (err) {
+        console.error('Failed to restart phone server:', err);
+        await fetchPhoneStatus();
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Restart server';
+        }
+      }
+    }
+
+    async function handleForgetAllClick(btn) {
+      if (btn.getAttribute('data-confirm') === 'true') {
+        clearTimeout(forgetAllTimer);
+        btn.removeAttribute('data-confirm');
+        btn.textContent = 'Forgetting...';
+        btn.disabled = true;
+        try {
+          await invokeTauri('phone_forget_all');
+          await fetchPhoneStatus();
+        } catch (err) {
+          console.error('Failed to forget all phones:', err);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Forget all phones';
+        }
+      } else {
+        btn.setAttribute('data-confirm', 'true');
+        btn.textContent = 'Sure? Click to confirm';
+        forgetAllTimer = setTimeout(() => {
+          btn.removeAttribute('data-confirm');
+          btn.textContent = 'Forget all phones';
+        }, 3000);
+      }
+    }
+
+    async function handleAutoOffChange(e) {
+      const minutes = parseInt(e.target.value, 10) || 0;
+      try {
+        await invokeTauri('phone_set_auto_off', { minutes });
+        if (currentPhoneStatus) {
+          currentPhoneStatus.auto_off_minutes = minutes;
+        }
+      } catch (err) {
+        console.error('Failed to set auto-off minutes:', err);
+      }
+    }
+
+    async function handleCapToggle(track) {
+      const key = track.getAttribute('data-cap');
+      if (!key) return;
+      const currentActive = track.classList.contains('active');
+      const targetActive = !currentActive;
+
+      track.classList.toggle('active', targetActive);
+      track.setAttribute('aria-checked', String(targetActive));
+
+      try {
+        const caps = await invokeTauri('phone_set_capability', { key, enabled: targetActive });
+        if (currentPhoneStatus) {
+          currentPhoneStatus.capabilities = caps;
+        }
+      } catch (err) {
+        console.error(`Failed to set capability ${key}:`, err);
+        track.classList.toggle('active', currentActive);
+        track.setAttribute('aria-checked', String(currentActive));
+      }
+    }
+
+    async function handleRemoveDevice(deviceId) {
+      try {
+        await invokeTauri('phone_remove_device', { id: deviceId });
+        await fetchPhoneStatus();
+      } catch (err) {
+        console.error('Failed to remove device:', err);
+      }
+    }
+
+    async function handleRenameDevice(deviceId, newName) {
+      try {
+        if (currentPhoneStatus?.devices) {
+          const d = currentPhoneStatus.devices.find(x => x.id === deviceId);
+          if (d) d.name = newName;
+        }
+        await invokeTauri('phone_rename_device', { id: deviceId, name: newName });
+        await fetchPhoneStatus();
+      } catch (err) {
+        console.error('Failed to rename device:', err);
+      }
+    }
+
+    async function handleCopyCode(btn) {
+      try {
+        await invokeTauri('phone_copy_code');
+      } catch (err) {
+        console.warn('phone_copy_code failed, copying clean code to clipboard:', err);
+      }
+      const cleanCode = (currentPairingSession?.code || '').replace(/[^A-Za-z0-9]/g, '');
+      if (cleanCode) {
+        await copyToClipboard(cleanCode, null);
+      }
+      if (btn) {
+        btn.style.opacity = '1';
+        btn.style.color = '#1FA81F';
+        setTimeout(() => {
+          btn.style.opacity = '';
+          btn.style.color = '';
+        }, 1500);
+      }
+    }
+
+    function showDevicePairedNotice(deviceName) {
+      const msg = document.getElementById('dude-link-pair-msg');
+      if (msg) {
+        msg.textContent = `${deviceName || 'Phone'} connected`;
+        msg.style.display = 'block';
+        setTimeout(() => {
+          msg.style.display = 'none';
+        }, 3000);
+      }
+    }
+
+    function setupPhoneEventListener() {
+      if (window.__TAURI__?.event?.listen) {
+        window.__TAURI__.event.listen('phone-changed', (event) => {
+          const payload = event?.payload || {};
+          if (payload.event === 'device-paired') {
+            showDevicePairedNotice(payload.deviceName);
+          }
+          clearTimeout(phoneEventDebounceTimer);
+          phoneEventDebounceTimer = setTimeout(() => {
+            if (currentActiveTab === 'dude-link') {
+              fetchPhoneStatus();
+            }
+          }, 100);
+        });
+      }
+    }
+
+    // ======================================================================
+    // STAGE 3: DEBUG SAMPLE STATES (Cycle with 'P' key)
+    // ======================================================================
+    const DUDE_LINK_DEBUG_STATES = [
+      {
+        name: '0. Off',
+        status: {
+          running: false,
+          error: null,
+          port: 50432,
+          addresses: [],
+          fingerprint_short: 'A1B2 C3D4 E5F6',
+          network_profile: 'Private',
+          capabilities: { notifications: true, files: true, clipboard: false, media: true },
+          auto_off_minutes: 0,
+          devices: []
+        }
+      },
+      {
+        name: '1. Starting',
+        status: {
+          running: false,
+          starting: true,
+          error: null,
+          port: 50432,
+          addresses: ['192.164.1.34'],
+          fingerprint_short: 'A1B2 C3D4 E5F6',
+          network_profile: 'Private',
+          capabilities: { notifications: true, files: true, clipboard: false, media: true },
+          auto_off_minutes: 0,
+          devices: []
+        }
+      },
+      {
+        name: '2. Running (0 devices)',
+        status: {
+          running: true,
+          error: null,
+          port: 50432,
+          addresses: ['192.164.1.34'],
+          fingerprint_short: 'A1B2 C3D4 E5F6',
+          network_profile: 'Private',
+          capabilities: { notifications: true, files: true, clipboard: false, media: true },
+          auto_off_minutes: 0,
+          devices: []
+        },
+        pairing: {
+          code: '8F4D-9K2M',
+          expires_in_sec: 118,
+          qr_size: 21,
+          qr_modules: [
+            1,1,1,1,1,1,1,0,0,1,0,1,1,0,1,1,1,1,1,1,1,
+            1,0,0,0,0,0,1,0,1,0,1,0,0,0,1,0,0,0,0,0,1,
+            1,0,1,1,1,0,1,0,0,1,1,1,0,0,1,0,1,1,1,0,1,
+            1,0,1,1,1,0,1,0,1,0,0,0,1,0,1,0,1,1,1,0,1,
+            1,0,1,1,1,0,1,0,0,1,0,1,0,0,1,0,1,1,1,0,1,
+            1,0,0,0,0,0,1,0,1,1,1,0,1,0,1,0,0,0,0,0,1,
+            1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,
+            0,0,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,0,0,0,
+            1,1,0,1,0,1,1,1,0,0,1,0,1,1,0,1,0,1,1,0,1,
+            0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,1,0,0,1,0,
+            1,0,0,1,0,1,1,0,1,1,0,1,1,0,0,1,0,1,1,0,1,
+            0,1,1,0,1,0,0,1,0,0,1,0,0,1,1,0,1,0,0,1,0,
+            1,0,0,1,1,1,1,0,1,1,0,1,1,0,1,1,0,1,0,1,1,
+            0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,
+            1,1,1,1,1,1,1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,
+            1,0,0,0,0,0,1,0,0,1,1,0,1,0,0,1,0,1,0,0,1,
+            1,0,1,1,1,0,1,0,1,0,1,1,0,1,1,0,1,1,0,1,0,
+            1,0,1,1,1,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,1,
+            1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1,1,0,1,0,
+            1,0,0,0,0,0,1,0,0,0,1,1,0,0,0,1,0,0,1,0,1,
+            1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,0,1,0,1,1,0
+          ].map(Boolean)
+        }
+      },
+      {
+        name: '3. Running (2 devices - Image 1 match)',
+        status: {
+          running: true,
+          error: null,
+          port: 50432,
+          addresses: ['192.164.1.34'],
+          fingerprint_short: 'A1B2 C3D4 E5F6',
+          network_profile: 'Private',
+          capabilities: { notifications: true, files: true, clipboard: false, media: true },
+          auto_off_minutes: 0,
+          devices: [
+            { id: 'dev-1', name: 'OnePlus Noard CE4 Lite 5G', created_at: Date.now() - 3600000, last_seen: Date.now(), connected: true },
+            { id: 'dev-2', name: 'samsung galaxy s23', created_at: Date.now() - 86400000, last_seen: Date.now() - 7200000, connected: false }
+          ]
+        },
+        pairing: {
+          code: '8F4D-9K2M',
+          expires_in_sec: 118,
+          qr_size: 21,
+          qr_modules: [
+            1,1,1,1,1,1,1,0,0,1,0,1,1,0,1,1,1,1,1,1,1,
+            1,0,0,0,0,0,1,0,1,0,1,0,0,0,1,0,0,0,0,0,1,
+            1,0,1,1,1,0,1,0,0,1,1,1,0,0,1,0,1,1,1,0,1,
+            1,0,1,1,1,0,1,0,1,0,0,0,1,0,1,0,1,1,1,0,1,
+            1,0,1,1,1,0,1,0,0,1,0,1,0,0,1,0,1,1,1,0,1,
+            1,0,0,0,0,0,1,0,1,1,1,0,1,0,1,0,0,0,0,0,1,
+            1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,
+            0,0,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,0,0,0,
+            1,1,0,1,0,1,1,1,0,0,1,0,1,1,0,1,0,1,1,0,1,
+            0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,1,0,0,1,0,
+            1,0,0,1,0,1,1,0,1,1,0,1,1,0,0,1,0,1,1,0,1,
+            0,1,1,0,1,0,0,1,0,0,1,0,0,1,1,0,1,0,0,1,0,
+            1,0,0,1,1,1,1,0,1,1,0,1,1,0,1,1,0,1,0,1,1,
+            0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,
+            1,1,1,1,1,1,1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,
+            1,0,0,0,0,0,1,0,0,1,1,0,1,0,0,1,0,1,0,0,1,
+            1,0,1,1,1,0,1,0,1,0,1,1,0,1,1,0,1,1,0,1,0,
+            1,0,1,1,1,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,1,
+            1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1,1,0,1,0,
+            1,0,0,0,0,0,1,0,0,0,1,1,0,0,0,1,0,0,1,0,1,
+            1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,0,1,0,1,1,0
+          ].map(Boolean)
+        }
+      },
+      {
+        name: '4. 10 phones limit reached',
+        status: {
+          running: true,
+          error: null,
+          port: 50432,
+          addresses: ['192.164.1.34'],
+          fingerprint_short: 'A1B2 C3D4 E5F6',
+          network_profile: 'Private',
+          capabilities: { notifications: true, files: true, clipboard: false, media: true },
+          auto_off_minutes: 0,
+          devices: Array.from({ length: 10 }, (_, i) => ({
+            id: `dev-${i + 1}`,
+            name: i === 0 ? 'OnePlus Noard CE4 Lite 5G' : (i === 1 ? 'samsung galaxy s23' : `Pixel 8 Pro (${i + 1})`),
+            created_at: Date.now() - (i + 1) * 86400000,
+            last_seen: Date.now() - i * 1800000,
+            connected: i === 0
+          }))
+        }
+      },
+      {
+        name: '5. Public network warning',
+        status: {
+          running: true,
+          error: null,
+          port: 50432,
+          addresses: ['10.0.0.45'],
+          fingerprint_short: 'A1B2 C3D4 E5F6',
+          network_profile: 'Public',
+          capabilities: { notifications: true, files: true, clipboard: false, media: true },
+          auto_off_minutes: 60,
+          devices: [
+            { id: 'dev-1', name: 'Pixel Fold', created_at: Date.now() - 3600000, last_seen: Date.now(), connected: true }
+          ]
+        }
+      },
+      {
+        name: '6. Port-busy / Server error',
+        status: {
+          running: false,
+          error: 'Port 50432 already in use',
+          port: 50432,
+          addresses: [],
+          fingerprint_short: 'A1B2 C3D4 E5F6',
+          network_profile: 'Private',
+          capabilities: { notifications: true, files: true, clipboard: false, media: true },
+          auto_off_minutes: 0,
+          devices: []
+        }
+      },
+      {
+        name: '7. Expired code',
+        status: {
+          running: true,
+          error: null,
+          port: 50432,
+          addresses: ['192.164.1.34'],
+          fingerprint_short: 'A1B2 C3D4 E5F6',
+          network_profile: 'Private',
+          capabilities: { notifications: true, files: true, clipboard: false, media: true },
+          auto_off_minutes: 0,
+          devices: []
+        },
+        expired: true
+      }
+    ];
+
+    function cycleDudeLinkDebugState() {
+      const state = DUDE_LINK_DEBUG_STATES[debugStateIndex];
+      debugStateIndex = (debugStateIndex + 1) % DUDE_LINK_DEBUG_STATES.length;
+      console.log(`%c[Dude Link Debug] State ${debugStateIndex}: ${state.name}`, 'color: #8B5CF6; font-weight: bold;');
+      renderPhoneStatus(state.status);
+      if (state.pairing) {
+        applyPairingSession(state.pairing);
+      }
+      if (state.expired) {
+        if (pairingCountdownTimer) {
+          clearInterval(pairingCountdownTimer);
+          pairingCountdownTimer = null;
+        }
+        pairingRemainingSeconds = 0;
+        const expiryText = document.getElementById('dude-link-expiry-text');
+        if (expiryText) expiryText.textContent = 'Expires in 00:00 (Expired)';
+      }
+    }
+
+    function onDudeLinkVisible() {
+      updateDudeLinkScrollVisuals();
+      fetchPhoneStatus().then(() => {
+        if (currentPhoneStatus && currentPhoneStatus.running) {
+          startPairingSession();
+        }
+      });
+      if (dudeLinkPollTimer) clearInterval(dudeLinkPollTimer);
+      dudeLinkPollTimer = setInterval(() => {
+        if (currentActiveTab === 'dude-link') {
+          fetchPhoneStatus();
+        }
+      }, 10000);
+    }
+
+    function onDudeLinkHidden() {
+      if (dudeLinkPollTimer) {
+        clearInterval(dudeLinkPollTimer);
+        dudeLinkPollTimer = null;
+      }
+      if (pairingCountdownTimer) {
+        clearInterval(pairingCountdownTimer);
+        pairingCountdownTimer = null;
+      }
+      currentPairingSession = null;
+      invokeTauri('phone_cancel_pairing').catch(() => {});
+      document.querySelectorAll('.dude-link-device-menu.open').forEach(m => m.classList.remove('open'));
+    }
+
+    function initDudeLinkSection() {
+      if (dudeLinkInitialized) return;
+      dudeLinkInitialized = true;
+
+      const area = document.getElementById('dude-link-scroll-area');
+      const panel = document.getElementById('dude-link-panel');
+      const banner = document.getElementById('dude-link-banner');
+
+      // 1. Scroll listener for bottom fade
+      if (area) {
+        area.addEventListener('scroll', () => {
+          if (!dudeLinkScrollRafId) {
+            dudeLinkScrollRafId = requestAnimationFrame(() => {
+              dudeLinkScrollRafId = null;
+              updateDudeLinkScrollVisuals();
+            });
+          }
+        }, { passive: true });
+
+        // Mouse wheel scrolling directly inside area
+        area.addEventListener('wheel', (e) => {
+          let delta = e.deltaY;
+          if (!delta) return;
+          if (e.deltaMode === 1) delta = e.deltaY * 36;
+          else if (e.deltaMode === 2) delta = e.deltaY * (area.clientHeight || 402);
+          const maxScroll = area.scrollHeight - area.clientHeight;
+          if (maxScroll <= 0) return;
+          const canScrollDown = delta > 0 && (area.scrollTop < maxScroll - 0.5);
+          const canScrollUp = delta < 0 && (area.scrollTop > 0.5);
+          if (canScrollDown || canScrollUp) {
+            e.preventDefault();
+            area.scrollBy({ top: delta, behavior: 'auto' });
+            updateDudeLinkScrollVisuals();
+          }
+        }, { passive: false });
+
+        // Tabbing into an off-screen control scrolls it into view
+        area.addEventListener('focusin', (e) => {
+          if (e.target && typeof e.target.scrollIntoView === 'function') {
+            e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        });
+
+        // Keyboard scrolling: Arrow keys, PageUp/PageDown, Space
+        area.addEventListener('keydown', (e) => {
+          const tag = (e.target && e.target.tagName) || '';
+          if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable) return;
+          let delta = 0;
+          if (e.key === 'ArrowDown') delta = 40;
+          else if (e.key === 'ArrowUp') delta = -40;
+          else if (e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey)) delta = (area.clientHeight - 40);
+          else if (e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)) delta = -(area.clientHeight - 40);
+          if (delta !== 0) {
+            e.preventDefault();
+            area.scrollBy({ top: delta, behavior: 'smooth' });
+          }
+        });
+      }
+
+      // 2. Non-passive wheel forwarding from fixed header and panel margins
+      if (panel && area) {
+        panel.addEventListener('wheel', (e) => {
+          if (area.contains(e.target)) return;
+          let delta = e.deltaY;
+          if (!delta) return;
+          if (e.deltaMode === 1) delta = e.deltaY * 36;
+          else if (e.deltaMode === 2) delta = e.deltaY * (area.clientHeight || 402);
+          const maxScroll = area.scrollHeight - area.clientHeight;
+          if (maxScroll <= 0) return;
+          const canScrollDown = delta > 0 && (area.scrollTop < maxScroll - 0.5);
+          const canScrollUp = delta < 0 && (area.scrollTop > 0.5);
+          if (canScrollDown || canScrollUp) {
+            e.preventDefault();
+            area.scrollBy({ top: delta, behavior: 'auto' });
+          }
+        }, { passive: false });
+      }
+
+      // 3. Banner drag support
+      if (banner && window.__TAURI__?.window?.getCurrentWindow) {
+        banner.addEventListener('mousedown', (e) => {
+          if (e.button === 0 && !e.target.closest('.dude-link-window-controls')) {
+            window.__TAURI__.window.getCurrentWindow().startDragging();
+          }
+        });
+      }
+
+      // 4. Single Delegated Click Handler on panel
+      if (panel) {
+        panel.addEventListener('click', async (e) => {
+          try {
+            // A. Server main toggle
+            const serverToggle = e.target.closest('#dude-link-server-toggle');
+            if (serverToggle) {
+              e.preventDefault();
+              await toggleServer();
+              return;
+            }
+
+            // B. Capability switch toggle
+            const capTrack = e.target.closest('.dude-link-cap-row .toggle-track');
+            if (capTrack) {
+              e.preventDefault();
+              await handleCapToggle(capTrack);
+              return;
+            }
+
+            // C. More options collapsible button
+            const moreBtn = e.target.closest('#dude-link-more-btn');
+            if (moreBtn) {
+              e.preventDefault();
+              const moreGrid = document.getElementById('dude-link-more-grid');
+              const moreWrap = document.getElementById('dude-link-more-wrap');
+              if (moreGrid) {
+                const isExpanded = moreGrid.classList.contains('expanded');
+                moreGrid.classList.toggle('expanded', !isExpanded);
+                if (moreWrap) moreWrap.classList.toggle('expanded', !isExpanded);
+                moreBtn.setAttribute('aria-expanded', String(!isExpanded));
+                setTimeout(updateDudeLinkScrollVisuals, 200);
+              }
+              return;
+            }
+
+            // D. Paired phones chevron toggle
+            const devicesChevronBtn = e.target.closest('#dude-link-devices-chevron-btn');
+            if (devicesChevronBtn) {
+              e.preventDefault();
+              const devicesGrid = document.getElementById('dude-link-devices-grid');
+              if (devicesGrid) {
+                const isExpanded = devicesGrid.classList.contains('expanded');
+                devicesGrid.classList.toggle('expanded', !isExpanded);
+                devicesChevronBtn.setAttribute('aria-expanded', String(!isExpanded));
+                setTimeout(updateDudeLinkScrollVisuals, 200);
+              }
+              return;
+            }
+
+            // E. Copy IP button
+            const copyAddrBtn = e.target.closest('#dude-link-copy-addr-btn');
+            if (copyAddrBtn) {
+              e.preventDefault();
+              const addr = (currentPhoneStatus?.addresses && currentPhoneStatus.addresses[0]) || '127.0.0.1';
+              await copyToClipboard(addr, copyAddrBtn);
+              return;
+            }
+
+            // F. Copy Key (fingerprint) button
+            const copyFpBtn = e.target.closest('#dude-link-copy-fp-btn');
+            if (copyFpBtn) {
+              e.preventDefault();
+              const fp = currentPhoneStatus?.fingerprint_short || '';
+              await copyToClipboard(fp, copyFpBtn);
+              return;
+            }
+
+            // G. Copy Code button
+            const copyCodeBtn = e.target.closest('#dude-link-copy-code-btn');
+            if (copyCodeBtn) {
+              e.preventDefault();
+              await handleCopyCode(copyCodeBtn);
+              return;
+            }
+
+            // H. Wi-Fi settings button
+            const wifiBtn = e.target.closest('#dude-link-wifi-settings-btn');
+            if (wifiBtn) {
+              e.preventDefault();
+              await invokeTauri('phone_open_wifi_settings');
+              return;
+            }
+
+            // I. Restart server button
+            const restartBtn = e.target.closest('#dude-link-restart-btn');
+            if (restartBtn) {
+              e.preventDefault();
+              await restartServer();
+              return;
+            }
+
+            // J. Forget all phones button
+            const forgetAllBtn = e.target.closest('#dude-link-forget-all-btn');
+            if (forgetAllBtn) {
+              e.preventDefault();
+              await handleForgetAllClick(forgetAllBtn);
+              return;
+            }
+          } catch (err) {
+            console.warn('Dude Link panel click error:', err);
+          }
+        });
+      }
+
+      // 5. Auto-off Select change listener
+      const autoOffSelect = document.getElementById('dude-link-auto-off-select');
+      if (autoOffSelect) {
+        autoOffSelect.addEventListener('change', handleAutoOffChange);
+      }
+
+      // 6. Global click outside / Escape listener to close device menus
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.dude-link-device-menu') && !e.target.closest('.dude-link-device-menu-btn')) {
+          document.querySelectorAll('.dude-link-device-menu.open').forEach(m => m.classList.remove('open'));
+        }
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.dude-link-device-menu.open').forEach(m => m.classList.remove('open'));
+        }
+      });
+
+      // 7. Setup Tauri event listener
+      setupPhoneEventListener();
+
+      // 8. Debug key 'P' listener (Phase 13: Debug only)
+      window.addEventListener('keydown', (e) => {
+        if ((e.key === 'P' || e.key === 'p') && !e.ctrlKey && !e.altKey && !e.metaKey) {
+          if (currentActiveTab === 'dude-link' && isDebugMode) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable) return;
+            e.preventDefault();
+            cycleDudeLinkDebugState();
+          }
+        }
+      });
+
+      // 9. Initial fetch
+      fetchPhoneStatus();
     }
 
     try {

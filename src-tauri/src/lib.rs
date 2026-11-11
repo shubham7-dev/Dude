@@ -10,6 +10,7 @@ pub mod sound;
 pub mod clipboard_history;
 pub mod audio_visualizer;
 pub mod dropvault;
+pub mod phone_link;
 
 const KEYRING_SERVICE: &str = "Dude";
 const KEYRING_USER: &str = "GeminiAPIKey";
@@ -24,6 +25,7 @@ pub fn is_quitting() -> bool {
 pub fn stop_background_workers() {
     IS_QUITTING.store(true, Ordering::SeqCst);
     BRIGHTNESS_CONDVAR.notify_all();
+    phone_link::stop_server();
 }
 
 #[tauri::command]
@@ -4469,12 +4471,27 @@ pub fn run() {
             dropvault::vault_clean_apply,
             dropvault::vault_clean_cancel,
             dropvault::vault_clean_discard,
-            dropvault::seed_vault_test_files
+            dropvault::seed_vault_test_files,
+            phone_link::phone_get_status,
+            phone_link::phone_set_enabled,
+            phone_link::phone_start_pairing,
+            phone_link::phone_cancel_pairing,
+            phone_link::phone_refresh_pairing,
+            phone_link::phone_copy_code,
+            phone_link::phone_remove_device,
+            phone_link::phone_rename_device,
+            phone_link::phone_forget_all,
+            phone_link::phone_set_capability,
+            phone_link::phone_set_auto_off,
+            phone_link::phone_restart,
+            phone_link::phone_open_wifi_settings,
+            phone_link::phone_publish_agent
         ])
         .setup(|app| {
             // Procedurally generate sound buffers in memory at startup
             let _ = sound::get_sound_engine();
             clipboard_history::init(&app.handle());
+            phone_link::init(&app.handle());
 
             let handle = app.handle().clone();
             handle.listen("behavior-changed", move |event| {

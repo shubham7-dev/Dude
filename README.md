@@ -242,6 +242,7 @@ Dude is engineered around a **strict local-first, zero-telemetry philosophy**:
 - 💻 **Air-Gapped Controls**: Media, brightness, volume, and battery queries execute purely via local Win32 and WMI CIM APIs.
 - 📝 **Volatile Clipboard**: Clipboard history is kept in volatile RAM only and discarded upon exit; sensitive clipboard data (passwords, crypto keys) is automatically filtered out.
 - 📁 **Isolated Storage**: DropVault operates strictly inside `Documents\DropVault` (or your user-configured directory). Files are only sent to the AI when you explicitly attach them.
+- 📱 **Dude Link Privacy**: Dude Link is off by default. Clipboard sharing is a separate switch that is also off by default. Everything stays on your local network. With Dude Link on, a paired phone can see whether Antigravity is working, finished or waiting for you, and the name of the project folder. It never gets file names, code, commands or chats.
 
 Read our complete [Privacy Policy](docs/PRIVACY.md).
 

@@ -14745,8 +14745,77 @@ ${Array.from({ length: 60 }, (_, i) => `[Link ${i + 1}](https://example.com/item
       } else {
         setMascotBadgeState('none');
       }
+
+      schedulePhonePublishAgent();
     }
     window.setMascotBadgeState = setMascotBadgeState;
+
+    // --- Dude Link Agent Activity Publisher (Debounced 250ms, deduplicated) ---
+    let phoneLinkRunning = false;
+    let phonePublishTimer = null;
+    let lastPublishedPhoneAgentJson = null;
+
+    async function checkPhoneLinkRunning() {
+      try {
+        if (window.__TAURI__?.core?.invoke) {
+          const status = await window.__TAURI__.core.invoke('phone_get_status');
+          phoneLinkRunning = !!(status && status.running);
+        }
+      } catch (_) {}
+    }
+
+    if (window.__TAURI__?.event?.listen) {
+      window.__TAURI__.event.listen('phone-changed', (event) => {
+        const payload = event?.payload || {};
+        if (payload.event === 'server-started') {
+          phoneLinkRunning = true;
+          schedulePhonePublishAgent();
+        } else if (payload.event === 'server-stopped') {
+          phoneLinkRunning = false;
+        } else if (payload.running !== undefined) {
+          phoneLinkRunning = !!payload.running;
+          if (phoneLinkRunning) schedulePhonePublishAgent();
+        }
+      });
+    }
+    checkPhoneLinkRunning();
+
+    function schedulePhonePublishAgent() {
+      if (phonePublishTimer) return;
+      phonePublishTimer = setTimeout(() => {
+        phonePublishTimer = null;
+        publishCurrentAgentStateToPhone();
+      }, 250);
+    }
+
+    async function publishCurrentAgentStateToPhone() {
+      if (!phoneLinkRunning) return;
+      try {
+        const conv = activeAgentConversationId ? agentConversations.get(activeAgentConversationId) : null;
+        let status = 'idle';
+        let project = '';
+        let step = null;
+        let since = null;
+        let edits = 0;
+
+        if (conv) {
+          status = ['thinking', 'working', 'needs_you', 'done', 'idle'].includes(conv.status) ? conv.status : 'idle';
+          project = (conv.project && conv.project !== 'Antigravity') ? conv.project : '';
+          step = (conv.runningCategory && ['read', 'edit', 'bash'].includes(conv.runningCategory)) ? conv.runningCategory : null;
+          since = conv.lastEventAt || null;
+          edits = typeof conv.editsCount === 'number' ? conv.editsCount : 0;
+        }
+
+        const stateObj = { status, project, step, since, edits };
+        const stateJson = JSON.stringify(stateObj);
+        if (stateJson === lastPublishedPhoneAgentJson) return;
+        lastPublishedPhoneAgentJson = stateJson;
+
+        if (window.__TAURI__?.core?.invoke) {
+          await window.__TAURI__.core.invoke('phone_publish_agent', { state: stateObj });
+        }
+      } catch (_) {}
+    }
 
     document.addEventListener('visibilitychange', () => {
       document.body.classList.toggle('mascot-window-hidden', document.hidden);

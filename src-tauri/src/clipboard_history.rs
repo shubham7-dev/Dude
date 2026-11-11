@@ -72,6 +72,7 @@ static MANAGER: OnceLock<Mutex<ManagerState>> = OnceLock::new();
 static LISTENER_HWND: AtomicIsize = AtomicIsize::new(0);
 static LISTENER_RUNNING: AtomicBool = AtomicBool::new(false);
 static DUDE_LAST_COPIED_HASH: AtomicU64 = AtomicU64::new(0);
+static SKIP_NEXT_HASH: AtomicU64 = AtomicU64::new(0);
 static APP_HANDLE: OnceLock<AppHandle> = OnceLock::new();
 static DEBUG_PREVIEW_ACTIVE: AtomicBool = AtomicBool::new(false);
 
@@ -373,6 +374,12 @@ fn process_clipboard_update(hwnd: HWND) {
 
         // 5. Check if this is Dude's own write (token matching)
         let hash = simple_hash(&text);
+        let skip_hash = SKIP_NEXT_HASH.load(Ordering::SeqCst);
+        if skip_hash != 0 && skip_hash == hash {
+            SKIP_NEXT_HASH.store(0, Ordering::SeqCst);
+            return;
+        }
+
         let last_dude = DUDE_LAST_COPIED_HASH.load(Ordering::SeqCst);
         if last_dude != 0 && last_dude == hash {
             DUDE_LAST_COPIED_HASH.store(0, Ordering::SeqCst);
@@ -622,6 +629,73 @@ fn write_to_windows_clipboard(text: &str) -> Result<(), String> {
         let _ = GlobalUnlock(h_mem);
 
         let _ = SetClipboardData(CF_UNICODETEXT, HANDLE(h_mem.0));
+    }
+    Ok(())
+}
+
+pub fn write_clipboard_skipping_history(text: &str) -> Result<(), String> {
+    let hash = simple_hash(text);
+    SKIP_NEXT_HASH.store(hash, Ordering::SeqCst);
+    write_to_windows_clipboard(text)
+}
+
+pub fn read_windows_clipboard_text() -> Result<String, String> {
+    unsafe {
+        let mut opened = false;
+        for _ in 0..5 {
+            if OpenClipboard(HWND(std::ptr::null_mut())).is_ok() {
+                opened = true;
+                break;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(20));
+        }
+        if !opened {
+            return Err("Failed to open clipboard".to_string());
+        }
+
+        struct Guard;
+        impl Drop for Guard {
+            fn drop(&mut self) {
+                unsafe {
+                    let _ = CloseClipboard();
+                }
+            }
+        }
+        let _g = Guard;
+
+        let handle = GetClipboardData(CF_UNICODETEXT).map_err(|e| e.to_string())?;
+        if handle.is_invalid() {
+            return Err("No unicode text in clipboard".to_string());
+        }
+
+        let ptr = GlobalLock(HGLOBAL(handle.0));
+        if ptr.is_null() {
+            return Err("Failed to lock clipboard global memory".to_string());
+        }
+
+        let u16_ptr = ptr as *const u16;
+        let mut len = 0;
+        while *u16_ptr.add(len) != 0 && len < 20000 {
+            len += 1;
+        }
+
+        let slice = std::slice::from_raw_parts(u16_ptr, len);
+        let s = String::from_utf16_lossy(slice);
+        let _ = GlobalUnlock(HGLOBAL(handle.0));
+        Ok(s)
+    }
+}
+
+pub fn clear_windows_clipboard_if_matches(text: &str) -> Result<(), String> {
+    if let Ok(curr) = read_windows_clipboard_text() {
+        if curr == text {
+            unsafe {
+                if OpenClipboard(HWND(std::ptr::null_mut())).is_ok() {
+                    let _ = EmptyClipboard();
+                    let _ = CloseClipboard();
+                }
+            }
+        }
     }
     Ok(())
 }
